@@ -1,6 +1,6 @@
-import { createValidationError } from './validationHelpers.js';
+import { createValidationError } from '../utils/validationHelpers.js';
 
-const validTripStatuses = ['PLANNING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+const validTripStatuses = ['PLANNING', 'COMPLETED'];
 
 function requireText(value, fieldName) {
   if (typeof value !== 'string' || value.trim() === '') {

@@ -1,6 +1,6 @@
 import { db } from '../infra/db/db.js';
 import { createValidationError } from '../utils/validationHelpers.js';
-import { validateCreateTrip, validateTripId, validateUpdateTrip } from '../utils/tripValidator.js';
+import { validateCreateTrip, validateTripId, validateUpdateTrip } from '../validators/tripValidator.js';
 
 function normalizeTrip(row) {
   return {
