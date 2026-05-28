@@ -7,7 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-.env
 node_modules
 dist
 dist-ssr
@@ -18,10 +17,9 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+.env
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-DS_Store
