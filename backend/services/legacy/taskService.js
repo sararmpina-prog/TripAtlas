@@ -18,7 +18,7 @@ Nota importante:
 */
 
 import { db } from '../../infra/db/db.js'; // O service não sabe detalhes da conexão MySQL, apenas usa a abstração db.
-import { createValidationError } from '../../utils/validationHelpers.js';
+import { ValidationError } from '../../utils/appErrors.js';
 import {
   normalizeTaskTarget,
   normalizeTaskDueDateInput,
@@ -102,7 +102,7 @@ async function findTaskByTarget(target) {
   );
 
   if (exactRows.length > 1) {
-    throw createValidationError(`Encontrei várias tarefas com "${normalizedTarget}". Indica o id da tarefa que queres alterar ou apagar.`);
+    throw new ValidationError(`Encontrei várias tarefas com "${normalizedTarget}". Indica o id da tarefa que queres alterar ou apagar.`);
   }
 
   if (exactRows.length === 1) {
@@ -115,7 +115,7 @@ async function findTaskByTarget(target) {
   );
 
   if (rows.length > 1) {
-    throw createValidationError(`Encontrei várias tarefas com "${normalizedTarget}". Indica o id da tarefa que queres alterar ou apagar.`);
+    throw new ValidationError(`Encontrei várias tarefas com "${normalizedTarget}". Indica o id da tarefa que queres alterar ou apagar.`);
   }
 
   return rows[0] || null;
@@ -126,7 +126,7 @@ async function resolveTaskByTarget(target, notFoundMessage) {
   const task = await findTaskByTarget(target);
 
   if (!task) {
-    throw createValidationError(notFoundMessage);
+    throw new ValidationError(notFoundMessage);
   }
 
   return task;
@@ -171,7 +171,7 @@ function buildTaskUpdateStatement(args = {}) {
   }
 
   if (updates.length === 0) {
-    throw createValidationError('Não há campos para atualizar');
+    throw new ValidationError('Não há campos para atualizar');
   }
 
   return { updates, values };
@@ -246,11 +246,11 @@ export async function updateTaskCompletion(args = {}) {
   const { id, completed } = args;
 
   if (!id || !/^\d+$/.test(String(id))) {
-    throw createValidationError('É necessário indicar um id válido para atualizar o estado da tarefa');
+    throw new ValidationError('É necessário indicar um id válido para atualizar o estado da tarefa');
   }
 
   if (typeof completed !== 'boolean') {
-    throw createValidationError('O campo completed deve ser booleano');
+    throw new ValidationError('O campo completed deve ser booleano');
   }
 
   await db.execute('UPDATE tasks SET completed = ? WHERE id = ?', [completed ? 1 : 0, Number(id)]);
@@ -258,7 +258,7 @@ export async function updateTaskCompletion(args = {}) {
   const [rows] = await db.execute('SELECT * FROM tasks WHERE id = ? LIMIT 1', [Number(id)]);
 
   if (!rows[0]) {
-    throw createValidationError('Tarefa não encontrada para atualizar o estado');
+    throw new ValidationError('Tarefa não encontrada para atualizar o estado');
   }
 
   return normalizeTask(rows[0]);
@@ -338,6 +338,6 @@ export async function executeTaskAction(functionCall) {
     case 'filter_tasks':
       return filterTasks(args);
     default:
-      throw createValidationError('Função desconhecida');
+      throw new ValidationError('Função desconhecida');
   }
 }

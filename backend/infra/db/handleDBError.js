@@ -5,7 +5,7 @@ Evita que erros da data base sejam expostos diretamente ao frontend.
 Pode ser usada nos services para garantir que os erros sejam tratados adequadamente.
 */
 
-import { ValidationError } from "./ValidationError.js";
+import { ValidationError } from "../../utils/appErrors.js";
 
 export const handleDBError = (err, context = null) => {
   // UNIQUE constraint

@@ -1,5 +1,5 @@
 import { db } from '../infra/db/db.js';
-import { createValidationError } from '../utils/validationHelpers.js';
+import { NotFoundError } from '../utils/appErrors.js';
 import { validateCreateTrip, validateTripId, validateUpdateTrip } from '../validators/tripValidator.js';
 
 function normalizeTrip(row) {
@@ -77,7 +77,7 @@ export async function updateTrip(id, payload = {}) {
   const [result] = await db.execute(`UPDATE trips SET ${updates.join(', ')} WHERE id = ?`, values);
 
   if (result.affectedRows === 0) {
-    throw createValidationError('Trip não encontrada para atualizar.');
+    throw new NotFoundError('Trip não encontrada para atualizar.');
   }
 
   const [rows] = await db.execute('SELECT * FROM trips WHERE id = ? LIMIT 1', [tripId]);
@@ -89,7 +89,7 @@ export async function deleteTrip(id) {
   const [rows] = await db.execute('SELECT * FROM trips WHERE id = ? LIMIT 1', [tripId]);
 
   if (!rows[0]) {
-    throw createValidationError('Trip não encontrada para apagar.');
+    throw new NotFoundError('Trip não encontrada para apagar.');
   }
 
   await db.execute('DELETE FROM trips WHERE id = ?', [tripId]);

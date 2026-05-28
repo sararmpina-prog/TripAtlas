@@ -18,7 +18,7 @@ Backend Validation
 Database
 */
 
-import { createValidationError } from './validationHelpers.js';
+import { ValidationError } from '../appErrors.js';
 
 // Uma única fonte de verdade - Evita repetição, melhora a manutenção e garante consistência com a BD (ENUM)
 const validPriorities = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
@@ -81,7 +81,7 @@ export function validateTaskPriority(priority) {
   }
 
   if (!validPriorities.includes(priority)) {
-    throw createValidationError('Prioridade inválida');
+    throw new ValidationError('Prioridade inválida');
   }
 }
 
@@ -91,7 +91,7 @@ export function validateTaskCompleted(completed) {
   }
 
   if (typeof completed !== 'boolean') {
-    throw createValidationError('O campo completed deve ser booleano');
+    throw new ValidationError('O campo completed deve ser booleano');
   }
 }
 
@@ -102,7 +102,7 @@ export function validateTaskDueDateInput(dueDate) {
   }
 
   if (typeof dueDate !== 'string' || !isAcceptedDueDateInput(dueDate)) {
-    throw createValidationError('Data inválida. Usa YYYY-MM-DD, ontem, hoje ou amanhã');
+    throw new ValidationError('Data inválida. Usa YYYY-MM-DD, ontem, hoje ou amanhã');
   }
 }
 
@@ -138,7 +138,7 @@ export function normalizeTaskDueDateInput(dueDate, referenceDate = new Date()) {
     return toIsoDate(tomorrow);
   }
 
-  throw createValidationError('Data inválida. Usa YYYY-MM-DD, ontem, hoje ou amanhã');
+  throw new ValidationError('Data inválida. Usa YYYY-MM-DD, ontem, hoje ou amanhã');
 }
 
 // Valida o identificador da tarefa alvo.
@@ -147,7 +147,7 @@ export function validateTaskTarget(target) {
   const normalizedTarget = normalizeTaskTarget(target);
 
   if (!hasText(normalizedTarget) && !/^\d+$/.test(String(normalizedTarget ?? ''))) {
-    throw createValidationError('Target é obrigatório');
+    throw new ValidationError('Target é obrigatório');
   }
 }
 
@@ -155,7 +155,7 @@ export function validateTaskTarget(target) {
 // Garante que campos essenciais existem antes de chegar à camada de persistência.
 export function validateCreateTask({ task, priority, dueDate }) {
   if (!hasText(task)) {
-    throw createValidationError('Título da tarefa é obrigatório');
+    throw new ValidationError('Título da tarefa é obrigatório');
   }
 
   validateTaskPriority(priority);

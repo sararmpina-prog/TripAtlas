@@ -1,10 +1,10 @@
-import { createValidationError } from '../utils/validationHelpers.js';
+import { ValidationError } from '../utils/appErrors.js';
 
 const validTripStatuses = ['PLANNING', 'COMPLETED'];
 
 function requireText(value, fieldName) {
   if (typeof value !== 'string' || value.trim() === '') {
-    throw createValidationError(`O campo ${fieldName} é obrigatório.`);
+    throw new ValidationError(`O campo ${fieldName} é obrigatório.`);
   }
 
   return value.trim();
@@ -16,7 +16,7 @@ function normalizeOptionalText(value, fieldName) {
   }
 
   if (typeof value !== 'string') {
-    throw createValidationError(`O campo ${fieldName} deve ser texto.`);
+    throw new ValidationError(`O campo ${fieldName} deve ser texto.`);
   }
 
   return value.trim() || null;
@@ -26,7 +26,7 @@ function normalizeIsoDate(value, fieldName) {
   const normalizedValue = requireText(value, fieldName);
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
-    throw createValidationError(`O campo ${fieldName} deve usar o formato YYYY-MM-DD.`);
+    throw new ValidationError(`O campo ${fieldName} deve usar o formato YYYY-MM-DD.`);
   }
 
   return normalizedValue;
@@ -38,7 +38,7 @@ function normalizeUserId(value) {
   }
 
   if (!/^\d+$/.test(String(value))) {
-    throw createValidationError('O campo userId deve ser um id numérico válido.');
+    throw new ValidationError('O campo userId deve ser um id numérico válido.');
   }
 
   return Number(value);
@@ -72,11 +72,11 @@ function buildValidatedTrip(payload = {}, { requireAtLeastOneField = false } = {
   }
 
   if (trip.startDate && trip.endDate && trip.endDate < trip.startDate) {
-    throw createValidationError('A data de fim não pode ser anterior à data de início.');
+    throw new ValidationError('A data de fim não pode ser anterior à data de início.');
   }
 
   if (requireAtLeastOneField && Object.keys(trip).length === 0) {
-    throw createValidationError('Indica pelo menos um campo para atualizar.');
+    throw new ValidationError('Indica pelo menos um campo para atualizar.');
   }
 
   return trip;
@@ -92,7 +92,7 @@ export function validateUpdateTrip(payload = {}) {
 
 export function validateTripId(value) {
   if (!/^\d+$/.test(String(value))) {
-    throw createValidationError('É necessário indicar um id válido para a trip.');
+    throw new ValidationError('É necessário indicar um id válido para a trip.');
   }
 
   return Number(value);
