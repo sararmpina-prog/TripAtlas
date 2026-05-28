@@ -24,8 +24,7 @@ CREATE TABLE trips (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 
@@ -48,10 +47,7 @@ CREATE TABLE accommodation_reserve (
 	accommodation_id INT NOT NULL,
 	trip_id INT NOT NULL,
     check_in_date DATE,
-    check_out_date DATE,
-   
-	FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
-    FOREIGN KEY (accommodation_id) REFERENCES accommodations(id)  ON DELETE CASCADE
+    check_out_date DATE
 ); 
 
 
@@ -66,21 +62,10 @@ CREATE TABLE flights (
 	arrival_airport VARCHAR(15),
     departure_datetime  DATETIME,
     arrival_datetime DATETIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-	FOREIGN KEY (id_trip) REFERENCES trips(id)
-    ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
 
--- Create user_flights table
--- 6. User_flights
-CREATE TABLE user_flights (
-	user_id INT NOT NULL,
-	flight_id INT NOT NULL,
-    PRIMARY KEY (user_id, flight_id),
-	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-	FOREIGN KEY (flight_id) REFERENCES flights(id) ON DELETE CASCADE
-); 
+--- TABELAS RELACIONADAS COM AI ---
 
 -- Creation chat_history table
 -- 7. chat_history
@@ -89,9 +74,7 @@ CREATE TABLE chat_history (
     trip_id INT NOT NULL,
 	user_message TEXT,
     ai_response MEDIUMTEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
 
 -- Creation ai_suggestions table
@@ -102,8 +85,15 @@ CREATE TABLE ai_suggestions (
 	title VARCHAR(100),
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
 
+--- TABELAS AUXILIARES ---
+
+-- Create user_flights table
+-- 6. User_flights
+CREATE TABLE user_flights (
+	user_id INT NOT NULL,
+	flight_id INT NOT NULL,
+    PRIMARY KEY (user_id, flight_id)
+); 

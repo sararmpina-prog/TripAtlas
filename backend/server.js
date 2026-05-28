@@ -1,13 +1,22 @@
-const express = require("express");
+import express from 'express';
+import tripRoutes from './routes/tripRoutes.js'
+
 const app = express();
+
+
+const port = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Backend a funcionar 🚀");
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'TripAtlas backend online.',
+  });
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor a correr em http://localhost:${PORT}`);
-});
+app.use('/api/trips', tripRoutes);
+
+  app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+  });
