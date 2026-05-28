@@ -3,9 +3,6 @@
 Os controllers apenas definem códigos de erro específicos para cada tipo de erro esperado, e o middleware global garante que esses códigos sejam incluídos nas respostas de erro.
 */
 
-import { ValidationError } from "../utils/ValidationError.js";
-import { NotFoundError } from "../utils/NotFoundError.js";
-
 export function notFoundHandler(req, res) {
   res.status(404).json({
     success: false,
@@ -17,27 +14,7 @@ export function notFoundHandler(req, res) {
 }
 
 export const errorHandler = (err, req, res, next) => {
-  console.error(err); // important for debug
-
-  if (err instanceof ValidationError) {
-    return res.status(400).json({
-      success: false,
-      error: {
-        message: err.message,
-        code: 'VALIDATION_ERROR',
-      },
-    });
-  }
-
-  if (err instanceof NotFoundError) {
-    return res.status(404).json({
-      success: false,
-      error: {
-        message: err.message,
-        code: 'NOT_FOUND',
-      },
-    });
-  }
+  console.error(err); // importante para debug
 
   const statusCode = err?.statusCode || 500;
   const code = err?.code || 'INTERNAL_SERVER_ERROR';

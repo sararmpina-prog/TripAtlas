@@ -6,15 +6,15 @@
 - se é uma string (typeof message !== 'string')
 - se não é apenas espaços em branco (!message.trim())
 
-Se alguma dessas condições for verdadeira, cria um erro de validação usando createValidationError() e passa para o próximo middleware (que é o middleware global de tratamento de erros) para enviar uma resposta de erro padronizada para o cliente.
+Se alguma dessas condições for verdadeira, cria um ValidationError e passa para o próximo middleware (que é o middleware global de tratamento de erros) para enviar uma resposta de erro padronizada para o cliente.
 */
-import { createValidationError } from '../utils/validationHelpers.js';
+import { ValidationError } from '../utils/appErrors.js';
 
 export function validateChatMessage(req, res, next) {
   const { message } = req.body;
 
   if (!message || typeof message !== 'string' || !message.trim()) {
-    return next(createValidationError('O campo "message" é obrigatório e deve ser uma string.'));
+    return next(new ValidationError('O campo "message" é obrigatório e deve ser uma string.'));
   }
 
   next();
