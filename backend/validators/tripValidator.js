@@ -61,7 +61,7 @@ function buildValidatedTrip(
     && trip.endDate < trip.startDate
   ) {
     throw new ValidationError(
-      'A data de fim não pode ser anterior à data de início.'
+      'The end date cannot be earlier than the start date.'
     );
   }
 
@@ -70,7 +70,7 @@ function buildValidatedTrip(
     && Object.keys(trip).length === 0
   ) {
     throw new ValidationError(
-      'Indica pelo menos um campo para atualizar.'
+      'Please indicate at least one field to update.'
     );
   }
 

@@ -16,7 +16,7 @@ import {
 export function parseRequiredText(value, fieldName) {
   if (isBlank(value)) {
     throw new ValidationError(
-      `O campo ${fieldName} é obrigatório.`
+      `The field ${fieldName} is mandatory.`
     );
   }
 
@@ -26,7 +26,7 @@ export function parseRequiredText(value, fieldName) {
 export function parseIsoDate(value, fieldName) {
   if (isBlank(value)) {
     throw new ValidationError(
-      `O campo ${fieldName} é obrigatório.`
+      `The field ${fieldName} is mandatory.`
     );
   }
 
@@ -34,7 +34,7 @@ export function parseIsoDate(value, fieldName) {
 
   if (!isIsoDate(normalized)) {
     throw new ValidationError(
-      `O campo ${fieldName} deve usar YYYY-MM-DD.`
+      `The field ${fieldName} must use YYYY-MM-DD.`
     );
   }
 
@@ -44,7 +44,7 @@ export function parseIsoDate(value, fieldName) {
 export function parseNumericId(value, fieldName) {
   if (isBlank(value)) {
     throw new ValidationError(
-      `O campo ${fieldName} é obrigatório.`
+      `The field ${fieldName} is mandatory.`
     );
   }
 
@@ -52,7 +52,7 @@ export function parseNumericId(value, fieldName) {
 
   if (!isNumericId(normalized)) {
     throw new ValidationError(
-      `O campo ${fieldName} deve ser numérico.`
+      `The field ${fieldName} must be numeric.`
     );
   }
 

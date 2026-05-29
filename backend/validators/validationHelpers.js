@@ -28,7 +28,7 @@ export function nullable(value, parser) {
 
 export function arrayOf(value, itemValidator) {
   if (!Array.isArray(value)) {
-    throw new ValidationError('O valor deve ser um array.');
+    throw new ValidationError('Value must be an array.');
   }
 
   return value.map(itemValidator);
@@ -37,7 +37,7 @@ export function arrayOf(value, itemValidator) {
 export function range(value, min, max) {
   if (typeof value !== 'number' || value < min || value > max) {
     throw new ValidationError(
-        `O valor deve estar entre ${min} e ${max}.`
+        `Value must be between ${min} and ${max}.`
     );
   }
 
