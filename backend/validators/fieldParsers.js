@@ -5,7 +5,8 @@ import { ValidationError } from '../utils/appErrors.js';
 import {
   isBlank,
   isIsoDate,
-  isNumericId
+  isNumericId,
+  hasMinLength
 } from './inputValidators.js';
 
 import {
@@ -13,7 +14,7 @@ import {
   toNumber
 } from './inputNormalizers.js';
 
-export function parseRequiredText(value, fieldName) {
+function requireValue(value, fieldName) {
   if (isBlank(value)) {
     throw new ValidationError(
       `The field ${fieldName} is mandatory.`
@@ -23,14 +24,24 @@ export function parseRequiredText(value, fieldName) {
   return normalizeText(value);
 }
 
-export function parseIsoDate(value, fieldName) {
-  if (isBlank(value)) {
+export function parseRequiredText(
+  value,
+  fieldName,
+  minLength = 1
+) {
+  const normalized = requireValue(value, fieldName);
+
+  if (!hasMinLength(normalized, minLength)) {
     throw new ValidationError(
-      `The field ${fieldName} is mandatory.`
+      `The field ${fieldName} is too short.`
     );
   }
 
-  const normalized = normalizeText(value);
+  return normalized;
+}
+
+export function parseIsoDate(value, fieldName) {
+  const normalized = requireValue(value, fieldName);
 
   if (!isIsoDate(normalized)) {
     throw new ValidationError(
@@ -42,13 +53,7 @@ export function parseIsoDate(value, fieldName) {
 }
 
 export function parseNumericId(value, fieldName) {
-  if (isBlank(value)) {
-    throw new ValidationError(
-      `The field ${fieldName} is mandatory.`
-    );
-  }
-
-  const normalized = normalizeText(value);
+  const normalized = requireValue(value, fieldName);
 
   if (!isNumericId(normalized)) {
     throw new ValidationError(

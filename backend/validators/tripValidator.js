@@ -10,55 +10,36 @@ import {
   normalizeOptionalText
 } from './inputNormalizers.js';
 
+const tripFields = {
+  title: value => parseRequiredText(value, 'title'),
+  description: normalizeOptionalText,
+  destination: value => parseRequiredText(value, 'destination'),
+  startDate: value => parseIsoDate(value, 'startDate'),
+  endDate: value => parseIsoDate(value, 'endDate'),
+  userId: value => parseNumericId(value, 'userId')
+};
+
 function buildValidatedTrip(
   payload = {},
   { requireAtLeastOneField = false } = {}
 ) {
   const trip = {};
 
-  if (payload.title !== undefined || !requireAtLeastOneField) {
-    trip.title =
-      payload.title === undefined
-        ? null
-        : parseRequiredText(payload.title, 'title');
-  }
+  for (const [field, parser] of Object.entries(tripFields)) {
+    const value = payload[field];
 
-  if (payload.description !== undefined || !requireAtLeastOneField) {
-    trip.description = normalizeOptionalText(payload.description);
-  }
+    const shouldParse =
+      value !== undefined || !requireAtLeastOneField;
 
-  if (payload.destination !== undefined || !requireAtLeastOneField) {
-    trip.destination = parseRequiredText(
-      payload.destination,
-      'destination'
-    );
-  }
-
-  if (payload.startDate !== undefined || !requireAtLeastOneField) {
-    trip.startDate = parseIsoDate(
-      payload.startDate,
-      'startDate'
-    );
-  }
-
-  if (payload.endDate !== undefined || !requireAtLeastOneField) {
-    trip.endDate = parseIsoDate(
-      payload.endDate,
-      'endDate'
-    );
-  }
-
-  if (payload.userId !== undefined || !requireAtLeastOneField) {
-    trip.userId = parseNumericId(
-      payload.userId,
-      'userId'
-    );
+    if (shouldParse) {
+      trip[field] = parser(value);
+    }
   }
 
   if (
-    trip.startDate
-    && trip.endDate
-    && trip.endDate < trip.startDate
+    trip.startDate &&
+    trip.endDate &&
+    trip.endDate < trip.startDate
   ) {
     throw new ValidationError(
       'The end date cannot be earlier than the start date.'
@@ -66,8 +47,8 @@ function buildValidatedTrip(
   }
 
   if (
-    requireAtLeastOneField
-    && Object.keys(trip).length === 0
+    requireAtLeastOneField &&
+    Object.keys(trip).length === 0
   ) {
     throw new ValidationError(
       'Please indicate at least one field to update.'

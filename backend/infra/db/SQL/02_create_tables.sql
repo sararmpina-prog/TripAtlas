@@ -17,8 +17,8 @@ CREATE TABLE users (
 -- 2. Trips
 CREATE TABLE trips (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-	user_id INT,
-    title VARCHAR(100),
+	user_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
     destination VARCHAR(150) NOT NULL,
     start_date DATE NOT NULL,
@@ -63,6 +63,8 @@ CREATE TABLE flights (
     departure_datetime  DATETIME,
     arrival_datetime DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP --- acrescentei isto!
 ); 
 
 --- TABELAS RELACIONADAS COM AI ---
