@@ -28,6 +28,7 @@ function toDbFields(data) {
   return result;
 }
 
+// LISTA TODOS OS VOOS
 export async function listFlights() {
   const [rows] = await db.execute(`
     SELECT * FROM flights
@@ -36,6 +37,7 @@ export async function listFlights() {
   return rows;
 }
 
+// PROCURA UM VOO PELO ID
 export async function findFlightById(id) {
   const [rows] = await db.execute(
     `
@@ -49,6 +51,7 @@ export async function findFlightById(id) {
   return rows[0];
 }
 
+// LISTA TODOS OS VOOS DE UMA VIAGEM
 export async function getFlightsByTripId(tripId) {
   const [rows] = await db.execute(
     `
@@ -72,6 +75,7 @@ export async function getFlightsByTripId(tripId) {
   return rows;
 }
 
+// CRIA UM NOVO VOO
 export async function createFlight(flightData) {
   const dbData = toDbFields(flightData);
 
@@ -89,35 +93,36 @@ export async function createFlight(flightData) {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
     [
-      dbData.trip_id,
-      dbData.flight_number,
-      dbData.airline,
-      dbData.departure_airport,
-      dbData.arrival_airport,
-      dbData.departure_datetime,
-      dbData.arrival_datetime,
+        dbData.trip_id,
+        dbData.flight_number ?? null,
+        dbData.airline ?? null,
+        dbData.departure_airport ?? null,
+        dbData.arrival_airport ?? null,
+        dbData.departure_datetime, // Obrigatórios não precisam do ??
+        dbData.arrival_datetime,
     ]
   );
 
   return result.insertId;
 }
 
+// ATUALIZA UM VOO EXISTENTE
 export async function updateFlight(id, data) {
   const dbData = toDbFields(data);
-
   const fields = Object.keys(dbData);
 
-  if (fields.length === 0) return;
+  // Se o payload veio vazio (nenhum campo para atualizar), consideramos que correu bem
+  if (fields.length === 0) return true; 
 
   const setClause = fields
     .map(field => `${field} = ?`)
     .join(', ');
 
   const values = fields.map(field => dbData[field]);
-
   values.push(id);
 
-  await db.execute(
+  // Desestruturar o 'result' da execução da query
+  const [result] = await db.execute(
     `
       UPDATE flights
       SET ${setClause}
@@ -125,14 +130,21 @@ export async function updateFlight(id, data) {
     `,
     values
   );
+
+  // Retorna true se o voo existe (mesmo que os dados enviados fossem iguais aos antigos)
+  return result.affectedRows > 0;
 }
 
+// APAGA UM VOO EXISTENTE
 export async function deleteFlight(id) {
-  await db.execute(
+  const [result] = await db.execute(
     `
       DELETE FROM flights
       WHERE id = ?
     `,
     [id]
   );
+
+  // Retorna true se eliminou um registo, false caso contrário
+  return result.affectedRows > 0;
 }

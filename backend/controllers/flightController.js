@@ -38,7 +38,11 @@ export const postFlight = asyncHandler(async (req, res) => {
 });
 
 export const patchFlight = asyncHandler(async (req, res) => {
-  const flight = await updateFlight(req.params.id, req.body || {});
+  // Converte o ID para número logo na entrada
+  const flightId = Number(req.params.id); 
+
+  // Passa o ID já convertido para o Service
+  const flight = await updateFlight(flightId, req.body || {});
 
   res.json({
     success: true,
@@ -47,7 +51,11 @@ export const patchFlight = asyncHandler(async (req, res) => {
 });
 
 export const deleteFlightById = asyncHandler(async (req, res) => {
-  const flight = await deleteFlight(req.params.id);
+  // Converte o ID para número logo na entrada
+  const flightId = Number(req.params.id);
+
+  // Passa o ID já convertido para o Service
+  const flight = await deleteFlight(flightId);
 
   res.json({
     success: true,

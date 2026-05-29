@@ -26,17 +26,6 @@ export async function listFlights() {
   return flights.map(normalizeFlight);
 }
 
-// função auxiliar para garantir que um voo existe antes de fazer update ou delete
-async function findFlightOrFail(id) {
-  const flight = await flightRepository.findFlightById(id);
-
-  if (!flight) {
-    throw new NotFoundError('Flight not found.');
-  }
-
-  return flight;
-}
-
 // CRIA UM NOVO VOO
 export async function createFlight(data) {
   const validatedFlight = validateCreateFlight(data || {});
@@ -51,24 +40,35 @@ export async function createFlight(data) {
 
 // ATUALIZA UM VOO EXISTENTE
 export async function updateFlight(id, flightData) {
-  await findFlightOrFail(id);
+  // Valida os dados de entrada com o Zod
   const validatedFlight = validateUpdateFlight(flightData || {});
 
-  await flightRepository.updateFlight(id, validatedFlight);
+  // Executa o update. O repository retorna true se encontrou, ou false se não existe
+  const isUpdated = await flightRepository.updateFlight(id, validatedFlight);
 
-  const updatedFlight = await findFlightOrFail(id);
+  if (!isUpdated) {
+    throw new NotFoundError('Flight not found.');
+  }
+
+  // Procura o voo atualizado para retornar ao cliente
+  const updatedFlight = await flightRepository.findFlightById(id);
 
   return normalizeFlight(updatedFlight);
 }
 
 // APAGA UM VOO EXISTENTE
 export async function deleteFlight(id) {
-  const existingFlight =
-    await findFlightOrFail(id);
+  // Procura o voo antes de o apagar para podermos devolver os dados ao cliente
+  const flight = await flightRepository.findFlightById(id);
 
+  if (!flight) {
+    throw new NotFoundError('Flight not found.');
+  }
+
+  // Apaga o voo diretamente da base de dados
   await flightRepository.deleteFlight(id);
 
-  return normalizeFlight(existingFlight);
+  return normalizeFlight(flight);
 }
 
 // LISTA OS VOOS ASSOCIADOS A UMA VIAGEM
