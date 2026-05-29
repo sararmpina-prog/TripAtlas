@@ -37,6 +37,29 @@ export function isIsoDate(value) {
   );
 }
 
+export function isIsoDatetime(value) {
+  if (
+    !isText(value)
+    || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
+  ) {
+    return false;
+  }
+
+  const [datePart, timePart] = value.split(' ');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hours, minutes, seconds] = timePart.split(':').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+
+  return (
+    date.getUTCFullYear() === year
+    && date.getUTCMonth() + 1 === month
+    && date.getUTCDate() === day
+    && date.getUTCHours() === hours
+    && date.getUTCMinutes() === minutes
+    && date.getUTCSeconds() === seconds
+  );
+}
+
 export function isNumericId(value) {
   return /^\d+$/.test(String(value));
 }

@@ -25,6 +25,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+
 app.use('/api/trips', tripRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);

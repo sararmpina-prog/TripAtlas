@@ -5,6 +5,7 @@ import { ValidationError } from '../utils/appErrors.js';
 import {
   isBlank,
   isIsoDate,
+  isIsoDatetime,
   isNumericId,
   hasMinLength
 } from './inputValidators.js';
@@ -46,6 +47,18 @@ export function parseIsoDate(value, fieldName) {
   if (!isIsoDate(normalized)) {
     throw new ValidationError(
       `The field ${fieldName} must use YYYY-MM-DD.`
+    );
+  }
+
+  return normalized;
+}
+
+export function parseIsoDatetime(value, fieldName) {
+  const normalized = requireValue(value, fieldName);
+
+  if (!isIsoDatetime(normalized)) {
+    throw new ValidationError(
+      `The field ${fieldName} must use YYYY-MM-DD HH:MM:SS.`
     );
   }
 

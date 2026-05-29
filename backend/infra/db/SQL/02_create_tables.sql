@@ -62,7 +62,7 @@ CREATE TABLE flights (
 	arrival_airport VARCHAR(15),
     departure_datetime  DATETIME,
     arrival_datetime DATETIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ON UPDATE CURRENT_TIMESTAMP --- acrescentei isto!
 ); 

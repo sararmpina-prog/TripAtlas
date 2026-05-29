@@ -37,9 +37,9 @@ function buildValidatedTrip(
   }
 
   if (
-    trip.startDate &&
+    trip.startDate && 
     trip.endDate &&
-    trip.endDate < trip.startDate
+    trip.endDate < trip.startDate // validação cross-field
   ) {
     throw new ValidationError(
       'The end date cannot be earlier than the start date.'
