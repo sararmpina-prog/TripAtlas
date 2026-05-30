@@ -56,17 +56,23 @@ export async function updateFlight(id, validatedFlight) {
   // Se o utilizador tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
   if (validatedFlight.departureDatetime || validatedFlight.arrivalDatetime) {
     const existingFlight = await flightRepository.findFlightById(id);
-    
+  
     if (!existingFlight) {
-      throw new NotFoundError('Flight not found.');
+        throw new NotFoundError('Flight not found.');
     }
 
-    // Fusão inteligente: Usa a nova data enviada ou mantém a que já estava gravada
-    const departure = validatedFlight.departureDatetime || existingFlight.departure_datetime;
-    const arrival = validatedFlight.arrivalDatetime || existingFlight.arrival_datetime;
+    // Garantimos que criamos instâncias estáveis de Date independentemente da origem do dado
+    const departureDate = validatedFlight.departureDatetime 
+        ? new Date(validatedFlight.departureDatetime) 
+        : new Date(existingFlight.departure_datetime);
 
-    if (new Date(arrival) < new Date(departure)) {
-      throw new ValidationError('Arrival datetime cannot be earlier than departure datetime.');
+    const arrivalDate = validatedFlight.arrivalDatetime 
+        ? new Date(validatedFlight.arrivalDatetime) 
+        : new Date(existingFlight.arrival_datetime);
+
+    // Comparação limpa através dos timestamps primitivos do motor V8 (.getTime())
+    if (arrivalDate.getTime() < departureDate.getTime()) {
+        throw new ValidationError('Arrival datetime cannot be earlier than departure datetime.');
     }
   }
 

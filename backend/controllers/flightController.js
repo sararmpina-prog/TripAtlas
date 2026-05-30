@@ -11,7 +11,6 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-
 import {
   createFlight,
   deleteFlight,
@@ -21,39 +20,26 @@ import {
 
 export const getFlights = asyncHandler(async (req, res) => {
   const flights = await listFlights();
-
-  res.json({
-    success: true,
-    data: flights,
-  });
+  res.json({ success: true, data: flights });
 });
 
 export const postFlight = asyncHandler(async (req, res) => {
   const flight = await createFlight(req.body || {});
-
-  res.status(201).json({
-    success: true,
-    data: flight,
-  });
+  res.status(201).json({ success: true, data: flight });
 });
 
 export const patchFlight = asyncHandler(async (req, res) => {
-  const flight = await updateFlight(
-    req.params.id,
-    req.body || {}
-  );
+  // Corrigido para bater certo com o paramName 'flightId' enviado pelas rotas
+  const flightId = req.params.flightId; 
 
-  res.json({
-    success: true,
-    data: flight,
-  });
+  const flight = await updateFlight(flightId, req.body || {});
+  res.json({ success: true, data: flight });
 });
 
 export const deleteFlightById = asyncHandler(async (req, res) => {
-  const flight = await deleteFlight(req.params.id);
+  // Corrigido para bater certo com o paramName 'flightId' enviado pelas rotas
+  const flightId = req.params.flightId;
 
-  res.json({
-    success: true,
-    data: flight,
-  });
+  const flight = await deleteFlight(flightId);
+  res.json({ success: true, data: flight });
 });
