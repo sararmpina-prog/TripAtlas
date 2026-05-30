@@ -11,11 +11,9 @@ const normalizedString = z
 // Definição do Objeto Base para podermos reutilizar no partial()
 const flightFields = {
   tripId: z
-    .any()
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val) && Number.isInteger(val), {
-      message: "The field tripId must be numeric.",
-    }),
+    .coerce.number({ invalid_type_error: "The field tripId must be numeric." })
+    .int({ message: "The field tripId must be an integer." })
+    .positive({ message: "The field tripId must be a positive number." }),
 
   // Aplica a normalização primeiro, valida o tamanho máximo se houver texto, e permite null/undefined
   flightNumber: normalizedString
