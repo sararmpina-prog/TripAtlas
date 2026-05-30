@@ -82,11 +82,14 @@ export async function updateFlight(id, validatedFlight) {
         ? new Date(validatedFlight.arrivalDatetime) 
         : new Date(existingFlight.arrival_datetime);
 
-    // Comparação limpa através dos timestamps primitivos do motor V8 (.getTime())
+    // Comparação limpa através dos timestamps primitivos:
     if (arrivalDate.getTime() < departureDate.getTime()) {
         throw new ValidationError('Arrival datetime cannot be earlier than departure datetime.');
     }
   }
+    /* se tentarmos comparar dois objetos de data diretamente usando operadores como < ou >, podemos obter comportamentos inconsistentes ou falhas silenciosas, porque estão a ser comparados dois objetos na memória e não os valores cronológicos em si;
+    getTime() converte a data para o número de milissegundos desde 1 de Janeiro de 1970, permitindo uma comparação direta e evitando problemas de fuso horário ou formatação */
+
 
   // Executa o update otimizado diretamente
   const isUpdated = await flightRepository.updateFlight(id, validatedFlight);

@@ -31,7 +31,9 @@ function toDbFields(data) {
 // LISTA TODOS OS VOOS
 export async function listFlights() {
   const [rows] = await db.execute(`
-    SELECT * FROM flights
+    SELECT 
+      id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, created_at, updated_at
+    FROM flights
   `);
 
   return rows;
@@ -41,7 +43,9 @@ export async function listFlights() {
 export async function findFlightById(id) {
   const [rows] = await db.execute(
     `
-      SELECT * FROM flights
+      SELECT 
+        id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, created_at, updated_at
+      FROM flights
       WHERE id = ?
       LIMIT 1
     `,
@@ -98,7 +102,7 @@ export async function createFlight(flightData) {
         dbData.airline ?? null,
         dbData.departure_airport ?? null,
         dbData.arrival_airport ?? null,
-        dbData.departure_datetime, // Obrigatórios não precisam do ??
+        dbData.departure_datetime, 
         dbData.arrival_datetime,
     ]
   );
@@ -120,7 +124,6 @@ export async function updateFlight(id, data) {
   const values = fields.map(field => dbData[field]);
   values.push(id);
 
-  // Desestruturar o 'result' da execução da query
   const [result] = await db.execute(
     `
       UPDATE flights
@@ -130,7 +133,6 @@ export async function updateFlight(id, data) {
     values
   );
 
-  // Retorna true se o voo existe (mesmo que os dados enviados fossem iguais aos antigos)
   return result.affectedRows > 0;
 }
 
@@ -144,6 +146,5 @@ export async function deleteFlight(id) {
     [id]
   );
 
-  // Retorna true se eliminou um registo, false caso contrário
   return result.affectedRows > 0;
 }
