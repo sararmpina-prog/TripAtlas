@@ -1,5 +1,7 @@
 import { db } from '../infra/db/db.js';
 import * as reserveRepository from '../repository/reserveRepository.js';
+import * as tripRepository from '../repository/tripRepository.js';
+import * as accommodationRepository from '../repository/accommodationRepository.js';
 import {validateReserveId} from '../validators/reserveValidator.js'
 import {validateCreateReserve} from '../validators/reserveValidator.js'
 import {validateAccommodationId} from '../validators/accommodationValidator.js'
@@ -17,7 +19,7 @@ export async function deleteAccommodationReserve(id) {
 
   const reserve = await reserveRepository.findReserveById(reserveId)
 
-  if (!rows[0]) {
+  if (!reserve) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
 
@@ -39,9 +41,9 @@ export async function createReserve(payload) {
 
   let accommodationId = validateAccommodationId(payload.accommodation_id);
   
-  let [rows] = await db.execute('SELECT * FROM accommodations WHERE id = ? LIMIT 1', [accommodationId]);
+  const accommodation = await accommodationRepository.findAccommodationById(accommodationId)
       
-  if (!rows[0]) {
+  if (!accommodation) {
     throw new NotFoundError('Acomodação não encontrada para criar reserva de estadia.');
   }
 
@@ -49,9 +51,9 @@ export async function createReserve(payload) {
 
   let tripId = validateTripId(payload.trip_id);
 
-  [rows] = await db.execute('SELECT * FROM trips WHERE id = ? LIMIT 1', [tripId]);
+  const trip = await tripRepository.findTripById(tripId)
     
-  if (!rows[0]) {
+  if (!trip) {
     throw new NotFoundError('Viagem não encontrada para criar reserva de estadia.');
   }
   
@@ -59,25 +61,15 @@ export async function createReserve(payload) {
 
   console.log("os meus valores a inserir são", accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
 
-  const [duplicateRows] = await db.execute(
-  ` SELECT 1 FROM accommodation_reserve WHERE accommodation_id = ? AND trip_id = ? AND check_in_date = ? AND check_out_date = ? LIMIT 1
-  `,
- [accommodationId, tripId, reserve.check_in_date, reserve.check_out_date]
- );
+  const duplicatedReserve = await reserveRepository.listDuplicatedReserves( accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
 
- if (duplicateRows.length > 0) {
-  throw new ValidationError('Esta reserva já existe.');
+ if (duplicatedReserve) {
+    throw new ValidationError('Esta reserva já existe.');
   }
 
-  const [result] = await db.execute(
-    `
-      INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date)
-      VALUES (?, ?, ?, ?)
-    `,
-    [accommodationId, tripId, reserve.check_in_date, reserve.check_out_date]
-  );
+ let newReserve = await reserveRepository.createReserve( accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
 
- [rows] = await db.execute('SELECT * FROM accommodation_reserve WHERE id = ? LIMIT 1', [result.insertId]);
+ let createdReserve = findReserveById(newReserve)
 
-  return rows
+  return createdReserve
 }

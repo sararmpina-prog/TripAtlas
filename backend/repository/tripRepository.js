@@ -5,12 +5,11 @@ Base de dados → snake_case */
 
 import { db } from '../infra/db/db.js';
 
-
-// PROCURA UMA ESTADIA PELO ID
-export async function findAccommodationById(id) {
+// PROCURA UMA RESERVA PELO ID
+export async function findTripById(id) {
   const [rows] = await db.execute(
     `
-      SELECT * FROM accommodations WHERE id = ? LIMIT 1
+      SELECT * FROM trips WHERE id = ? LIMIT 1
     `,
     [id]
   );

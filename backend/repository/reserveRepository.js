@@ -26,7 +26,7 @@ export async function findReserveById(id) {
   return rows[0];
 }
 
-// APAGA UM VOO EXISTENTE
+// APAGA UMA RESERVA EXISTENTE
 export async function deleteReserve(id) {
   const [result] = await db.execute(
     `
@@ -40,3 +40,27 @@ export async function deleteReserve(id) {
 }
 
 
+// LISTA RESERVAS DUPLICADAS
+export async function listDuplicatedReserves(accommodationId, tripId, check_in_date, check_out_date) {
+  const [rows] = await db.execute(`
+   SELECT 1 FROM accommodation_reserve WHERE accommodation_id = ? AND trip_id = ? AND check_in_date = ? AND check_out_date = ? LIMIT 1
+  `,  [accommodationId, tripId, check_in_date, check_out_date]);
+
+  // Retorna true se eliminou um registo, false caso contrário
+  return rows.length > 0
+}
+
+
+// CRIA UMA NOVA RESERVA
+export async function createReserve(accommodationId, tripId, check_in_date, check_out_date) {
+
+  const [result] = await db.execute(
+    `
+      INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date)
+      VALUES (?, ?, ?, ?)
+    `,
+    [accommodationId, tripId, reserve.check_in_date, reserve.check_out_date]
+  );
+
+    return result.insertId;
+}
