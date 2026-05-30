@@ -1,6 +1,3 @@
-import { db } from '../infra/db/db.js';
-import {validateAccommodationId} from '../validators/accommodationValidator.js'
-
 
 //Transforma qualquer params.id em string primeiro, teste regex (só números). test (devolve booleano)
 export function validateReserveId(value) {

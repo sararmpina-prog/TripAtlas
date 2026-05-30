@@ -41,3 +41,12 @@ export const postReserve = asyncHandler(async (req, res) => {
         data: reserve,
     });
 });
+
+export const patchReserve = asyncHandler(async (req, res) => {
+    const reserve = await updateReserve(req.params.id, req.body || {});
+
+    res.json({
+        success: true,
+        data: reserve,
+    });
+});

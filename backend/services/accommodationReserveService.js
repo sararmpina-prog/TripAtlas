@@ -1,4 +1,3 @@
-import { db } from '../infra/db/db.js';
 import * as reserveRepository from '../repository/reserveRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
@@ -73,3 +72,10 @@ export async function createReserve(payload) {
 
   return createdReserve
 }
+
+// ATUALIZA UM VOO EXISTENTE
+// Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
+export async function updateReserve(id, validatedFlight) {
+
+  
+  }
