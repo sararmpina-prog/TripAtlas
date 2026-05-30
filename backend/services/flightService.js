@@ -17,6 +17,7 @@ Nota importante:
 */
 
 import * as flightRepository from '../repository/flightRepository.js';
+import * as tripRepository from '../repository/tripRepository.js';
 import { NotFoundError, ValidationError } from '../utils/appErrors.js';
 
 // Transforma o snake_case da BD para camelCase consistente no Frontend
@@ -42,8 +43,13 @@ export async function listFlights() {
 }
 
 // CRIA UM NOVO VOO
-// Os dados chegam aqui 100% validados pelo middleware do Zod
 export async function createFlight(validatedFlight) {
+  // Valida se a viagem (tripId) realmente existe no sistema antes de criar o voo
+  const tripExists = await tripRepository.findTripById(validatedFlight.tripId);
+  if (!tripExists) {
+    throw new NotFoundError('The associated trip was not found.');
+  }
+
   const flightId = await flightRepository.createFlight(validatedFlight);
   const flight = await flightRepository.findFlightById(flightId);
 
@@ -51,8 +57,14 @@ export async function createFlight(validatedFlight) {
 }
 
 // ATUALIZA UM VOO EXISTENTE
-// Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
 export async function updateFlight(id, validatedFlight) {
+  // Se o utilizador estiver a tentar alterar o tripId, validamos se o novo ID existe
+  if (validatedFlight.tripId) {
+    const tripExists = await tripRepository.findTripById(validatedFlight.tripId);
+    if (!tripExists) {
+      throw new NotFoundError('The new associated trip was not found.');
+    }
+  }
   // Se o utilizador tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
   if (validatedFlight.departureDatetime || validatedFlight.arrivalDatetime) {
     const existingFlight = await flightRepository.findFlightById(id);
