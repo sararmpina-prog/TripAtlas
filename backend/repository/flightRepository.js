@@ -111,7 +111,6 @@ export async function updateFlight(id, data) {
   const dbData = toDbFields(data);
   const fields = Object.keys(dbData);
 
-  // Se o payload veio vazio (nenhum campo para atualizar), consideramos que correu bem
   if (fields.length === 0) return true; 
 
   const setClause = fields

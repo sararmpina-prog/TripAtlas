@@ -12,13 +12,18 @@ import {
   deleteFlightById,
 } from '../controllers/flightController.js';
 
+// Middlewares
+import { validateBody } from '../middlewares/validationMiddleware.js';
+import { createFlightSchema, updateFlightSchema } from '../validators/flightValidator.js';
+
 const router = express.Router();
 
 router.get('/', getFlights);
 
-router.post('/', postFlight);
+// O middleware valida e limpa os dados ANTES de o controller ser executado
+router.post('/', validateBody(createFlightSchema), postFlight);
 
-router.patch('/:id', patchFlight);
+router.patch('/:id', validateBody(updateFlightSchema), patchFlight);
 
 router.delete('/:id', deleteFlightById);
 

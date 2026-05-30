@@ -1,25 +1,14 @@
-/* Este middleware valida o input antes de chegar à lógica principal da aplicação. Ele garante que as mensagens de chat recebidas tenham o formato esperado, evitando que dados inválidos sejam processados pelos controllers e services.
+/* Faz-se esta validação do input ANTES da chamada à AI para evitar requests desnecessárias.
+
+Se alguma dessas condições for verdadeira, cria um ValidationError e passa para o próximo middleware (errorHandler) para enviar uma resposta de erro padronizada para o cliente.
 */
+import { z } from 'zod';
+import { validateBody } from '../middlewares/validationMiddleware.js';
 
-/* Extrai a mensagem enviada pelo frontend e verifica:
-- se existe (!message)
-- se é uma string (typeof message !== 'string')
-- se não é apenas espaços em branco (!message.trim())
+const chatSchema = z.object({
+  message: z.string({ required_error: 'The field "message" is mandatory.' })
+    .trim()
+    .min(1, { message: 'The field "message" cannot be empty.' })
+});
 
-Se alguma dessas condições for verdadeira, cria um ValidationError e passa para o próximo middleware (que é o middleware global de tratamento de erros) para enviar uma resposta de erro padronizada para o cliente.
-*/
-import { ValidationError } from '../utils/appErrors.js';
-
-export function validateChatMessage(req, res, next) {
-  const { message } = req.body;
-
-  if (!message || typeof message !== 'string' || !message.trim()) {
-    return next(new ValidationError('O campo "message" é obrigatório e deve ser uma string.'));
-  }
-
-  next();
-}
-
-// Faz-se esta validação do input ANTES da chamada à AI para evitar requests desnecessárias.
-
-// Nota: No futuro posso actualizar para uma biblioteca schema-based como Zod mas por agora deixo esta validação simples e direta, já que o payload é muito simples (apenas uma mensagem de texto).
+// Nas rotas de IA basta usar: validateBody(chatSchema)

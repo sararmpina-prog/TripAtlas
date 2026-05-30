@@ -1,5 +1,6 @@
+/* Ficheiro de validação para a entidade Flight usando Zod. Ele define as regras de validação para os campos relacionados a um voo. Este arquivo é responsável por garantir que os dados recebidos para criar ou atualizar um voo estejam no formato correto e atendam às regras de negócio estabelecidas. */
+
 import { z } from 'zod';
-import { ValidationError } from '../utils/appErrors.js';
 
 // Helper base para limpar espaços e converter strings vazias em null
 const normalizedString = z
@@ -7,7 +8,7 @@ const normalizedString = z
   .trim()
   .transform((val) => (val === '' ? null : val));
 
-// Definição do Objeto Base (Sem Refines) para podermos reutilizar no partial()
+// Definição do Objeto Base para podermos reutilizar no partial()
 const flightFields = {
   tripId: z
     .any()
@@ -43,17 +44,19 @@ const flightFields = {
 };
 
 // Schema de Criação Completo com a validação cross-field
-const createFlightSchema = z.object(flightFields)
+export const createFlightSchema = z.object(flightFields)
   .refine((data) => new Date(data.arrivalDatetime) >= new Date(data.departureDatetime), {
     message: "Arrival datetime cannot be earlier than departure datetime.",
     path: ["arrivalDatetime"], 
   });
 
 // Schema de Atualização (Update / PATCH)
-const updateFlightSchema = z.object(flightFields).partial()
+export const updateFlightSchema = z.object(flightFields).partial()
+  // Garante que pelo menos um campo foi enviado para atualização
   .refine((data) => Object.keys(data).length > 0, {
     message: "Please indicate at least one field to update.",
   })
+  // Só valida a lógica das datas se AMBAS tiverem sido enviadas no PATCH
   .refine((data) => {
     if (!data.departureDatetime || !data.arrivalDatetime) return true;
     return new Date(data.arrivalDatetime) >= new Date(data.departureDatetime);
@@ -62,32 +65,6 @@ const updateFlightSchema = z.object(flightFields).partial()
     path: ["arrivalDatetime"],
   });
 
-// Funções de Exportação com Tratamento de Erros Customizado
-export function validateCreateFlight(payload) {
-  try {
-    return createFlightSchema.parse(payload);
-  } catch (error) {
-    handleZodError(error);
-  }
-}
-
-export function validateUpdateFlight(payload) {
-  try {
-    return updateFlightSchema.parse(payload);
-  } catch (error) {
-    handleZodError(error);
-  }
-}
-
-// Helper para converter os erros do Zod para ValidationError do projeto
-function handleZodError(error) {
-  if (error instanceof z.ZodError) {
-    const firstError = error.errors[0];
-    throw new ValidationError(firstError.message);
-  }
-  throw error;
-}
-
 /* Este ficheiro pretende responder à pergunta:
 
 "quais são as regras do Flight?"
@@ -95,4 +72,4 @@ function handleZodError(error) {
 Responsável por:
 - regras da entidade
 - mensagens de erro
-- coerência entre campos */
+- coerência de tipos e formatos entre campos */

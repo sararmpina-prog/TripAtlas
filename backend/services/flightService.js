@@ -1,10 +1,26 @@
-import * as flightRepository from '../repository/flightRepository.js';
-import { NotFoundError } from '../utils/appErrors.js';
-import {
-  validateCreateFlight,
-  validateUpdateFlight,
-} from '../validators/flightValidator.js';
+/* Service de tarefas:
 
+Faz a ponte entre controllers / tool calls e a persistência, mantendo aqui:
+- resolução de targets
+- validação de regras de negócio
+- normalização de input/output
+
+Fluxo arquitetural:
+Controller (recebe request/resposta HTTP)
+   ↓
+Task Service (decide regras de negócio)
+   ↓
+Database (armazenamento persistente)
+
+Nota importante:
+  A AI nunca acede diretamente à base de dados.
+  Apenas chama funções expostas por este service.
+*/
+
+import * as flightRepository from '../repository/flightRepository.js';
+import { NotFoundError, ValidationError } from '../utils/appErrors.js';
+
+// Transforma o snake_case da BD para camelCase consistente no Frontend
 function normalizeFlight(row) {
   return {
     id: row.id,
@@ -27,54 +43,59 @@ export async function listFlights() {
 }
 
 // CRIA UM NOVO VOO
-export async function createFlight(data) {
-  const validatedFlight = validateCreateFlight(data || {});
-  const flightId =
-    await flightRepository.createFlight(validatedFlight);
-
-  const flight =
-    await flightRepository.findFlightById(flightId);
+// Os dados chegam aqui 100% validados pelo middleware do Zod
+export async function createFlight(validatedFlight) {
+  const flightId = await flightRepository.createFlight(validatedFlight);
+  const flight = await flightRepository.findFlightById(flightId);
 
   return normalizeFlight(flight);
 }
 
 // ATUALIZA UM VOO EXISTENTE
-export async function updateFlight(id, flightData) {
-  // Valida os dados de entrada com o Zod
-  const validatedFlight = validateUpdateFlight(flightData || {});
+// Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
+export async function updateFlight(id, validatedFlight) {
+  // Se o utilizador tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
+  if (validatedFlight.departureDatetime || validatedFlight.arrivalDatetime) {
+    const existingFlight = await flightRepository.findFlightById(id);
+    
+    if (!existingFlight) {
+      throw new NotFoundError('Flight not found.');
+    }
 
-  // Executa o update. O repository retorna true se encontrou, ou false se não existe
+    // Fusão inteligente: Usa a nova data enviada ou mantém a que já estava gravada
+    const departure = validatedFlight.departureDatetime || existingFlight.departure_datetime;
+    const arrival = validatedFlight.arrivalDatetime || existingFlight.arrival_datetime;
+
+    if (new Date(arrival) < new Date(departure)) {
+      throw new ValidationError('Arrival datetime cannot be earlier than departure datetime.');
+    }
+  }
+
+  // Executa o update otimizado diretamente
   const isUpdated = await flightRepository.updateFlight(id, validatedFlight);
 
   if (!isUpdated) {
     throw new NotFoundError('Flight not found.');
   }
 
-  // Procura o voo atualizado para retornar ao cliente
   const updatedFlight = await flightRepository.findFlightById(id);
-
   return normalizeFlight(updatedFlight);
 }
 
 // APAGA UM VOO EXISTENTE
 export async function deleteFlight(id) {
-  // Procura o voo antes de o apagar para podermos devolver os dados ao cliente
   const flight = await flightRepository.findFlightById(id);
 
   if (!flight) {
     throw new NotFoundError('Flight not found.');
   }
 
-  // Apaga o voo diretamente da base de dados
   await flightRepository.deleteFlight(id);
-
   return normalizeFlight(flight);
 }
 
 // LISTA OS VOOS ASSOCIADOS A UMA VIAGEM
 export async function getFlightsByTripId(tripId) {
-  const flights =
-    await flightRepository.getFlightsByTripId(tripId);
-
+  const flights = await flightRepository.getFlightsByTripId(tripId);
   return flights.map(normalizeFlight);
 }
