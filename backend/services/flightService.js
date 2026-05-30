@@ -1,5 +1,4 @@
-/* Service de tarefas:
-
+/* Service:
 Faz a ponte entre controllers / tool calls e a persistência, mantendo aqui:
 - resolução de targets
 - validação de regras de negócio

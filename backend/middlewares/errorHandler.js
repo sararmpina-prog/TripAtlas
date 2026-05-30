@@ -16,16 +16,17 @@ export function notFoundHandler(req, res) {
 export const errorHandler = (err, req, res, next) => {
   console.error(err); // importante para debug
 
-  const statusCode = err?.statusCode || 500;
-  const code = err?.code || 'INTERNAL_SERVER_ERROR';
-  const message = err?.message || 'Internal Server Error';
+  const statuscode = err?.statuscode || 500;
+  const code = err?.code || 'internal_server_error';
+  
+  // Se for 500, esconde a mensagem real para segurança
+  const message = statuscode === 500 
+    ? 'internal server error' 
+    : (err?.message || 'an error occurred');
 
-  res.status(statusCode).json({
+  res.status(statuscode).json({
     success: false,
-    error: {
-      message,
-      code,
-    },
+    error: { message, code },
   });
 };
 

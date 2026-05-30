@@ -13,6 +13,7 @@ import {
 } from '../controllers/flightController.js';
 
 // Middlewares
+import { validateIdParam } from '../middlewares/validateIdParam.js';
 import { validateBody } from '../middlewares/validationMiddleware.js';
 import { createFlightSchema, updateFlightSchema } from '../validators/flightValidator.js';
 
@@ -23,8 +24,8 @@ router.get('/', getFlights);
 // O middleware valida e limpa os dados ANTES de o controller ser executado
 router.post('/', validateBody(createFlightSchema), postFlight);
 
-router.patch('/:id', validateBody(updateFlightSchema), patchFlight);
+router.patch('/:flightId', validateIdParam('flightId'), validateBody(updateFlightSchema), patchFlight);
 
-router.delete('/:id', deleteFlightById);
+router.delete('/:flightId', validateIdParam('flightId'), deleteFlightById);
 
 export default router;

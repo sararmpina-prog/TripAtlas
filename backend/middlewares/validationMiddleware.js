@@ -1,17 +1,19 @@
+import { ZodError } from 'zod'; // Importação adicionada para segurança
 import { ValidationError } from '../utils/appErrors.js';
 
-// Um único middleware que aceita qualquer schema do Zod como argumento
 export const validateBody = (schema) => (req, res, next) => {
   try {
-    // Altera o req.body para os dados já limpos/normalizados pelo Zod
+    // Altera o req.body para os dados limpos/normalizados pelo Zod
     req.body = schema.parse(req.body || {});
     next();
   } catch (error) {
-    // Apanha o erro do Zod e passa para o errorHandler
-    if (error.name === 'ZodError' || error.errors) {
+    // Verifica de forma segura se é um erro do Zod e se tem mensagens
+    if (error instanceof ZodError && error.errors.length > 0) {
       const firstError = error.errors[0];
       return next(new ValidationError(firstError.message));
     }
+    
+    // Passa qualquer outro erro inesperado para o errorHandler global
     next(error);
   }
 };
