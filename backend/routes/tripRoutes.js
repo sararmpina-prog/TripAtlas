@@ -5,20 +5,28 @@ O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';
-import { deleteTripById, getTrips, patchTrip, postTrip } from '../controllers/tripController.js';
+
+import {
+  getTrips,
+  postTrip,
+  patchTrip,
+  deleteTripById,
+} from '../controllers/tripController.js';
+
+// Middlewares
+import { validateIdParam } from '../middlewares/validateIdParam.js';
+import { validateBody } from '../middlewares/validationMiddleware.js';
+import { createTripSchema, updateTripSchema } from '../validators/tripValidator.js';
 
 const router = express.Router();
 
-// Rota para obter a lista de Trips
 router.get('/', getTrips);
 
-// Rota para criar uma Trip
-router.post('/', postTrip);
+// O middleware valida e limpa os dados ANTES de o controller ser executado
+router.post('/', validateBody(createTripSchema), postTrip);
 
-// Rota para atualizar / patch uma Trip
-router.patch('/:id', patchTrip);
+router.patch('/:tripId', validateIdParam('tripId'), validateBody(updateTripSchema), patchTrip);
 
-// Rota para eliminar uma Trip de forma determinística pelo id
-router.delete('/:id', deleteTripById);
+router.delete('/:tripId', validateIdParam('tripId'), deleteTripById);
 
 export default router;

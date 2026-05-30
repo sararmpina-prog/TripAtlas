@@ -29,7 +29,6 @@ export const postFlight = asyncHandler(async (req, res) => {
 });
 
 export const patchFlight = asyncHandler(async (req, res) => {
-  // Corrigido para bater certo com o paramName 'flightId' enviado pelas rotas
   const flightId = req.params.flightId; 
 
   const flight = await updateFlight(flightId, req.body || {});
@@ -37,7 +36,6 @@ export const patchFlight = asyncHandler(async (req, res) => {
 });
 
 export const deleteFlightById = asyncHandler(async (req, res) => {
-  // Corrigido para bater certo com o paramName 'flightId' enviado pelas rotas
   const flightId = req.params.flightId;
 
   const flight = await deleteFlight(flightId);
