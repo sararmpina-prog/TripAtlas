@@ -1,4 +1,5 @@
 import { db } from '../infra/db/db.js';
+import * as reserveRepository from '../repository/reserveRepository.js';
 import {validateReserveId} from '../validators/reserveValidator.js'
 import {validateCreateReserve} from '../validators/reserveValidator.js'
 import {validateAccommodationId} from '../validators/accommodationValidator.js'
@@ -6,8 +7,7 @@ import {validateTripId} from '../validators/tripValidator.js'
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
 export async function listAccommodationsReserves() {
-  const [rows] = await db.query('SELECT * FROM accommodation_reserve');
-  return rows;
+  const reserves = await reserveRepository.listReserves();
 }
 
 
@@ -15,15 +15,16 @@ export async function deleteAccommodationReserve(id) {
 
   const reserveId = validateReserveId(id);
 
-  const [rows] = await db.execute('SELECT * FROM accommodation_reserve WHERE id = ? LIMIT 1', [reserveId]);
+  const reserve = await reserveRepository.findReserveById(reserveId)
 
   if (!rows[0]) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
 
-  await db.execute('DELETE FROM accommodation_reserve WHERE id = ?', [reserveId]);
+   // Apaga a reserva diretamente da base de dados
+  await flightRepository.deleteReserve(reserveId);
 
-  return rows
+  return reserve
 }
 
 
