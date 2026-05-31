@@ -1,6 +1,10 @@
-/* Camada de abstração de erros da Gemini. Normaliza as respostas de falha 
-   para um formato consistente interno da aplicação através de parsing do Zod. */
+/* Camada de abstração de erros do provider de IA. Como a Gemini pode devolver erros em formatos diferentes, este ficheiro normaliza esses erros para um formato consistente interno da aplicação através de parsing do Zod.
 
+- Separa erros de infraestrutura (AI) da lógica de negócio
+- Converte erros técnicos em mensagens user-friendly
+- Identifica erros transitórios vs permanentes
+- Centraliza o tratamento de erros da Gemini
+*/
 import { z } from 'zod';
 
 // Schema para validar e extrair dados caso o erro venha num formato JSON estruturado
@@ -38,11 +42,14 @@ function extractProviderErrorInfo(error) {
   };
 }
 
+/* Erros de limite de taxa (429) e indisponibilidade temporária (503) são considerados transitórios enquanto erros de recurso não encontrado (404) indicam um problema de configuração que deve ser corrigido pelo desenvolvedor.
+*/
 export function isTransientGeminiError(error) {
   const providerError = extractProviderErrorInfo(error);
   return providerError.code === 429 || providerError.code === 503 || providerError.status === 'RESOURCE_EXHAUSTED' || providerError.status === 'UNAVAILABLE';
 }
 
+// UX Final - Converte erros técnicos da Gemini em mensagens amigáveis para o usuário final
 export function formatAIError(error) {
   const providerError = extractProviderErrorInfo(error);
 
