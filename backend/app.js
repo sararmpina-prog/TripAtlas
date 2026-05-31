@@ -13,10 +13,11 @@ dotenv.config();
 
 // Rotas
 import tripRoutes from './routes/tripRoutes.js';
-import flightRoutes from './routes/flightRoutes.js'; // Nova rota incluída!
+import flightRoutes from './routes/flightRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // Middlewares
-import logger from './middlewares/loggerMiddleware.js'; // Reutilizado do projeto antigo
+import logger from './middlewares/loggerMiddleware.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { hasDatabaseConfig } from './infra/db/db.js';
 
@@ -24,7 +25,7 @@ const app = express();
 
 // Middlewares Globais
 app.use(express.json());
-// Altere a origem do CORS para bater certo com o seu frontend se necessário
+// Origem do CORS deve ser ajustada para bater certo com o Live Server do frontend
 app.use(cors({ origin: 'http://127.0.0.1:5500' })); 
 app.use(logger);
 
@@ -47,7 +48,8 @@ app.get('/health', (req, res) => {
 
 // Atribuição de Rotas da API
 app.use('/api/trips', tripRoutes);
-app.use('/api/flights', flightRoutes); // Nova rota registada!
+app.use('/api/flights', flightRoutes);
+app.use('/api/users', userRoutes);
 
 // Tratamento de Erros (Sempre no fim)
 app.use(notFoundHandler);

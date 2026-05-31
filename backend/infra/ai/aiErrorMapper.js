@@ -54,14 +54,14 @@ export function formatAIError(error) {
   const providerError = extractProviderErrorInfo(error);
 
   if (providerError.code === 429 || providerError.status === 'RESOURCE_EXHAUSTED') {
-    return 'A IA atingiu o limite temporário de pedidos. Tenta novamente daqui a pouco.';
+    return 'AI has reached the temporary request limit. Please try again shortly.';
   }
   if (providerError.code === 503 || providerError.status === 'UNAVAILABLE') {
-    return 'A Gemini está temporariamente indisponível. Tenta novamente dentro de instantes.';
+    return 'Gemini is temporarily unavailable. Please try again shortly.';
   }
   if (providerError.code === 404 || providerError.status === 'NOT_FOUND') {
-    return 'O modelo Gemini configurado não está disponível. Verifica a variável GEMINI_MODEL.';
+    return 'The configured Gemini model is not available. Please check the GEMINI_MODEL variable.';
   }
 
-  return providerError.message || 'Erro desconhecido na chamada à AI';
+  return providerError.message || 'Unknown error in AI call';
 }

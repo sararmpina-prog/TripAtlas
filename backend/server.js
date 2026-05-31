@@ -18,7 +18,7 @@ async function startServer() {
 
   // Ativa o servidor HTTP
   app.listen(port, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${port}`);
+    console.log(`🚀 Servidor a executar em http://localhost:${port}`);
   });
 }
 

@@ -2,7 +2,7 @@
 
 Responsabilidades:
 - validar configuração base
-- executar chamadas ao provider
+- executar chamadas ao provider utilizando o SDK oficial @google/genai
 - aplicar retry/fallback de modelos
 - devolver texto ou resposta bruta
 
@@ -16,146 +16,141 @@ import { logGeminiDebug } from './aiDebugLogger.js';
 import { validateBaseConfig, validateContents } from './aiValidators.js';
 import { DEFAULT_GEMINI_MODEL, buildModelCandidates } from './geminiModels.js';
 
+// Inicialização correta do cliente oficial da Google
 const ai = new GoogleGenAI({
-	apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
+// Ajusta as configurações para o formato nativo esperado pelo SDK
 function buildFinalConfig(config = {}) {
-	return {
-		...config,
-		temperature: typeof config.temperature === 'number' ? config.temperature : 0.2,
-	};
+  return {
+    temperature: typeof config.temperature === 'number' ? config.temperature : 0.2,
+    ...config,
+  };
 }
 
+// Sintaxe nativa do método do novo SDK @google/genai
 async function generateGeminiResponse(contents, model, config) {
-	return ai.models.generateContent({
-		model,
-		contents,
-		config,
-	});
+  return ai.models.generateContent({
+    model,
+    contents,
+    config: buildFinalConfig(config), // O SDK espera o objeto config aqui dentro
+  });
 }
 
 async function generateGeminiResponseWithRetry(contents, model, config) {
-	const modelCandidates = buildModelCandidates(model);
-	let lastError;
+  const modelCandidates = buildModelCandidates(model);
+  let lastError;
 
-	for (const currentModel of modelCandidates) {
-		for (let attempt = 0; attempt < 2; attempt += 1) {
-			try {
-				logGeminiDebug('ai-call', 'model-attempt', {
-					model: currentModel,
-					attempt: attempt + 1,
-					candidateCount: modelCandidates.length,
-					contentsCount: Array.isArray(contents) ? contents.length : 0,
-				});
+  for (const currentModel of modelCandidates) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        logGeminiDebug('ai-call', 'model-attempt', {
+          model: currentModel,
+          attempt: attempt + 1,
+          candidateCount: modelCandidates.length,
+          contentsCount: Array.isArray(contents) ? contents.length : 0,
+        });
 
-				const response = await generateGeminiResponse(contents, currentModel, config);
+        const response = await generateGeminiResponse(contents, currentModel, config);
 
-				logGeminiDebug('ai-call', 'model-success', {
-					model: currentModel,
-					attempt: attempt + 1,
-				});
+        logGeminiDebug('ai-call', 'model-success', {
+          model: currentModel,
+          attempt: attempt + 1,
+        });
 
-				return response;
-			} catch (error) {
-				lastError = error;
-				const transient = isTransientGeminiError(error);
+        return response;
+      } catch (error) {
+        lastError = error;
+        const transient = isTransientGeminiError(error);
 
-				logGeminiDebug('ai-call', 'model-error', {
-					model: currentModel,
-					attempt: attempt + 1,
-					transient,
-					message: error?.message || 'Erro desconhecido',
-				});
+        logGeminiDebug('ai-call', 'model-error', {
+          model: currentModel,
+          attempt: attempt + 1,
+          transient,
+          message: error?.message || 'Unknown error',
+        });
 
-				if (!transient) {
-					throw error;
-				}
+        if (!transient) {
+          throw error;
+        }
 
-				if (attempt === 1) {
-					break;
-				}
-			}
-		}
-	}
+        if (attempt === 1) {
+          break;
+        }
+      }
+    }
+  }
 
-	throw lastError;
+  throw lastError;
 }
 
+// Extração segura utilizando os getters nativos do novo SDK
 function extractResponseText(response) {
-	const text = response?.text?.trim();
+  const text = response?.text;
 
-	if (text) {
-		return text;
-	}
+  if (text && typeof text === 'string') {
+    return text.trim();
+  }
 
-	const partsText = response?.candidates?.[0]?.content?.parts
-		?.filter((part) => typeof part?.text === 'string' && !part.thought)
-		.map((part) => part.text.trim())
-		.filter(Boolean)
-		.join('\n');
-
-	if (!partsText) {
-		throw new Error('Resposta vazia da AI');
-	}
-
-	return partsText;
+  throw new Error('Empty or invalid response received from AI');
 }
 
 export async function callGemini(prompt, model = DEFAULT_GEMINI_MODEL, config = {}) {
-	try {
-		logGeminiDebug('ai-call', 'call-gemini-start', {
-			model,
-			promptLength: typeof prompt === 'string' ? prompt.length : 0,
-		});
+  try {
+    logGeminiDebug('ai-call', 'call-gemini-start', {
+      model,
+      promptLength: typeof prompt === 'string' ? prompt.length : 0,
+    });
 
-		validateBaseConfig(config);
+    validateBaseConfig(config);
 
-		if (!prompt || typeof prompt !== 'string') {
-			throw new Error('Prompt inválido para a chamada à AI');
-		}
+    if (!prompt || typeof prompt !== 'string') {
+      throw new Error('Invalid prompt for AI call');
+    }
 
-		const response = await generateGeminiResponseWithRetry(
-			[{ role: 'user', parts: [{ text: prompt }] }],
-			model,
-			buildFinalConfig(config)
-		);
+    // Estrutura padrão de contents aceita pela API
+    const response = await generateGeminiResponseWithRetry(
+      [{ role: 'user', parts: [{ text: prompt }] }],
+      model,
+      config
+    );
 
-		return extractResponseText(response);
-	} catch (error) {
-		throw new Error(`Erro na chamada à AI: ${formatAIError(error)}`);
-	}
+    return extractResponseText(response);
+  } catch (error) {
+    throw new Error(`Error in AI call: ${formatAIError(error)}`);
+  }
 }
 
 export async function callGeminiWithContents(contents, model = DEFAULT_GEMINI_MODEL, config = {}) {
-	try {
-		logGeminiDebug('ai-call', 'call-gemini-with-contents-start', {
-			model,
-			contentsCount: Array.isArray(contents) ? contents.length : 0,
-		});
+  try {
+    logGeminiDebug('ai-call', 'call-gemini-with-contents-start', {
+      model,
+      contentsCount: Array.isArray(contents) ? contents.length : 0,
+    });
 
-		validateBaseConfig(config);
-		validateContents(contents);
+    validateBaseConfig(config);
+    validateContents(contents);
 
-		const response = await generateGeminiResponseWithRetry(contents, model, buildFinalConfig(config));
-		return extractResponseText(response);
-	} catch (error) {
-		throw new Error(`Erro na chamada à AI: ${formatAIError(error)}`);
-	}
+    const response = await generateGeminiResponseWithRetry(contents, model, config);
+    return extractResponseText(response);
+  } catch (error) {
+    throw new Error(`Error in AI call: ${formatAIError(error)}`);
+  }
 }
 
 export async function callGeminiWithResponse(contents, model = DEFAULT_GEMINI_MODEL, config = {}) {
-	try {
-		logGeminiDebug('ai-call', 'call-gemini-with-response-start', {
-			model,
-			contentsCount: Array.isArray(contents) ? contents.length : 0,
-		});
+  try {
+    logGeminiDebug('ai-call', 'call-gemini-with-response-start', {
+      model,
+      contentsCount: Array.isArray(contents) ? contents.length : 0,
+    });
 
-		validateBaseConfig(config);
-		validateContents(contents);
+    validateBaseConfig(config);
+    validateContents(contents);
 
-		return await generateGeminiResponseWithRetry(contents, model, buildFinalConfig(config));
-	} catch (error) {
-		throw new Error(`Erro na chamada à AI: ${formatAIError(error)}`);
-	}
+    return await generateGeminiResponseWithRetry(contents, model, config);
+  } catch (error) {
+    throw new Error(`Error in AI call: ${formatAIError(error)}`);
+  }
 }
