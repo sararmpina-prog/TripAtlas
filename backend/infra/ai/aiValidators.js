@@ -1,39 +1,28 @@
-/* Validações base da camada de infraestrutura AI.
+/* Validações base da camada de infraestrutura AI usando Zod.
+   A abordagem fail-fast evita chamadas inválidas à API da Gemini. */
 
-Estas validações garantem que:
-- a configuração mínima da Gemini existe
-- os parâmetros recebidos têm o formato esperado
-- erros de configuração são detetados o mais cedo possível
+import { z } from 'zod';
 
-A abordagem fail-fast evita chamadas inválidas à API
-e simplifica o debugging durante desenvolvimento.
-*/
+// Schema para garantir que as Variáveis de Ambiente essenciais existem
+const envSchema = z.object({
+  GEMINI_API_KEY: z.string({ required_error: 'GEMINI_API_KEY não definida no .env' }).min(1)
+});
 
+// Schema para validar o objeto de configuração da chamada à AI
+const configSchema = z.object({}).passthrough(); // Aceita qualquer objeto, rejeita null/arrays/primitivos
 
-// Valida configuração genérica das chamadas à Gemini.
-//
-// Verifica:
-// - existência da API key
-// - integridade do objeto config
-//
-// Impede que a infraestrutura AI execute com estado inválido.
+// Schema para o histórico conversacional (Contents) esperado pela Gemini
+const contentsSchema = z.array(z.any()).min(1, { message: 'Contents não pode estar vazio' });
+
 export function validateBaseConfig(config) {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error('GEMINI_API_KEY não definida no .env');
-    }
-
-    if (config === null || typeof config !== 'object' || Array.isArray(config)) {
-        throw new Error('Config inválida para a chamada à AI');
-    }
+  // Valida o .env instantaneamente
+  envSchema.parse(process.env);
+  
+  // Valida se o config é um objeto válido
+  configSchema.parse(config);
 }
 
-// Valida o formato do array contents utilizado pela Gemini.
-//
-// A API espera um histórico conversacional estruturado.
-// Esta validação garante que existe pelo menos uma mensagem válida
-// antes da chamada ao provider.
 export function validateContents(contents) {
-    if (!Array.isArray(contents) || contents.length === 0) {
-        throw new Error('Contents inválido para a chamada à AI');
-    }
+  // Valida se é um array preenchido
+  contentsSchema.parse(contents);
 }
