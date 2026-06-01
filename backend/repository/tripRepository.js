@@ -17,7 +17,14 @@ function toDbFields(data) {
   const result = {};
   for (const [camel, snake] of Object.entries(tripFieldMap)) {
     if (data[camel] !== undefined) {
-      result[snake] = data[camel];
+      let value = data[camel];
+
+      // CONVERSÃO DE SEGURANÇA PARA A ENTIDADE TRIP
+      if ((camel === 'startDate' || camel === 'endDate') && typeof value === 'string') {
+        value = new Date(value);
+      }
+
+      result[snake] = value;
     }
   }
   return result;
