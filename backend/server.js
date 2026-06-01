@@ -1,7 +1,7 @@
 import express from 'express';
 import tripRoutes from './routes/tripRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
-import accommodationReserveRoutes from './routes/accommodationReserveRoutes.js'
+import reserveRoutes from './routes/reserveRoutes.js'
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/trips', tripRoutes);
 app.use('/api/accommodations', accommodationRoutes);
-app.use('/api/reserves', accommodationReserveRoutes);
+app.use('/api/reserves', reserveRoutes);
 
   app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
