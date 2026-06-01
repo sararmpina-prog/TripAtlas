@@ -1,12 +1,20 @@
 import * as reserveRepository from '../repository/reserveRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
+import { NotFoundError, ValidationError} from '../utils/appErrors.js';
+
+/* SUGESTÃO: estes imports já não fazem falta
+Como usamos o Zod, através do middleware validateBody nas rotas, o Express agora limpa e valida todos os formatos automaticamente antes de o pedido sequer entrar no Service.
+Por causa disso, estas funções manuais como validateTripId, validateReserveId, validateAccommodationId e validateCreateReserve — já não fazem falta. O Zod barra qualquer erro na entrada, pelo que podemos apagar esses imports e simplificar o ficheiro.*
+
 import {validateReserveId} from '../validators/reserveValidator.js'
 import {validateCreateReserve} from '../validators/reserveValidator.js'
 import {validateAccommodationId} from '../validators/accommodationValidator.js'
 import {validateTripId} from '../validators/tripValidator.js'
-import { NotFoundError, ValidationError} from '../utils/appErrors.js';
+
 import {toDbReserveFields} from '../repository/reserveRepository.js'
+
+*/
 
 
 // Transforma o snake_case da BD para camelCase consistente no Frontend
@@ -17,6 +25,12 @@ function normalizeReserve(row) {
     tripId: row.trip_id,
     checkInDate: row.check_in_date,
     checkOutDate: row.check_out_date
+
+    /* SUGESTÃO: acrescentar:
+
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+    */
   };
 }
 
@@ -29,20 +43,41 @@ export async function listAccommodationsReserves() {
 
 export async function deleteAccommodationReserve(id) {
 
-  const reserveId = validateReserveId(id);
+  /* SUGESTÃO: apagar; porque o zod já valida o formato do ID e o middleware validateIdParam já bloqueia IDs inválidos antes de chegarem aqui. Se o ID for inválido, nem sequer entramos nesta função, pelo que não precisamos de validar manualmente aqui.
 
-  const reserve = await reserveRepository.findReserveById(reserveId)
+  const reserveId = validateReserveId(id);
+  */
+
+  /* SUGESTÃO: !reserveRows || reserveRows.length === 0) 
+  
+  O motor do MySQL devolve sempre um Array (uma lista) quando fazemos db.execute(), mesmo que a query use LIMIT 1 ou procure por um ID único.
+  
+  O que acontece se a reserva NÃO existir? O MySQL não devolve null ou undefined. Ele devolve um array vazio: [].
+  O problema em JavaScript: No JavaScript, um array vazio [] é avaliado como verdadeiro (true). Por isso, a condição if (!reserve) que tinhas escrito vai falhar sempre, porque o Node acha que a lista vazia é um registo válido. O código avançaria e tentava ler propriedades de onde não existem, mandando o servidor abaixo.Ao mudarmos para if (!reserveRows || reserveRows.length === 0), estamos a perguntar diretamente ao Node: 'A lista veio vazia?'. Se a lista tiver zero elementos, lançamos o NotFoundError com total segurança, protegendo a aplicação contra crashes.
+
+  const reserve = await reserveRepository.findReserveById(id)
 
   if (!reserve) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
+*/
 
-   // Apaga a reserva diretamente da base de dados
+  const reserveRows = await reserveRepository.findReserveById(id);
+
+  if (!reserveRows || reserveRows.length === 0) {
+    throw new NotFoundError('Reserva não encontrada para apagar.');
+  }
+
+  // Apaga a reserva diretamente da base de dados
+
+  /* SUGESTÃO: flightRepository está errado:
   await flightRepository.deleteReserve(reserveId);
+   */
 
-  return normalizeReserve(reserve)
+  await reserveRepository.deleteReserve(id);
+  
+  return normalizeReserve(reserveRows[0]);
 }
-
 
 //Cria reserva
 export async function createReserve(payload) {
