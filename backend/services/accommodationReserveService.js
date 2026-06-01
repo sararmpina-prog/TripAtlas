@@ -43,7 +43,6 @@ export async function deleteAccommodationReserve(id) {
   return normalizeReserve(reserve)
 }
 
-
 //Cria reserva
 export async function createReserve(payload) {
 
