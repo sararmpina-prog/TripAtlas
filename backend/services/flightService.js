@@ -7,7 +7,7 @@ Faz a ponte entre controllers / tool calls e a persistência, mantendo aqui:
 Fluxo arquitetural:
 Controller (recebe request/resposta HTTP)
    ↓
-Task Service (decide regras de negócio)
+Service (decide regras de negócio)
    ↓
 Database (armazenamento persistente)
 

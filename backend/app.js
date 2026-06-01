@@ -17,7 +17,6 @@ import flightRoutes from './routes/flightRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
 // Middlewares
-import logger from './middlewares/loggerMiddleware.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { hasDatabaseConfig } from './infra/db/db.js';
 
@@ -27,7 +26,6 @@ const app = express();
 app.use(express.json());
 // Origem do CORS deve ser ajustada para bater certo com o Live Server do frontend
 app.use(cors({ origin: 'http://127.0.0.1:5500' })); 
-app.use(logger);
 
 // Endpoints Base e Health Check
 app.get('/', (req, res) => {

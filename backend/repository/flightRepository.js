@@ -3,7 +3,7 @@
 Importante:
 Base de dados → snake_case */
 
-import db from '../infra/db/db.js';
+import { db } from '../infra/db/db.js';
 
 const flightFieldMap = {
   tripId: 'trip_id',

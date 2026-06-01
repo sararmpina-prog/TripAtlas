@@ -1,7 +1,7 @@
 /* Camada responsável pela comunicação com a BD.
    Base de dados → snake_case */
 
-import db from '../infra/db/db.js';
+import { db } from '../infra/db/db.js';
 
 const tripFieldMap = {
   userId: 'user_id',
@@ -23,7 +23,7 @@ function toDbFields(data) {
   return result;
 }
 
-// LISTA TODAS AS VIAGENS (Sem SELECT *)
+// LISTA TODAS AS VIAGENS
 export async function listTrips() {
   const [rows] = await db.execute(`
     SELECT 
@@ -33,7 +33,7 @@ export async function listTrips() {
   return rows;
 }
 
-// PROCURA UMA VIAGEM PELO ID (Sem SELECT *)
+// PROCURA UMA VIAGEM PELO ID
 export async function findTripById(id) {
   const [rows] = await db.execute(
     `
