@@ -225,7 +225,7 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 
 ### FAIL (Parâmetro Inválido no Middleware)
 * **URL de Teste**: http://localhost:3000/api/trips/abc
-* **Resultado Esperado**: Código 400 Bad Request com a mensagem do nosso middleware validateIdParam: "Invalid tripId." (Apanhado na fronteira sem sequer tocar no Service ou na BD!).
+* **Resultado Esperado**: Código 400 Bad Request com a mensagem do nosso middleware validateIdParams: "Invalid tripId." (Apanhado na fronteira sem sequer tocar no Service ou na BD!).
 
 ## Demonstração do ON DELETE CASCADE (Viagem ID 5)
 

@@ -13,7 +13,7 @@ import {
 } from '../controllers/flightController.js';
 
 // Middlewares
-import { validateIdParam } from '../middlewares/validateIdParam.js';
+import { validateIdParam } from '../middlewares/validateIdParams.js';
 import { validateBody } from '../middlewares/validationMiddleware.js';
 import { createFlightSchema, updateFlightSchema } from '../validators/flightValidator.js';
 

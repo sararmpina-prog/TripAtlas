@@ -13,7 +13,7 @@ import {
 } from '../controllers/userController.js';
 
 // Middlewares
-import { validateIdParam } from '../middlewares/validateIdParam.js';
+import { validateIdParam } from '../middlewares/validateIdParams.js';
 import { validateBody } from '../middlewares/validationMiddleware.js';
 import { createUserSchema, updateUserSchema } from '../validators/userValidator.js';
 

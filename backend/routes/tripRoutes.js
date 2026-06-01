@@ -14,7 +14,7 @@ import {
 } from '../controllers/tripController.js';
 
 // Middlewares
-import { validateIdParam } from '../middlewares/validateIdParam.js';
+import { validateIdParam } from '../middlewares/validateIdParams.js';
 import { validateBody } from '../middlewares/validationMiddleware.js';
 import { createTripSchema, updateTripSchema } from '../validators/tripValidator.js';
 
