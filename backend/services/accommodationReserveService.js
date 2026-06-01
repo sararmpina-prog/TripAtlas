@@ -1,8 +1,6 @@
 import * as reserveRepository from '../repository/reserveRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
-import {validateReserveId} from '../validators/reserveValidator.js'
-import {validateTripId} from '../validators/tripValidator.js'
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
 
@@ -24,7 +22,7 @@ export async function listAccommodationsReserves() {
   return reserves.map(normalizeReserve)
 }
 
-// APAGA UMA RESERVA DE ESTADIA EXISTENTE
+// APAGA UMA RESERVA EXISTENTE
 export async function deleteAccommodationReserve(id) {
 
   const reserveId = validateReserveId(id);
@@ -57,8 +55,6 @@ export async function createReserve(payload) {
   }
 
   console.log("Id da acomodação", reserve.accommodation_id)
-
-  let tripId = validateTripId(reserve.trip_id);
 
   const trip = await tripRepository.findTripById(reserve.trip_id)
     
