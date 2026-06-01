@@ -1,5 +1,4 @@
 import express from 'express';
-import tripRoutes from './routes/tripRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
 import reserveRoutes from './routes/reserveRoutes.js'
 
@@ -17,7 +16,6 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use('/api/trips', tripRoutes);
 app.use('/api/accommodations', accommodationRoutes);
 app.use('/api/reserves', reserveRoutes);
 
