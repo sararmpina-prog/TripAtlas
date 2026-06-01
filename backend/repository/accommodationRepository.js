@@ -62,3 +62,29 @@ export async function deleteAccommodation(id) {
   // Retorna true se eliminou um registo, false caso contrário
   return result.affectedRows > 0;
 }
+
+
+// LISTA ESTADIAS DUPLICADAS
+export async function listDuplicatedAccommodation(accommodation) {
+  const [rows] = await db.execute(`
+   SELECT 1 FROM accommodations WHERE name = ? AND city = ? AND country = ? LIMIT 1
+  `,  [accommodation.name, accommodation.city, accommodation.country]);
+
+  // Retorna true se eliminou um registo, false caso contrário
+  return rows.length > 0
+}
+
+
+// CRIA UMA NOVA ESTADIA
+export async function createAccommodation(accommodation) {
+
+  const [result] = await db.execute(
+    `
+      INSERT INTO accommodations (name, city, country)
+      VALUES (?, ?, ?)
+    `,
+    [accommodation.name, accommodation.city, accommodation.country]
+  );
+
+    return result.insertId;
+}

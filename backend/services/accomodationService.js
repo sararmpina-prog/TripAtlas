@@ -25,3 +25,26 @@ export async function deleteAccommodation(id) {
 
   return accommodation; 
 }
+
+
+// CRIA UMA NOVA ESTADIA
+export async function createAccommodation(payload) {
+
+  console.log("Estou no serviço estadias")
+
+  const accommodation = payload
+
+  console.log("A reserva é, após validações da data", accommodation)
+
+  const duplicatedAccommodation = await accommodationRepository.listDuplicatedAccommodation(accommodation)
+
+ if (duplicatedAccommodation) {
+    throw new ValidationError('Accommodation already exists');
+  }
+
+ let newAccommodation = await accommodationRepository.createAccommodation(accommodation)
+
+ let createAccommodation = await accommodationRepository.findAccommodationById(newAccommodation)
+
+  return createAccommodation
+}
