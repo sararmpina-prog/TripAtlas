@@ -52,7 +52,7 @@ export const updateReserveSchema = z.object(reserveFields).partial()
   // Validação Cross-Field condicional para o Update
   .refine((data) => {
     if (!data.check_in_date || !data.check_out_date) return true;
-    return new Date(data.check_out_date) >= new Date(data.check_in_date);
+    return (data.check_out_date) >= (data.check_in_date);
   }, {
     message: "The check_out_date cannot be earlier than the check_in_date.",
     path: ["check_out_date"],

@@ -122,29 +122,22 @@ export async function updateReserve(id, validatedReserve) {
   ) {
 
     const checkInDate = validatedReserve.check_in_date
-      ? new Date(validatedReserve.check_in_date)
-      : new Date(existingReserve.check_in_date);
+      ? (validatedReserve.check_in_date)
+      : (existingReserve.check_in_date);
 
     const checkOutDate = validatedReserve.check_out_date
-      ? new Date(validatedReserve.check_out_date)
-      : new Date(existingReserve.check_out_date);
+      ? (validatedReserve.check_out_date)
+      : (existingReserve.check_out_date);
 
-    if (checkOutDate.getTime() < checkInDate.getTime()) {
+    if (checkOutDate < checkInDate) {
       throw new ValidationError(
         'The check_out_date cannot be earlier than the check_in_date.'
       );
     }
+    updateData.check_in_date = checkInDate
+    updateData.check_out_date = checkOutDate;
   }
 
-      // só adiciona ao update depois de validar
-    if (validatedReserve.check_in_date !== undefined) {
-      updateData.check_in_date = validatedReserve.check_in_date;
-    }
-
-    if (validatedReserve.check_out_date !== undefined) {
-      updateData.check_out_date = validatedReserve.check_out_date;
-    }
-  
 
   console.log("serviço validatedReserve", updateData)
 
