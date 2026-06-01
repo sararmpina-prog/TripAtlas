@@ -134,6 +134,6 @@ export async function updateReserve(id, validatedReserve) {
 
   const updatedReserve = await reserveRepository.findReserveById(id);
 
-  return updateReserve
+  return updatedReserve
 
   }

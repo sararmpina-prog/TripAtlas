@@ -21,7 +21,7 @@ const reserveFields = {
     .any()
     .transform((val) => Number(val))
     .refine((val) => !isNaN(val) && Number.isInteger(val), {
-      message: "The field accommodation_id must be numeric.",
+      message: "The field trip_id must be numeric.",
     }),
     check_in_date: z
     .string({ required_error: "The field check_in_date is mandatory." })

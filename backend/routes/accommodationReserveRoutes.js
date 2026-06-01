@@ -8,6 +8,7 @@ import express from 'express';
 import { getAccommodationsReserves, deleteAccommodationReserveById, postReserve, patchReserve} from '../controllers/accommodationReserveController.js';
 import {validateUpdateTrip} from '../validators/reserveZodValidator.js'
 import {validateBody} from '../middlewares/validationMiddleware.js'
+import {validateIdParam} from '../middlewares/validateIdParams.js'
 
 const router = express.Router();
 
@@ -21,6 +22,6 @@ router.post('/', postReserve);
 router.delete('/:id', deleteAccommodationReserveById);
 
 // Rota para atualizar uma reserva
-router.patch('/:id',  validateBody(validateUpdateTrip), patchReserve);
+router.patch('/:ReserveId', validateIdParam('ReserveId'), validateBody(validateUpdateTrip), patchReserve);
 
 export default router;
