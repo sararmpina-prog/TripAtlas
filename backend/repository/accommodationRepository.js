@@ -88,3 +88,25 @@ export async function createAccommodation(accommodation) {
 
     return result.insertId;
 }
+
+
+// ATUALIZA UMA NOVA ESTADIA
+export async function updateAccommodation(id, accommodation) {
+
+  const [result] = await db.execute(
+   `UPDATE accommodations
+      SET
+        name = ?,
+        city = ?,
+        country = ?
+      WHERE id = ?
+    `,
+    [
+      accommodation.name,
+      accommodation.city,
+      accommodation.country,
+      id
+    ])
+
+    return result.affectedRows > 0;
+}

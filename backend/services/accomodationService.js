@@ -48,3 +48,35 @@ export async function createAccommodation(payload) {
 
   return createAccommodation
 }
+
+
+
+// ATUALIZA UMA ESTADIA EXISTENTE (PUT OU PATCH)
+// Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
+export async function updateAccommodation(id, validatedAccommodation) {
+
+  //Se estadia existe 
+  console.log("Service patch estadia id", id)
+  const existingAccommodation = await accommodationRepository.findAccommodationById(id);
+
+  if (!existingAccommodation) {
+    throw new NotFoundError('Accommodation not found.');
+  }
+
+  let updateData = {};
+
+  updateData = {
+  name: validatedAccommodation.name ?? existingAccommodation.name,
+  city: validatedAccommodation.city ?? existingAccommodation.city,
+  country: validatedAccommodation.country ?? existingAccommodation.country,
+};
+  
+  console.log("serviço validatedEstadia", updateData)
+
+  await accommodationRepository.updateAccommodation(id, updateData);
+
+  const updateAccommodation = await accommodationRepository.findAccommodationById(id);
+
+  return updateAccommodation
+
+}

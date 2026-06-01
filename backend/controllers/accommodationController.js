@@ -44,3 +44,14 @@ export const postTrip = asyncHandler(async (req, res) => {
         data: accommodation,
     });
 });
+
+
+export const patchAccommodation = asyncHandler(async (req, res) => {
+    console.log("Controller patch estadia id", req.params.id)
+    const accommodation = await updateAccommodation(req.params.ReserveId, req.body || {});
+
+    res.json({
+        success: true,
+        data: accommodation,
+    });
+});
