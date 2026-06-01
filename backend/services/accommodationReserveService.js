@@ -79,6 +79,8 @@ export async function createReserve(payload) {
 // Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
 export async function updateReserve(id, validatedReserve) {
 
+  
+
   //Se reversa existe 
   console.log("Service patch reserva id", id)
   const existingReserve = await reserveRepository.findReserveById(id);
@@ -87,7 +89,7 @@ export async function updateReserve(id, validatedReserve) {
     throw new NotFoundError('Reserve not found.');
   }
 
-
+  const updateData = {};
 
   // Se acomodação existe
   if (validatedReserve.accommodation_id !== undefined) {
@@ -99,6 +101,7 @@ export async function updateReserve(id, validatedReserve) {
       throw new NotFoundError('Accommodation not found.');
     }
   }
+  updateData.accommodation_id = validatedReserve.accommodation_id;
 
   // Validar trip caso seja alterada
   if (validatedReserve.trip_id !== undefined) {
@@ -110,6 +113,7 @@ export async function updateReserve(id, validatedReserve) {
       throw new NotFoundError('Trip not found.');
     }
   }
+  updateData.trip_id = validatedReserve.trip_id;
 
   // Validar datas usando o estado atual da BD
   if (
@@ -132,12 +136,22 @@ export async function updateReserve(id, validatedReserve) {
     }
   }
 
-  console.log("serviço validatedReserve", validatedReserve)
+      // só adiciona ao update depois de validar
+    if (validatedReserve.check_in_date !== undefined) {
+      updateData.check_in_date = validatedReserve.check_in_date;
+    }
 
-  await reserveRepository.updateReserve(id, validatedReserve);
+    if (validatedReserve.check_out_date !== undefined) {
+      updateData.check_out_date = validatedReserve.check_out_date;
+    }
+  
+
+  console.log("serviço validatedReserve", updateData)
+
+  await reserveRepository.updateReserve(id, updateData);
 
   const updatedReserve = await reserveRepository.findReserveById(id);
 
   return updatedReserve
 
-  }
+}
