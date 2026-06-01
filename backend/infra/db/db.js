@@ -24,7 +24,7 @@ const tableStatements = [
       email VARCHAR(150) NOT NULL UNIQUE,
       mobile_phone VARCHAR(20),
       password_hash VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
@@ -47,7 +47,7 @@ const tableStatements = [
       name VARCHAR(150) NOT NULL,
       city VARCHAR(100),
       country VARCHAR(100),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
