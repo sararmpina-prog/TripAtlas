@@ -6,6 +6,7 @@ import {validateCreateReserve} from '../validators/reserveValidator.js'
 import {validateAccommodationId} from '../validators/accommodationValidator.js'
 import {validateTripId} from '../validators/tripValidator.js'
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
+import {toDbReserveFields} from '../repository/reserveRepository.js'
 
 
 // Transforma o snake_case da BD para camelCase consistente no Frontend
@@ -48,39 +49,37 @@ export async function createReserve(payload) {
 
   console.log("Estou no serviço")
 
-  const reserve = payload;
+  const reserve = payload
 
   console.log("A reserva é, após validações da data", reserve)
-
-  let accommodationId = validateAccommodationId(payload.accommodation_id);
   
-  const accommodation = await accommodationRepository.findAccommodationById(accommodationId)
+  const accommodation = await accommodationRepository.findAccommodationById(reserve.accommodation_id)
       
   if (!accommodation) {
     throw new NotFoundError('Accommodation not found.');
   }
 
-  console.log("Id da acomodação", accommodationId)
+  console.log("Id da acomodação", reserve.accommodation_id)
 
-  let tripId = validateTripId(payload.trip_id);
+  let tripId = validateTripId(reserve.trip_id);
 
-  const trip = await tripRepository.findTripById(tripId)
+  const trip = await tripRepository.findTripById(reserve.trip_id)
     
   if (!trip) {
     throw new NotFoundError('Viagem não encontrada para criar reserva de estadia.');
   }
   
-  console.log("Id da viagem", tripId)
+  console.log("Id da viagem", trip)
 
-  console.log("os meus valores a inserir são", accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
+  console.log("os meus valores a inserir são", reserve)
 
-  const duplicatedReserve = await reserveRepository.listDuplicatedReserves( accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
+  const duplicatedReserve = await reserveRepository.listDuplicatedReserves(reserve)
 
  if (duplicatedReserve) {
     throw new ValidationError('Esta reserva já existe.');
   }
 
- let newReserve = await reserveRepository.createReserve( accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
+ let newReserve = await reserveRepository.createReserve(reserve)
 
  let createdReserve = await reserveRepository.findReserveById(newReserve)
 
@@ -90,8 +89,6 @@ export async function createReserve(payload) {
 // ATUALIZA UMA RESERVA EXISTENTE (PUT OU PATCH)
 // Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
 export async function updateReserve(id, validatedReserve) {
-
-  
 
   //Se reversa existe 
   console.log("Service patch reserva id", id)
