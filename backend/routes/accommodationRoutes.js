@@ -5,12 +5,12 @@ O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';
-import { getAccomodations} from '../controllers/accommodationController.js';
+import { getAccommodations} from '../controllers/accommodationController.js';
 
 const router = express.Router();
 
 // Rota para obter a lista de Accomodations
-router.get('/', getAccomodations);
+router.get('/', getAccommodations);
 
 
 export default router;

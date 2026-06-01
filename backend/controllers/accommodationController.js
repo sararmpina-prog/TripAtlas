@@ -13,11 +13,11 @@ O controller é também responsável por lidar com erros de forma consistente, u
 import { asyncHandler } from '../middlewares/asyncHandler.js';
 import {listAccomodations} from '../services/accomodationService.js'
 
-export const getAccomodations = asyncHandler(async (req, res) => {
-    const accomodations = await listAccomodations();
+export const getAccommodations = asyncHandler(async (req, res) => {
+    const accommodations = await listAccomodations();
 
     res.json({
         success: true,
-        data: accomodations
+        data: accommodations
     });
 });
