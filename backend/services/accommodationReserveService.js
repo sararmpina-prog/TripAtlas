@@ -2,11 +2,9 @@ import * as reserveRepository from '../repository/reserveRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
 import {validateReserveId} from '../validators/reserveValidator.js'
-import {validateCreateReserve} from '../validators/reserveValidator.js'
-import {validateAccommodationId} from '../validators/accommodationValidator.js'
 import {validateTripId} from '../validators/tripValidator.js'
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
-import {toDbReserveFields} from '../repository/reserveRepository.js'
+
 
 
 // Transforma o snake_case da BD para camelCase consistente no Frontend
@@ -26,7 +24,7 @@ export async function listAccommodationsReserves() {
   return reserves.map(normalizeReserve)
 }
 
-
+// APAGA UMA RESERVA DE ESTADIA EXISTENTE
 export async function deleteAccommodationReserve(id) {
 
   const reserveId = validateReserveId(id);
