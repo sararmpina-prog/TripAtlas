@@ -11,15 +11,10 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-import {
-  createUser,
-  deleteUser,
-  listUsers,
-  updateUser,
-} from '../services/userService.js';
+import * as userService from '../services/userService.js';
 
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await userService.listUsers();
+  const users = await userService.listUsers(); 
   res.json({ success: true, data: users });
 });
 

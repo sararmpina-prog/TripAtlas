@@ -18,12 +18,12 @@ async function startServer() {
 
   // Ativa o servidor HTTP
   app.listen(port, () => {
-    console.log(`🚀 Servidor a executar em http://localhost:${port}`);
+    console.log(`Servidor a executar em http://localhost:${port}`);
   });
 }
 
 // Executa o arranque capturando falhas críticas imprevistas
 startServer().catch((error) => {
-  console.error('💥 Falha crítica ao iniciar o servidor:', error);
+  console.error('Falha crítica ao iniciar o servidor:', error);
   process.exit(1);
 });
