@@ -64,3 +64,26 @@ export async function createReserve(accommodationId, tripId, check_in_date, chec
 
     return result.insertId;
 }
+
+// ATUALIZA UMA NOVA RESERVA
+export async function updateReserve(id, reserve) {
+
+  const [result] = await db.execute(
+   `UPDATE accommodation_reserve
+      SET
+        accommodation_id = ?,
+        trip_id = ?,
+        check_in_date = ?,
+        check_out_date = ?
+      WHERE id = ?
+    `,
+    [
+      reserve.accommodation_id,
+      reserve.trip_id,
+      reserve.check_in_date,
+      reserve.check_out_date,
+      id
+    ])
+
+    return result.affectedRows > 0;
+}

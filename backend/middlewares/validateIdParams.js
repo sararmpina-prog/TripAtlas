@@ -11,6 +11,7 @@ export const validateIdParam = (paramName) =>
     }
 
     req.params[paramName] = id;
+    console.log("req.params[paramName]", req.params[paramName])
 
     next();
   };

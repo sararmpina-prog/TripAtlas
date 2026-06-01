@@ -9,6 +9,8 @@ import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
+
+  return reserves
 }
 
 
@@ -78,6 +80,7 @@ export async function createReserve(payload) {
 export async function updateReserve(id, validatedReserve) {
 
   //Se reversa existe 
+  console.log("Service patch reserva id", id)
   const existingReserve = await reserveRepository.findReserveById(id);
 
   if (!existingReserve) {
@@ -129,6 +132,7 @@ export async function updateReserve(id, validatedReserve) {
     }
   }
 
+  console.log("serviço validatedReserve", validatedReserve)
 
   await reserveRepository.updateReserve(id, validatedReserve);
 

@@ -36,7 +36,7 @@ const reserveFields = {
 }
 
 // 2. Schema de Criação Completo (POST)
-const createReserveSchema = z.object(reserveFields)
+export const createReserveSchema = z.object(reserveFields)
   // Validação Cross-Field: data de fim não pode ser anterior à data de início
   .refine((data) => new Date(data.check_out_date) >= new Date(data.check_in_date), {
     message: "The end date cannot be earlier than the start date.",
@@ -44,7 +44,7 @@ const createReserveSchema = z.object(reserveFields)
   });
 
 // 3. Schema de Atualização Completo (PATCH)
-const updateReserveSchema = z.object(reserveFields).partial()
+export const updateReserveSchema = z.object(reserveFields).partial()
   // Garante que pelo menos um campo foi enviado para atualização
   .refine((data) => Object.keys(data).length > 0, {
     message: "Please indicate at least one field to update.",
