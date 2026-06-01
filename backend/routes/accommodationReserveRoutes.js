@@ -6,7 +6,7 @@ O fluxo conversacional de AI será tratado numa camada própria.
 
 import express from 'express';
 import { getAccommodationsReserves, deleteAccommodationReserveById, postReserve, patchReserve} from '../controllers/accommodationReserveController.js';
-import {updateReserveSchema} from '../validators/reserveZodValidator.js'
+import {updateReserveSchema, createReserveSchema} from '../validators/reserveZodValidator.js'
 import {validateBody} from '../middlewares/validationMiddleware.js'
 import {validateIdParam} from '../middlewares/validateIdParams.js'
 
@@ -16,7 +16,7 @@ const router = express.Router();
 router.get('/', getAccommodationsReserves);
 
 // Rota para criar uma reserva
-router.post('/', postReserve);
+router.post('/',  validateBody(createReserveSchema), postReserve);
 
 // Rota para eliminar uma reserva de um hotel de forma determinística pelo id
 router.delete('/:id', deleteAccommodationReserveById);

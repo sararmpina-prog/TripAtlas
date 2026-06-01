@@ -38,8 +38,8 @@ const reserveFields = {
 // 2. Schema de Criação Completo (POST)
 export const createReserveSchema = z.object(reserveFields)
   // Validação Cross-Field: data de fim não pode ser anterior à data de início
-  .refine((data) => new Date(data.check_out_date) >= new Date(data.check_in_date), {
-    message: "The end date cannot be earlier than the start date.",
+  .refine((data) => data.check_out_date >= data.check_in_date, {
+    message: "The check_out_date cannot be earlier than the check_in_date.",
     path: ["check_out_date"],
   });
 

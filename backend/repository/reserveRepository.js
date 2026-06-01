@@ -59,7 +59,7 @@ export async function createReserve(accommodationId, tripId, check_in_date, chec
       INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date)
       VALUES (?, ?, ?, ?)
     `,
-    [accommodationId, tripId, reserve.check_in_date, reserve.check_out_date]
+    [accommodationId, tripId, check_in_date, check_out_date]
   );
 
     return result.insertId;

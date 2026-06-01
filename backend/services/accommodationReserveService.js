@@ -36,7 +36,7 @@ export async function createReserve(payload) {
 
   console.log("Estou no serviço")
 
-  const reserve = validateCreateReserve(payload);
+  const reserve = payload;
 
   console.log("A reserva é, após validações da data", reserve)
 
@@ -45,7 +45,7 @@ export async function createReserve(payload) {
   const accommodation = await accommodationRepository.findAccommodationById(accommodationId)
       
   if (!accommodation) {
-    throw new NotFoundError('Acomodação não encontrada para criar reserva de estadia.');
+    throw new NotFoundError('Accommodation not found.');
   }
 
   console.log("Id da acomodação", accommodationId)
@@ -70,7 +70,7 @@ export async function createReserve(payload) {
 
  let newReserve = await reserveRepository.createReserve( accommodationId, tripId, reserve.check_in_date, reserve.check_out_date)
 
- let createdReserve = findReserveById(newReserve)
+ let createdReserve = await reserveRepository.findReserveById(newReserve)
 
   return createdReserve
 }
