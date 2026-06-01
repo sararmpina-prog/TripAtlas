@@ -22,7 +22,7 @@ function normalizeReserve(row) {
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
 
-  return reserves
+  return reserves.map(normalizeReserve)
 }
 
 
@@ -39,7 +39,7 @@ export async function deleteAccommodationReserve(id) {
    // Apaga a reserva diretamente da base de dados
   await flightRepository.deleteReserve(reserveId);
 
-  return reserve
+  return normalizeReserve(reserve)
 }
 
 
