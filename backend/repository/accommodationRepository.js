@@ -45,6 +45,7 @@ export async function findAccommodationById(id) {
     [id]
   );
 
+  console.log("rows[0]", rows[0])
   return rows[0];
 }
 
@@ -53,7 +54,7 @@ export async function findAccommodationById(id) {
 export async function deleteAccommodation(id) {
   const [result] = await db.execute(
     `
-     'DELETE FROM accommodations WHERE id = ?'
+     DELETE FROM accommodations WHERE id = ?
     `,
     [id]
   );

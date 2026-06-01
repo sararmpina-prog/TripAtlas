@@ -1,4 +1,5 @@
 import * as accommodationRepository from '../repository/accommodationRepository.js';
+import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
 
 // LISTA TODAS AS ESTADIAS
@@ -13,7 +14,7 @@ export async function listAccomodations() {
 // APAGA UMA ESTADIA EXISTENTE
 export async function deleteAccommodation(id) {
 
-  const accommodation = await reserveRepository.findAccommodationById(id)
+  const accommodation = await accommodationRepository.findAccommodationById(id)
 
   if (!accommodation) {
     throw new NotFoundError('Accommodation not found');
