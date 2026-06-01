@@ -23,14 +23,17 @@ const reserveFields = {
     .refine((val) => !isNaN(val) && Number.isInteger(val), {
       message: "The field accommodation_id must be numeric.",
     }),
-  check_in_date: z
+    check_in_date: z
     .string({ required_error: "The field check_in_date is mandatory." })
-    .date({ message: "The field check_in_date must use YYYY-MM-DD." }),
-
-  check_out_date: z
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "The field check_in_date must use YYYY-MM-DD.",
+    }),
+    check_out_date: z
     .string({ required_error: "The field check_out_date is mandatory." })
-    .date({ message: "The field check_out_date must use YYYY-MM-DD." }),
-};
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "The field check_out_date must use YYYY-MM-DD.",
+    }),
+}
 
 // 2. Schema de Criação Completo (POST)
 const createReserveSchema = z.object(reserveFields)
@@ -51,8 +54,8 @@ const updateReserveSchema = z.object(reserveFields).partial()
     if (!data.check_in_date || !data.check_out_date) return true;
     return new Date(data.check_out_date) >= new Date(data.check_in_date);
   }, {
-    message: "The end date cannot be earlier than the start date.",
-    path: ["endDate"],
+    message: "The check_out_date cannot be earlier than the check_in_date.",
+    path: ["check_out_date"],
   });
 
 // 4. Funções de Exportação

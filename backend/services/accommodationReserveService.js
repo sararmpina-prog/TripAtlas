@@ -73,9 +73,67 @@ export async function createReserve(payload) {
   return createdReserve
 }
 
-// ATUALIZA UM VOO EXISTENTE
+// ATUALIZA UMA RESERVA EXISTENTE (PUT OU PATCH)
 // Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
-export async function updateReserve(id, validatedFlight) {
+export async function updateReserve(id, validatedReserve) {
 
-  
+  //Se reversa existe 
+  const existingReserve = await reserveRepository.findReserveById(id);
+
+  if (!existingReserve) {
+    throw new NotFoundError('Reserve not found.');
+  }
+
+
+
+  // Se acomodação existe
+  if (validatedReserve.accommodation_id !== undefined) {
+
+    const accommodation = await accommodationRepository
+      .findAccommodationById(validatedReserve.accommodation_id);
+
+    if (!accommodation) {
+      throw new NotFoundError('Accommodation not found.');
+    }
+  }
+
+  // Validar trip caso seja alterada
+  if (validatedReserve.trip_id !== undefined) {
+
+    const trip = await tripRepository
+      .findTripById(validatedReserve.trip_id);
+
+    if (!trip) {
+      throw new NotFoundError('Trip not found.');
+    }
+  }
+
+  // Validar datas usando o estado atual da BD
+  if (
+    validatedReserve.check_in_date !== undefined ||
+    validatedReserve.check_out_date !== undefined
+  ) {
+
+    const checkInDate = validatedReserve.check_in_date
+      ? new Date(validatedReserve.check_in_date)
+      : new Date(existingReserve.check_in_date);
+
+    const checkOutDate = validatedReserve.check_out_date
+      ? new Date(validatedReserve.check_out_date)
+      : new Date(existingReserve.check_out_date);
+
+    if (checkOutDate.getTime() < checkInDate.getTime()) {
+      throw new ValidationError(
+        'The check_out_date cannot be earlier than the check_in_date.'
+      );
+    }
+  }
+
+
+  await reserveRepository.updateReserve(id, validatedReserve);
+
+  const updatedReserve = await reserveRepository.findReserveById(id);
+
+  return updateReserve
+
   }
