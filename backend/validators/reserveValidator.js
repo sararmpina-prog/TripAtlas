@@ -58,31 +58,6 @@ export const updateReserveSchema = z.object(reserveFields).partial()
     path: ["check_out_date"],
   });
 
-// 4. Funções de Exportação
-export function validateCreateTrip(payload) {
-  try {
-    return createReserveSchema.parse(payload);
-  } catch (error) {
-    handleZodError(error);
-  }
-}
-
-export function validateUpdateTrip(payload) {
-  try {
-    return updateReserveSchema.parse(payload);
-  } catch (error) {
-    handleZodError(error);
-  }
-}
-
-// Helper para converter os erros do Zod para ValidationError do projeto
-function handleZodError(error) {
-  if (error instanceof z.ZodError) {
-    const firstError = error.errors[0];
-    throw new ValidationError(firstError.message);
-  }
-  throw error;
-}
 
 /* Este ficheiro pretende responder à pergunta:
 
