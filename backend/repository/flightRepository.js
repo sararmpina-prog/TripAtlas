@@ -21,7 +21,15 @@ function toDbFields(data) {
 
   for (const [camel, snake] of Object.entries(flightFieldMap)) {
     if (data[camel] !== undefined) {
-      result[snake] = data[camel];
+      let value = data[camel];
+
+      // SE FOR UM CAMPO DE DATA, CONVERTE A STRING ISO NUM OBJETO DATE REAL
+      // O driver mysql2 sabe converter objetos Date diretamente para o formato correto do MySQL
+      if ((camel === 'departureDatetime' || camel === 'arrivalDatetime') && typeof value === 'string') {
+        value = new Date(value);
+      }
+
+      result[snake] = value;
     }
   }
 

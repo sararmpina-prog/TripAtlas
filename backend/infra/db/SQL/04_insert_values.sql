@@ -1,12 +1,3 @@
--- LIMPAR DADOS ANTIGOS (Ordem inversa das FKs para não dar erro ao apagar)
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE accommodation_reserve;
-TRUNCATE TABLE flights;
-TRUNCATE TABLE trips;
-TRUNCATE TABLE accommodations;
-TRUNCATE TABLE users;
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- INSERIR UTILIZADORES (IDs gerados automaticamente: 1 a 5)
 INSERT INTO users (first_name, surname, email, mobile_phone, password_hash) VALUES
 ('Miguel', 'Silva', 'miguel@email.com', '912345678', 'hash1'),

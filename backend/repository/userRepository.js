@@ -45,7 +45,7 @@ export async function findUserById(id) {
     `,
     [id]
   );
-  return rows[0]; // Retorna o registo ou undefined
+  return rows;
 }
 
 // ADICIONADO PARA TERÇA-FEIRA: PROCURA UM UTILIZADOR PELO EMAIL
@@ -61,7 +61,7 @@ export async function findUserByEmail(email) {
     `,
     [email]
   );
-  return rows[0]; // Retorna o registo ou undefined
+  return rows;
 }
 
 // CRIA UM NOVO UTILIZADOR
