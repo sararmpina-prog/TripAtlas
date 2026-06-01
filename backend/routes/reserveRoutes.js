@@ -19,7 +19,7 @@ router.get('/', getAccommodationsReserves);
 router.post('/',  validateBody(createReserveSchema), postReserve);
 
 // Rota para eliminar uma reserva de um hotel de forma determinística pelo id
-router.delete('/:id', deleteAccommodationReserveById);
+router.delete('/:id', validateIdParam('id'), deleteAccommodationReserveById);
 
 // Rota para atualizar uma reserva
 router.patch('/:ReserveId', validateIdParam('ReserveId'), validateBody(updateReserveSchema), patchReserve);
