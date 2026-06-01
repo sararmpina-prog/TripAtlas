@@ -7,6 +7,18 @@ import {validateAccommodationId} from '../validators/accommodationValidator.js'
 import {validateTripId} from '../validators/tripValidator.js'
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
+
+// Transforma o snake_case da BD para camelCase consistente no Frontend
+function normalizeReserve(row) {
+  return {
+    id: row.id,
+    accommodationId: row.accommodation_id,
+    tripId: row.trip_id,
+    checkInDate: row.check_in_date,
+    checkOutDate: row.check_out_date
+  };
+}
+
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
 
@@ -31,7 +43,7 @@ export async function deleteAccommodationReserve(id) {
 }
 
 
-
+//Cria reserva
 export async function createReserve(payload) {
 
   console.log("Estou no serviço")
@@ -72,7 +84,7 @@ export async function createReserve(payload) {
 
  let createdReserve = await reserveRepository.findReserveById(newReserve)
 
-  return createdReserve
+  return normalizeReserve(createdReserve)
 }
 
 // ATUALIZA UMA RESERVA EXISTENTE (PUT OU PATCH)
@@ -145,6 +157,6 @@ export async function updateReserve(id, validatedReserve) {
 
   const updatedReserve = await reserveRepository.findReserveById(id);
 
-  return updatedReserve
+  return normalizeReserve(updatedReserve);
 
 }
