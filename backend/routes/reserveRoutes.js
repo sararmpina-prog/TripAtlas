@@ -22,6 +22,6 @@ router.post('/',  validateBody(createReserveSchema), postReserve);
 router.delete('/:id', validateIdParam('id'), deleteAccommodationReserveById);
 
 // Rota para atualizar uma reserva
-router.patch('/:ReserveId', validateIdParam('ReserveId'), validateBody(updateReserveSchema), patchReserve);
+router.patch('/:reserveId', validateIdParam('reserveId'), validateBody(updateReserveSchema), patchReserve);
 
 export default router;

@@ -25,18 +25,16 @@ export async function listAccommodationsReserves() {
 // APAGA UMA RESERVA EXISTENTE
 export async function deleteAccommodationReserve(id) {
 
-  const reserveId = validateReserveId(id);
+  const reserve = await reserveRepository.findReserveById(id)
 
-  const reserve = await reserveRepository.findReserveById(reserveId)
-
-  if (!reserve) {
+  if (!reserve || reserve.length === 0) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
 
    // Apaga a reserva diretamente da base de dados
-  await flightRepository.deleteReserve(reserveId);
+  await reserveRepository.deleteReserve(id);
 
-  return normalizeReserve(reserve)
+  return normalizeReserve(reserve[0])
 }
 
 //Cria reserva
@@ -87,7 +85,7 @@ export async function updateReserve(id, validatedReserve) {
   console.log("Service patch reserva id", id)
   const existingReserve = await reserveRepository.findReserveById(id);
 
-  if (!existingReserve) {
+  if (!existingReserve || existingReserve.length === 0) {
     throw new NotFoundError('Reserve not found.');
   }
 
