@@ -1,55 +1,69 @@
+import { z } from 'zod';
+import { ValidationError } from '../utils/appErrors.js';
 
-//Transforma qualquer params.id em string primeiro, teste regex (só números). test (devolve booleano)
-export function validateReserveId(value) {
-  if (!/^\d+$/.test(String(value))) {
-    throw new ValidationError('É necessário indicar um id válido para a trip.');
-  }
+// Helper reutilizável para campos de texto opcionais e normalizados
+const optionalNormalizedString = z
+  .string()
+  .trim()
+  .transform((val) => (val === '' ? null : val))
+  .optional()
+  .nullable();
 
-  return Number(value);
+// 1. Definição das Regras dos Campos (Mapeado com as restrições do SQL)
+const reserveFields = {
+  accommodation_id: z
+    .any()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && Number.isInteger(val), {
+      message: "The field accommodation_id must be numeric.",
+    }),
+    trip_id: z
+    .any()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && Number.isInteger(val), {
+      message: "The field trip_id must be numeric.",
+    }),
+    check_in_date: z
+    .string({ required_error: "The field check_in_date is mandatory." })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "The field check_in_date must use YYYY-MM-DD.",
+    }),
+    check_out_date: z
+    .string({ required_error: "The field check_out_date is mandatory." })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+        message: "The field check_out_date must use YYYY-MM-DD.",
+    }),
 }
 
-function requireText(value, fieldName) {
-  if (typeof value !== 'string' || value.trim() === '') {
-    throw new ValidationError(`O campo ${fieldName} é obrigatório.`);
-  }
+// 2. Schema de Criação Completo (POST)
+export const createReserveSchema = z.object(reserveFields)
+  // Validação Cross-Field: data de fim não pode ser anterior à data de início
+  .refine((data) => data.check_out_date >= data.check_in_date, {
+    message: "The check_out_date cannot be earlier than the check_in_date.",
+    path: ["check_out_date"],
+  });
 
-  return value.trim();
-}
+// 3. Schema de Atualização Completo (PATCH)
+export const updateReserveSchema = z.object(reserveFields).partial()
+  // Garante que pelo menos um campo foi enviado para atualização
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Please indicate at least one field to update.",
+  })
+  // Validação Cross-Field condicional para o Update
+  .refine((data) => {
+    if (!data.check_in_date || !data.check_out_date) return true;
+    return (data.check_out_date) >= (data.check_in_date);
+  }, {
+    message: "The check_out_date cannot be earlier than the check_in_date.",
+    path: ["check_out_date"],
+  });
 
-function normalizeIsoDate(value, fieldName) {
-  const normalizedValue = requireText(value, fieldName);
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
-    throw new ValidationError(`O campo ${fieldName} deve usar o formato YYYY-MM-DD.`);
-  }
+/* Este ficheiro pretende responder à pergunta:
 
-  return normalizedValue;
-}
+"quais são as regras da Trip?"
 
-function buildValidatedReserve(payload) {
-  console.log("O meu payload é", payload)
-  const reserve = {};
-
-  if (payload.check_in_date) {
-    reserve.check_in_date = normalizeIsoDate(payload.check_in_date, 'check_in_date');
-  }
-
-  if (payload.check_out_date) {
-    reserve.check_out_date = normalizeIsoDate(payload.check_out_date, 'check_out_date');
-  }
-
-  if (reserve.check_in_date && reserve.check_out_date && reserve.check_out_date < reserve.check_in_date) {
-    throw new ValidationError('A data de fim não pode ser anterior à data de início.');
-  }
-
-  if (Object.keys(reserve).length === 0) {
-    throw new ValidationError('Indica pelo menos um campo para atualizar.');
-  }
-
-  console.log("A minha reserva é", reserve)
-  return reserve;
-}
-
-export function validateCreateReserve(payload) {
-  return buildValidatedReserve(payload);
-}
+Responsável por:
+- regras da entidade
+- mensagens de erro
+- coerência entre campos */

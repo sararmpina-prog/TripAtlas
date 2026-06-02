@@ -5,8 +5,8 @@ O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';
-import { getAccommodationsReserves, deleteAccommodationReserveById, postReserve, patchReserve} from '../controllers/accommodationReserveController.js';
-import {updateReserveSchema, createReserveSchema} from '../validators/reserveZodValidator.js'
+import { getAccommodationsReserves, deleteAccommodationReserveById, postReserve, patchReserve} from '../controllers/reserveController.js';
+import {updateReserveSchema, createReserveSchema} from '../validators/reserveValidator.js'
 import {validateBody} from '../middlewares/validationMiddleware.js'
 import {validateIdParam} from '../middlewares/validateIdParams.js'
 

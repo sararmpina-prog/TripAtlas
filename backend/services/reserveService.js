@@ -26,40 +26,22 @@ export async function listAccommodationsReserves() {
   return reserves.map(normalizeReserve)
 }
 
-
+// APAGA UMA RESERVA EXISTENTE
 export async function deleteAccommodationReserve(id) {
-
-  /* SUGESTÃO: apagar; porque o zod já valida o formato do ID e o middleware validateIdParam já bloqueia IDs inválidos antes de chegarem aqui. Se o ID for inválido, nem sequer entramos nesta função, pelo que não precisamos de validar manualmente aqui.
-
-  const reserveId = validateReserveId(id);
-  */
-
-  /* SUGESTÃO: !reserveRows || reserveRows.length === 0) 
-  
-  O motor do MySQL devolve sempre um Array (uma lista) quando fazemos db.execute(), mesmo que a query use LIMIT 1 ou procure por um ID único.
-  
-  O que acontece se a reserva NÃO existir? O MySQL não devolve null ou undefined. Ele devolve um array vazio: [].
-  O problema em JavaScript: No JavaScript, um array vazio [] é avaliado como verdadeiro (true). Por isso, a condição if (!reserve) que tinhas escrito vai falhar sempre, porque o Node acha que a lista vazia é um registo válido. O código avançaria e tentava ler propriedades de onde não existem, mandando o servidor abaixo.Ao mudarmos para if (!reserveRows || reserveRows.length === 0), estamos a perguntar diretamente ao Node: 'A lista veio vazia?'. Se a lista tiver zero elementos, lançamos o NotFoundError com total segurança, protegendo a aplicação contra crashes.
 
   const reserve = await reserveRepository.findReserveById(id)
 
-  if (!reserve) {
-    throw new NotFoundError('Reserva não encontrada para apagar.');
-  }
-*/
-
-  const reserveRows = await reserveRepository.findReserveById(id);
-
-  if (!reserveRows || reserveRows.length === 0) {
+  if (!reserve || reserve.length === 0) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
 
+   // Apaga a reserva diretamente da base de dados
   await reserveRepository.deleteReserve(id);
-  
-  return normalizeReserve(reserveRows[0]);
+
+  return normalizeReserve(reserve[0])
 }
 
-//Cria reserva
+//Cria reserva 
 export async function createReserve(payload) {
 
   console.log("Estou no serviço")
@@ -75,8 +57,6 @@ export async function createReserve(payload) {
   }
 
   console.log("Id da acomodação", reserve.accommodation_id)
-
-  let tripId = validateTripId(reserve.trip_id);
 
   const trip = await tripRepository.findTripById(reserve.trip_id)
     
@@ -109,7 +89,7 @@ export async function updateReserve(id, validatedReserve) {
   console.log("Service patch reserva id", id)
   const existingReserve = await reserveRepository.findReserveById(id);
 
-  if (!existingReserve) {
+  if (!existingReserve || existingReserve.length === 0) {
     throw new NotFoundError('Reserve not found.');
   }
 

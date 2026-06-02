@@ -11,7 +11,7 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-import {listAccommodationsReserves, deleteAccommodationReserve, createReserve, updateReserve} from '../services/accommodationReserveService.js'
+import {listAccommodationsReserves, deleteAccommodationReserve, createReserve, updateReserve} from '../services/reserveService.js'
 
 export const getAccommodationsReserves = asyncHandler(async (req, res) => {
     const accommodationsReserves = await listAccommodationsReserves();

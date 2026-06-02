@@ -11,7 +11,7 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-import {listAccomodations} from '../services/accomodationService.js'
+import {listAccomodations, deleteAccommodation, createAccommodation, updateAccommodation} from '../services/accomodationService.js'
 
 export const getAccommodations = asyncHandler(async (req, res) => {
     const accommodations = await listAccomodations();
@@ -19,5 +19,39 @@ export const getAccommodations = asyncHandler(async (req, res) => {
     res.json({
         success: true,
         data: accommodations
+    });
+});
+
+
+
+export const deleteAccommodationById = asyncHandler(async (req, res) => {
+    const accommodation = await deleteAccommodation(req.params.id);
+
+    res.json({
+        success: true,
+        data: accommodation,
+    });
+});
+
+
+
+export const postTrip = asyncHandler(async (req, res) => {
+    console.log("body is controller estaadia", req.body)
+    const accommodation = await createAccommodation(req.body || {});
+
+    res.status(201).json({
+        success: true,
+        data: accommodation,
+    });
+});
+
+
+export const patchAccommodation = asyncHandler(async (req, res) => {
+    console.log("Controller patch estadia id", req.params.id)
+    const accommodation = await updateAccommodation(req.params.id, req.body || {});
+
+    res.json({
+        success: true,
+        data: accommodation,
     });
 });
