@@ -37,7 +37,7 @@ export async function deleteAccommodationReserve(id) {
   return normalizeReserve(reserve[0])
 }
 
-//Cria reserva
+//Cria reserva 
 export async function createReserve(payload) {
 
   console.log("Estou no serviço")
