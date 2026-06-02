@@ -3,20 +3,6 @@ import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
-/* SUGESTÃO: estes imports já não fazem falta
-Como usamos o Zod, através do middleware validateBody nas rotas, o Express agora limpa e valida todos os formatos automaticamente antes de o pedido sequer entrar no Service.
-Por causa disso, estas funções manuais como validateTripId, validateReserveId, validateAccommodationId e validateCreateReserve — já não fazem falta. O Zod barra qualquer erro na entrada, pelo que podemos apagar esses imports e simplificar o ficheiro.*
-
-import {validateReserveId} from '../validators/reserveValidator.js'
-import {validateCreateReserve} from '../validators/reserveValidator.js'
-import {validateAccommodationId} from '../validators/accommodationValidator.js'
-import {validateTripId} from '../validators/tripValidator.js'
-
-import {toDbReserveFields} from '../repository/reserveRepository.js'
-
-*/
-
-
 // Transforma o snake_case da BD para camelCase consistente no Frontend
 function normalizeReserve(row) {
   return {
@@ -67,12 +53,6 @@ export async function deleteAccommodationReserve(id) {
   if (!reserveRows || reserveRows.length === 0) {
     throw new NotFoundError('Reserva não encontrada para apagar.');
   }
-
-  // Apaga a reserva diretamente da base de dados
-
-  /* SUGESTÃO: flightRepository está errado:
-  await flightRepository.deleteReserve(reserveId);
-   */
 
   await reserveRepository.deleteReserve(id);
   
@@ -139,7 +119,7 @@ export async function updateReserve(id, validatedReserve) {
   if (validatedReserve.accommodation_id !== undefined) {
 
     const accommodation = await accommodationRepository
-      .findAccommodationById(validatedReserve.accommodation_id);
+      .findAccommodationById(validatedReserve.accommodationId);
 
     if (!accommodation) {
       throw new NotFoundError('Accommodation not found.');

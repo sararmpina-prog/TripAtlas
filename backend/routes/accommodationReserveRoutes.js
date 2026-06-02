@@ -19,13 +19,9 @@ router.get('/', getAccommodationsReserves);
 router.post('/',  validateBody(createReserveSchema), postReserve);
 
 // Rota para eliminar uma reserva de um hotel de forma determinística pelo id
-/* ********** router.delete('/:id', deleteAccommodationReserveById); ********** */
-// SUGESTÃO: Adicionado validateIdParam para o ID da reserva e alinhado nome do parâmetro
 router.delete('/:reserveId', validateIdParam('reserveId'), deleteAccommodationReserveById);
 
 // Rota para atualizar uma reserva
-/* ********** router.patch('/:ReserveId', validateIdParam('ReserveId'), validateBody(updateReserveSchema), patchReserve); ********** */
-// SUGESTÃO: r minusculo
 router.patch('/:reserveId', validateIdParam('reserveId'), validateBody(updateReserveSchema), patchReserve);
 
 export default router;
