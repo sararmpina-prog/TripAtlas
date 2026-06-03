@@ -1,6 +1,6 @@
-/* Rotas REST para gerir accomodations no backend principal.
+/* Rotas REST para gerir reserves no backend principal.
 
-Este ficheiro expõe apenas o CRUD determinístico da entidade accomodation.
+Este ficheiro expõe apenas o CRUD determinístico da entidade reserve.
 O fluxo conversacional de AI será tratado numa camada própria.
 */
 
