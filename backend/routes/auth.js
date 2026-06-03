@@ -1,1 +1,9 @@
-/*JWT_SECRET = minha_chave_123 */
+import express from 'express';
+
+const router = express.Router();
+
+router.post("/login", login);
+
+
+export default router;
+
