@@ -16,7 +16,7 @@ import tripRoutes from './routes/tripRoutes.js';
 import flightRoutes from './routes/flightRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
-import accommodationReserveRoutes from './routes/accommodationReserveRoutes.js'
+import reserveRoutes from './routes/reserveRoutes.js'
 
 // Middlewares
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
@@ -51,7 +51,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/accommodations', accommodationRoutes);
-app.use('/api/reserves', accommodationReserveRoutes);
+app.use('/api/reserves', reserveRoutes);
 
 // Tratamento de Erros (Sempre no fim)
 app.use(notFoundHandler);
