@@ -8,8 +8,8 @@ export const validateBody = (schema) => (req, res, next) => {
     next();
   } catch (error) {
     // Verifica de forma segura se é um erro do Zod e se tem mensagens
-    if (error instanceof ZodError && error.errors.length > 0) {
-      const firstError = error.errors[0];
+    if (error instanceof ZodError && error.issues && error.issues.length > 0) {
+      const firstError = error.issues[0];
       return next(new ValidationError(firstError.message));
     }
     

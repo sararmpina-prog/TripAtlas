@@ -9,7 +9,8 @@ CREATE TABLE users (
     email VARCHAR(150) NOT NULL UNIQUE,
     mobile_phone VARCHAR(20),
     password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 
@@ -17,8 +18,8 @@ CREATE TABLE users (
 -- 2. Trips
 CREATE TABLE trips (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-	user_id INT,
-    title VARCHAR(100),
+	user_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL,
     description VARCHAR(255),
     destination VARCHAR(150) NOT NULL,
     start_date DATE NOT NULL,
@@ -62,7 +63,9 @@ CREATE TABLE flights (
 	arrival_airport VARCHAR(15),
     departure_datetime  DATETIME,
     arrival_datetime DATETIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 --- TABELAS RELACIONADAS COM AI ---

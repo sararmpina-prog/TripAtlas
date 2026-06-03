@@ -1,24 +1,29 @@
-import express from 'express';
-import accommodationRoutes from './routes/accommodationRoutes.js'
-import reserveRoutes from './routes/reserveRoutes.js'
+/* Ficheiro cuja função é ler as configurações, testar a ligação e a estrutura da base de dados (garantindo que o schema existe) e, se tudo estiver correto, ligar o servidor.
+*/
 
-const app = express();
-
+import app from './app.js';
+import { ensureTripAtlasSchema, hasDatabaseConfig } from './infra/db/db.js';
+import { checkDBConnection } from './infra/db/checkDBConnection.js';
 
 const port = Number(process.env.PORT) || 3000;
 
-app.use(express.json());
+async function startServer() {
+  // Inicialização Segura da Base de Dados antes do Express escutar pedidos
+  if (hasDatabaseConfig()) {
+    await checkDBConnection();
+    await ensureTripAtlasSchema();
+  } else {
+    console.warn('⚠️ DB config ausente. O servidor arranca sem inicializar a base de dados.');
+  }
 
-app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: 'TripAtlas backend online.',
-  });
-});
-
-app.use('/api/accommodations', accommodationRoutes);
-app.use('/api/reserves', reserveRoutes);
-
+  // Ativa o servidor HTTP
   app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
+    console.log(`Servidor a executar em http://localhost:${port}`);
   });
+}
+
+// Executa o arranque capturando falhas críticas imprevistas
+startServer().catch((error) => {
+  console.error('Falha crítica ao iniciar o servidor:', error);
+  process.exit(1);
+});

@@ -120,3 +120,5 @@ export async function getChatHistoryByUser(userId, limit = 10) {
   seria interessante introduzir um "mapper layer"
   entre DB schema e AI schema.
 */
+
+/* ************** Abordagem moderna: Guardar cada mensagem como uma linha individual com uma coluna role (ex: 'user', 'assistant', 'system'). *********** */

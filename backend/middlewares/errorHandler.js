@@ -14,18 +14,20 @@ export function notFoundHandler(req, res) {
 }
 
 export const errorHandler = (err, req, res, next) => {
-  console.error(err); // importante para debug
+  console.error(err); // Importante para debug
 
+  // Corrigido para CamelCase para ler corretamente da sua classe AppError
   const statusCode = err?.statusCode || 500;
   const code = err?.code || 'INTERNAL_SERVER_ERROR';
-  const message = err?.message || 'Internal Server Error';
+  
+  // Se for 500, esconde a mensagem real para segurança
+  const message = statusCode === 500 
+    ? 'Internal Server Error' 
+    : (err?.message || 'An error occurred');
 
   res.status(statusCode).json({
     success: false,
-    error: {
-      message,
-      code,
-    },
+    error: { message, code },
   });
 };
 

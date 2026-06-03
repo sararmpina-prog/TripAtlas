@@ -3,8 +3,6 @@ import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
-
-
 // Transforma o snake_case da BD para camelCase consistente no Frontend
 function normalizeReserve(row) {
   return {
@@ -13,6 +11,12 @@ function normalizeReserve(row) {
     tripId: row.trip_id,
     checkInDate: row.check_in_date,
     checkOutDate: row.check_out_date
+
+    /* SUGESTÃO: acrescentar:
+
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+    */
   };
 }
 
@@ -95,7 +99,7 @@ export async function updateReserve(id, validatedReserve) {
   if (validatedReserve.accommodation_id !== undefined) {
 
     const accommodation = await accommodationRepository
-      .findAccommodationById(validatedReserve.accommodation_id);
+      .findAccommodationById(validatedReserve.accommodationId);
 
     if (!accommodation) {
       throw new NotFoundError('Accommodation not found.');

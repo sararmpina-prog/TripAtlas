@@ -7,8 +7,7 @@
   - evolução defensiva do schema (migrations simples em runtime)
 
   Este módulo não contém lógica de negócio.
-  Apenas assegura que a base de dados está disponível e consistente
-  para as camadas superiores (services / AI / tools).
+  Apenas assegura que a base de dados está disponível e consistente.
 */
 
 import mysql from "mysql2";
@@ -25,14 +24,15 @@ const tableStatements = [
       email VARCHAR(150) NOT NULL UNIQUE,
       mobile_phone VARCHAR(20),
       password_hash VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `
     CREATE TABLE IF NOT EXISTS trips (
       id INT PRIMARY KEY AUTO_INCREMENT,
-      user_id INT,
-      title VARCHAR(100),
+      user_id INT NOT NULL,
+      title VARCHAR(100) NOT NULL,
       description VARCHAR(255),
       destination VARCHAR(150) NOT NULL,
       start_date DATE NOT NULL,
@@ -47,7 +47,8 @@ const tableStatements = [
       name VARCHAR(150) NOT NULL,
       city VARCHAR(100),
       country VARCHAR(100),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `
@@ -55,8 +56,10 @@ const tableStatements = [
       id INT PRIMARY KEY AUTO_INCREMENT,
       accommodation_id INT NOT NULL,
       trip_id INT NOT NULL,
-      check_in_date DATE,
-      check_out_date DATE
+      check_in_date DATE NOT NULL,
+      check_out_date DATE NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `
@@ -67,28 +70,29 @@ const tableStatements = [
       airline VARCHAR(100),
       departure_airport VARCHAR(15),
       arrival_airport VARCHAR(15),
-      departure_datetime DATETIME,
-      arrival_datetime DATETIME,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      departure_datetime DATETIME NOT NULL,
+      arrival_datetime DATETIME NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `
     CREATE TABLE IF NOT EXISTS chat_history (
       id INT PRIMARY KEY AUTO_INCREMENT,
       trip_id INT NOT NULL,
-      user_message TEXT,
-      ai_response MEDIUMTEXT,
+      user_message TEXT NOT NULL,
+      ai_response MEDIUMTEXT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `,
   `
     CREATE TABLE IF NOT EXISTS ai_suggestions (
       id INT PRIMARY KEY AUTO_INCREMENT,
-      trip_id INT,
-      title VARCHAR(100),
-      content TEXT,
+      trip_id INT NOT NULL,
+      title VARCHAR(100) NOT NULL,
+      content TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `

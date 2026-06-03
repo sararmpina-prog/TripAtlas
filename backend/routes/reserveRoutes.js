@@ -1,6 +1,6 @@
-/* Rotas REST para gerir accomodations no backend principal.
+/* Rotas REST para gerir reserves no backend principal.
 
-Este ficheiro expõe apenas o CRUD determinístico da entidade accomodation.
+Este ficheiro expõe apenas o CRUD determinístico da entidade reserve.
 O fluxo conversacional de AI será tratado numa camada própria.
 */
 
@@ -19,7 +19,7 @@ router.get('/', getAccommodationsReserves);
 router.post('/',  validateBody(createReserveSchema), postReserve);
 
 // Rota para eliminar uma reserva de um hotel de forma determinística pelo id
-router.delete('/:id', validateIdParam('id'), deleteAccommodationReserveById);
+router.delete('/:reserveId', validateIdParam('reserveId'), deleteAccommodationReserveById);
 
 // Rota para atualizar uma reserva
 router.patch('/:reserveId', validateIdParam('reserveId'), validateBody(updateReserveSchema), patchReserve);

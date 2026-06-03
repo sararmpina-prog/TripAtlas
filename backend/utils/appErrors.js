@@ -1,3 +1,7 @@
+/* Ficheiro de utilitários para erros personalizados da aplicação. Permite criar erros específicos com mensagens e códigos de status HTTP, facilitando o tratamento de erros em toda a aplicação.
+*/
+
+// Classe Base para erros conhecidos da aplicação
 export class AppError extends Error {
   constructor(message, statusCode, code) {
     super(message);
@@ -7,12 +11,14 @@ export class AppError extends Error {
   }
 }
 
+// Erro de Validação (Ex: Zod, inputs inválidos) -> HTTP 400
 export class ValidationError extends AppError {
   constructor(message) {
     super(message, 400, 'VALIDATION_ERROR');
   }
 }
 
+// Erro de Recurso Não Encontrado (Ex: ID de voo inexistente) -> HTTP 404
 export class NotFoundError extends AppError {
   constructor(message) {
     super(message, 404, 'NOT_FOUND');
