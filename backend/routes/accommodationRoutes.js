@@ -17,15 +17,14 @@ router.get('/', getAccommodations);
 
 
 // Rota para eliminar uma estadia de forma determinística pelo id
-router.delete('/:id', validateIdParam('id'),deleteAccommodationById);
+router.delete('/:accommodationId', validateIdParam('accommodationId'),deleteAccommodationById);
 
 
 // O middleware valida e limpa os dados ANTES de o controller ser executado
-router.post('/', validateBody(createAccommodationSchema), postTrip);
-
+router.post('/', validateBody(createAccommodationSchema), postAccommodation);
 
 
 // Rota para atualizar uma estadia
-router.patch('/:id', validateIdParam('id'), validateBody(updateAccommodationSchema), patchAccommodation);
+router.patch('/:accommodationId', validateIdParam('accommodationId'), validateBody(updateAccommodationSchema), patchAccommodation);
 
 export default router;
