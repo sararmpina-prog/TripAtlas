@@ -1,8 +1,58 @@
+# REGISTO
+
+## POST http://localhost:3000/api/auth/register
+
+### SUCCESS
+
+{
+  "first_name": "Carlos",
+  "surname": "Antunes",
+  "email": "carlos@email.com",
+  "mobile_phone": "+351 919999999",
+  "password": "passsecreta123"
+}
+
+* **Resultado Esperado**: Código 201 Created. A API vai devolver um objeto contendo o token gerado pelo JWT e os dados do utilizador sem a password.
+
+
+# LOGIN
+
+## POST http://localhost:3000/api/auth/login
+
+{
+  "email": "carlos@email.com",
+  "password": "passsecreta123"
+}
+
+* **Resultado Esperado**:  Código 200 OK com o JSON contendo o token.
+
+---
+
+# Como testar as rotas protegidas:
+
+Como a barreira global foi activada no app.js, se tentarmos fazer:
+
+GET http://localhost:3000/api/trips, vamos ter `erro 401 Unauthorized`
+
+Para conseguirmos ver as viagens no Thunder Client:
+
+Copiar o texto do token que recebemos no sucesso do Login.
+
+No pedido das trips, clicamos na aba Headers do Thunder Client.Adicionamos um header chamado `Authorization`.
+
+No valor, escrevemos `Bearer`  seguido do token colado
+(exemplo: Bearer eyJhbGciOi...).
+Clicamos em Send e a rota vai abrir com sucesso.
+
+---
+
 # GET
 
 GET http://localhost:3000/api/users
 GET http://localhost:3000/api/flights
 GET http://localhost:3000/api/trips
+GET http://localhost:3000/api/accommodations
+GET http://localhost:3000/api/accommodations/reserve
 
 ---
 
@@ -13,23 +63,23 @@ GET http://localhost:3000/api/trips
 ### SUCCESS
 
 {
-  "firstName": "Ana",
+  "first_name": "Ana",
   "surname": "Campos",
   "email": "anacampos@email.com",
-  "mobilePhone": "+351 912345678",
+  "mobile_phone": "+351 912345678",
   "password": "supersecretpassword345"
 }
 
-Resultado esperado: Código 201 Created e os dados normalizados em camelCase
+* **Resultado Esperado**: Código 201 Created
 
 {
   "success": true,
   "data": {
     "id": 7,
-    "firstName": "Ana",
+    "first_name": "Ana",
     "surname": "Campos",
     "email": "anacampos@email.com",
-    "mobilePhone": "+351 912345678",
+    "mobile_phone": "+351 912345678",
     "createdAt": "2026-06-01 11:42:33",
     "updatedAt": "2026-06-01 11:42:33"
   }
@@ -38,26 +88,26 @@ Resultado esperado: Código 201 Created e os dados normalizados em camelCase
 ### FAIL (número de telemóvel com texto)
 
 {
-  "firstName": "Rui",
+  "first_name": "Rui",
   "surname": "Silva",
   "email": "ruisilva@email.com",
-  "mobilePhone": "912-TEXTO-78",
+  "mobile_phone": "912-TEXTO-78",
   "password": "123"
 }
 
-Resultado esperado: 400 Bad Request com a mensagem customizada: "The field mobilePhone contains invalid characters.",
+* **Resultado Esperado**: 400 Bad Request com a mensagem customizada: "The field mobile_phone contains invalid characters.",
 
 ### FAIL (email mal formatado)
 
 {
-  "firstName": "Rui",
+  "first_name": "Rui",
   "surname": "Silva",
   "email": "ruisila.com",
-  "mobilePhone": "912345678",
+  "mobile_phone": "912345678",
   "password": "123"
 }
 
-Resultado esperado: 400 Bad Request com a mensagem customizada: "The field email must be a valid email address."
+* **Resultado Esperado**: 400 Bad Request com a mensagem customizada: "The field email must be a valid email address."
 
 
 ## POST http://localhost:3000/api/flights
@@ -65,77 +115,125 @@ Resultado esperado: 400 Bad Request com a mensagem customizada: "The field email
 ### SUCCESS
 
 {
-  "tripId": 1,
-  "flightNumber": "TAP555",
+  "trip_id": 1,
+  "flight_number": "TAP555",
   "airline": "TAP Portugal",
-  "departureAirport": "LIS",
-  "arrivalAirport": "OPO",
-  "departureDatetime": "2026-06-02T10:00:00.000Z",
-  "arrivalDatetime": "2026-06-02T11:00:00.000Z"
+  "departure_airport": "LIS",
+  "arrival_airport": "OPO",
+  "departure_datetime": "2026-06-02T10:00:00.000Z",
+  "arrival_datetime": "2026-06-02T11:00:00.000Z"
 }
 
-Resultado esperado: Código 201 Created e os dados normalizados em camelCase
+* **Resultado Esperado**: Código 201 Created
 
 ### SUCCESS
 
 {
-  "tripId": 12,
-  "flightNumber": "EK194",
+  "trip_id": 12,
+  "flight_number": "EK194",
   "airline": "Emirates",
-  "departureAirport": "LIS",
-  "arrivalAirport": "DXB",
-  "departureDatetime": "2026-08-01T14:00:00.000Z",
-  "arrivalDatetime": "2026-08-02T01:00:00.000Z"
+  "departure_airport": "LIS",
+  "arrival_airport": "DXB",
+  "departure_datetime": "2026-08-01T14:00:00.000Z",
+  "arrival_datetime": "2026-08-02T01:00:00.000Z"
 }
 
-Resultado esperado: Código 201 Created e os dados normalizados em camelCase
+* **Resultado Esperado**: Código 201 Created
 
 ### FAIL (data de chegada antes da data de partida)
 
 {
-  "tripId": 1,
-  "departureDatetime": "2026-06-02T15:00:00.000Z",
-  "arrivalDatetime": "2026-06-02T10:00:00.000Z"
+  "trip_id": 1,
+  "departure_datetime": "2026-06-02T15:00:00.000Z",
+  "arrival_datetime": "2026-06-02T10:00:00.000Z"
 }
 
-Resultado esperado: Código 400 Bad Request com a mensagem customizada: "Arrival datetime cannot be earlier than departure datetime."
+* **Resultado Esperado**: Código 400 Bad Request com a mensagem customizada: "Arrival datetime cannot be earlier than departure datetime."
 
 ### FAIL (id de trip inválido)
 
 {
-  "tripId": 999,
-  "departureDatetime": "2026-06-02T10:00:00.000Z",
-  "arrivalDatetime": "2026-06-02T11:00:00.000Z"
+  "trip_id": 999,
+  "departure_datetime": "2026-06-02T10:00:00.000Z",
+  "arrival_datetime": "2026-06-02T11:00:00.000Z"
 }
 
-Resultado esperado: 404 Not Found com a mensagem customizada: "The associated trip was not found."
+* **Resultado Esperado**: 404 Not Found com a mensagem customizada: "The associated trip was not found."
 
 ## POST http://localhost:3000/api/trips
 
 ### SUCCESS
 
 {
-  "userId": 1,
+  "user_id": 1,
   "title": "Eurotrip Verão 2026",
   "description": "Backpacking pela Europa central com amigos da faculdade.",
   "destination": "Amsterdão, Países Baixos",
-  "startDate": "2026-07-15",
-  "endDate": "2026-07-30"
+  "start_date": "2026-07-15",
+  "end_date": "2026-07-30"
 }
 
-Resultado esperado: Código 201 Created e os dados normalizados em camelCase
+* **Resultado Esperado**: Código 201 Created
 
 ### FAIL (data de chegada antes da data de partida)
 
 {
-  "userId": 1,
+  "user_id": 1,
   "title": "Viagem no Tempo",
   "destination": "Porto",
-  "startDate": "2026-07-15",
-  "endDate": "2026-07-10"
+  "start_date": "2026-07-15",
+  "end_date": "2026-07-10"
 }
 
-Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The end date cannot be earlier than the start date."
+* **Resultado Esperado**:  Código 400 Bad Request com a mensagem customizada: "The end date cannot be earlier than the start date."
+
+
+## POST http://localhost:3000/api/accommodations
+
+### SUCCESS
+
+{
+  "name": "Selina Secret Garden",
+  "city": "Lisboa",
+  "country": "Portugal"
+}
+
+* **Resultado Esperado**: Código 201 Created
+
+### FAIL (Duplicação do índice UNIQUE)
+
+{
+  "name": "Hotel Lisboa Plaza",
+  "city": "Lisboa",
+  "country": "Portugal"
+}
+
+* **Resultado Esperado**: 409 Conflict | "This accommodation already exists in this city and country."
+
+
+## POST http://localhost:3000/api/accommodations/reserve
+
+### SUCCESS
+
+{
+  "accommodation_id": 4,
+  "trip_id": 1,
+  "check_in_date": "2026-06-01",
+  "check_out_date": "2026-06-05"
+}
+
+* **Resultado Esperado**: Código 201 Created
+
+### FAIL (Check-out anterior ao Check-in)
+
+{
+  "accommodation_id": 4,
+  "trip_id": 1,
+  "check_in_date": "2026-06-05",
+  "check_out_date": "2026-06-01"
+}
+
+* **Resultado Esperado**: 400 Bad Request | "Check-out date cannot be earlier than check-in date."
 
 ---
 
@@ -157,8 +255,8 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 * **URL de Teste**: http://localhost:3000/api/trips/1
 * **Payload (JSON)**:
 {
-  "startDate": "2026-08-01",
-  "endDate": "2026-08-15"
+  "start_date": "2026-08-01",
+  "end_date": "2026-08-15"
 }
 * **Resultado Esperado**: Código 200 OK
 
@@ -168,7 +266,7 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 * **Contexto**: Data de fim anterior à data de início.
 * **Payload (JSON)**:
 {
-  "endDate": "2026-05-20"
+  "end_date": "2026-05-20"
 }
 * **Resultado Esperado**: Código 400 Bad Request com a mensagem customizada: "The end date cannot be earlier than the start date."
 
@@ -180,7 +278,6 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 }
 * **Resultado Esperado**: Código 404 Not Found com a mensagem customizada: "Trip not found."
 
----
 
 ## PATCH http://localhost:3000/api/flights/:flightId
 
@@ -188,7 +285,7 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 * **URL de Teste**: http://localhost:3000/api/flights/1
 * **Payload (JSON)**:
 {
-  "flightNumber": "TAP000"
+  "flight_number": "TAP000"
 }
 * **Resultado Esperado**: Código 200 OK.
 
@@ -197,9 +294,63 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 * **Contexto**: Data de partida alterada para depois da hora de chegada que já estava gravada.
 * **Payload (JSON)**:
 {
-  "departureDatetime": "2026-06-01T15:00:00.000Z"
+  "departure_datetime": "2026-06-01T15:00:00.000Z"
 }
 * **Resultado Esperado**: Código 400 Bad Request com a mensagem: "Arrival datetime cannot be earlier than departure datetime."
+
+
+## PATCH http://localhost:3000/api/accommodations/:accommodationId
+
+### SUCCESS (Atualizar Nome do Hotel)
+* **URL de Teste**: http://localhost:3000/api/accommodations/1
+* **Payload (JSON)**:
+{
+  "name": "Hotel Lisboa Plaza Premium"
+}
+* **Resultado Esperado**: Código 200 OK.
+
+### FAIL (Violação do Índice Único com Registo Existente)
+* **URL de Teste**: http://localhost:3000/api/accommodations/1
+* **Contexto**: Tentar alterar o nome/localização para dados idênticos aos de outro hotel já registado.
+* **Payload (JSON)**:
+{
+  "name": "Pestana CR7",
+  "city": "Funchal",
+  "country": "Portugal"
+}
+* **Resultado Esperado**: Código 409 Conflict | "This accommodation already exists in this city and country."
+
+
+## PATCH http://localhost:3000/api/accommodations/reserve/:reserveId
+
+### SUCCESS (Alterar Apenas Data de Check-out)
+* **URL de Teste**: http://localhost:3000/api/accommodations/reserve/1
+* **Payload (JSON)**:
+{
+  "check_out_date": "2026-12-26"
+}
+* **Resultado Esperado**: Código 200 OK.
+
+### FAIL (Validação Cruzada: Novo Check-out anterior ao Check-in atual)
+* **URL de Teste**: http://localhost:3000/api/accommodations/reserve/1
+* **Contexto**: A reserva atual começa a 2026-12-20. O utilizador tenta encurtar o fim para antes do início.
+* **Payload (JSON)**:
+{
+  "check_out_date": "2026-12-18"
+}
+* **Resultado Esperado**: Código 400 Bad Request | "Check-out date cannot be earlier than check-in date."
+
+### FAIL (Violação de Reserva Única Replicada)
+* **URL de Teste**: http://localhost:3000/api/accommodations/reserve/2
+* **Contexto**: Tentar mudar as datas ou IDs para valores que colidam exatamente com outra reserva existente (restrição unique_reservation).
+* **Payload (JSON)**:
+{
+  "accommodation_id": 4,
+  "trip_id": 1,
+  "check_in_date": "2026-06-01",
+  "check_out_date": "2026-06-05"
+}
+* **Resultado Esperado**: Código 409 Conflict | "A reservation with these exact details already exists."
 
 ---
 
@@ -209,13 +360,12 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 
 ### SUCCESS
 * **URL de Teste**: http://localhost:3000/api/flights/10
-* **Resultado Esperado**: Código 200 OK com o objeto do voo que acabou de ser eliminado normalizado em camelCase.
+* **Resultado Esperado**: Código 200 OK com o objeto do voo que acabou de ser eliminado.
 
 ### FAIL (Voo Não Existe)
 * **URL de Teste**: http://localhost:3000/api/flights/999
 * **Resultado Esperado**: Código 404 Not Found com a mensagem customizada: "Flight not found."
 
----
 
 ## DELETE http://localhost:3000/api/trips/:tripId
 
@@ -225,18 +375,23 @@ Resultado esperado:  Código 400 Bad Request com a mensagem customizada: "The en
 
 ### FAIL (Parâmetro Inválido no Middleware)
 * **URL de Teste**: http://localhost:3000/api/trips/abc
-* **Resultado Esperado**: Código 400 Bad Request com a mensagem do nosso middleware validateIdParams: "Invalid tripId." (Apanhado na fronteira sem sequer tocar no Service ou na BD!).
+* **Resultado Esperado**: Código 400 Bad Request com a mensagem do middleware: "Invalid tripId." (Apanhado na fronteira pelo validateIdParams).
 
-## Demonstração do ON DELETE CASCADE (Viagem ID 5)
 
-### 1. Estado Inicial (Antes de Apagar)
-* Executa um `GET http://localhost:3000/api/flights`.
-* **O que vais ver**: Vais encontrar o voo associado à viagem ID 12: `EK194` da Emirates.
+## DELETE http://localhost:3000/api/accommodations/reserve/:reserveId
 
-### 2. A Execução do Delete
-* Executa o pedido: `DELETE http://localhost:3000/api/trips/12`
-* **Resultado**: A viagem "Backpacking pela Europa central com amigos da faculdade." é eliminada do sistema.
+### SUCCESS
+* **URL de Teste**: http://localhost:3000/api/accommodations/reserve/10
+* **Resultado Esperado**: Código 200 OK com o objeto da reserva eliminado. O hotel em si não é apagado.
 
-### 3. O Estado Final (Efeito Cascata Duplo)
-* Executa novamente o `GET http://localhost:3000/api/flights`.
-* **O que vais ver**: Tanto o voo `LH654` como o voo `EK194` **desapareceram por completo e em simultâneo** da base de dados.
+### FAIL (Reserva Não Encontrada)
+* **URL de Teste**: http://localhost:3000/api/accommodations/reserve/999
+* **Resultado Esperado**: Código 404 Not Found | "Reservation not found."
+
+
+## DELETE http://localhost:3000/api/accommodations/:accommodationId
+
+### SUCCESS
+* **URL de Teste**: http://localhost:3000/api/accommodations/2
+* **Resultado Esperado**: Código 200 OK com o hotel eliminado.
+* **Efeito Cascata**: Devido ao ON DELETE CASCADE definido na base de dados, todas as reservas (accommodation_reserve) associadas a este hotel com ID 2 são eliminadas automaticamente.
