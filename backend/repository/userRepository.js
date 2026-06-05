@@ -66,7 +66,9 @@ export async function findUserByEmail(email) {
 
 // CRIA UM NOVO UTILIZADOR
 export async function createUser(userData) {
-  const dbData = toDbFields(userData);
+  // const dbData = toDbFields(userData);
+
+  console.log("userData repositório é", userData)
 
   const [result] = await db.execute(
     `
@@ -76,11 +78,11 @@ export async function createUser(userData) {
       VALUES (?, ?, ?, ?, ?)
     `,
     [
-      dbData.first_name,
-      dbData.surname,
-      dbData.email,
-      dbData.mobile_phone ?? null, // Proteção de nulos para o campo opcional
-      dbData.password_hash,
+      userData.first_name,
+      userData.surname,
+      userData.email,
+      userData.mobile_phone ?? null, // Proteção de nulos para o campo opcional
+      userData.password,
     ]
   );
 

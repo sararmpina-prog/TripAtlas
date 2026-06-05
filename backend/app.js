@@ -56,6 +56,7 @@ app.use('/api/flights', flightRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/accommodations', accommodationRoutes);
 app.use('/api/reserves', reserveRoutes);
+app.use('/api', authRoutes); 
 
 // Tratamento de Erros (Sempre no fim)
 app.use(notFoundHandler);

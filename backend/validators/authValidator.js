@@ -16,7 +16,7 @@ export const loginSchema = z.object({
     .trim()
     .email({ message: "The field email must be a valid email address." }),
     
-  password: z
+  password_hash: z
     .string({ required_error: "The field password is mandatory." })
     .min(1, { message: "The field password cannot be empty." }),
 });
@@ -50,7 +50,7 @@ export const registerSchema = z.object({
     )
     .optional(),
 
-  password: z
+  password_hash: z
     .string({ required_error: "The field password is mandatory." })
     .min(6, { message: "The field password must be at least 6 characters long." })
     .max(50, { message: "The field password cannot exceed 50 characters." }),

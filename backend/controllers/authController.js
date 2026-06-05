@@ -20,6 +20,7 @@ export const login = asyncHandler(async (req, res) => {
 
 // REGISTO DE NOVO UTILIZADOR
 export const register = asyncHandler(async (req, res) => {
+  console.log("controller", req.body)
   // O req.body já vem limpo e em snake_case por causa do createUserSchema do Zod
   const authData = await authService.registerUser(req.body || {});
 

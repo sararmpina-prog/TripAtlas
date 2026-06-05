@@ -62,6 +62,7 @@ export async function authenticateUser(email, password) {
  * @returns {object} Objeto com o token JWT e dados do utilizador criado
  */
 export async function registerUser(validatedData) {
+  console.log("service", validatedData)
   // 1. Verifica se o email já existe no sistema
   const existingUser = await userRepository.findUserByEmail(validatedData.email);
   if (existingUser && existingUser.length > 0) {
@@ -70,7 +71,7 @@ export async function registerUser(validatedData) {
 
   // 2. Encripta a password em texto limpo antes de ir para a BD
   // O número 10 indica o custo do algoritmo (saltRounds), o padrão de mercado seguro
-  const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+  const hashedPassword = await bcrypt.hash(validatedData.password_hash, 10);
 
   // 3. Prepara o objeto substituto em snake_case puro para o repositório
   const newUserRows = {
