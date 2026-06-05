@@ -2,6 +2,7 @@
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
 import * as authService from '../services/authService.js';
+import { db } from '../infra/db/db.js';
 
 // AUTENTICAÇÃO DE UTILIZADOR
 export const login = asyncHandler(async (req, res) => {
@@ -19,7 +20,7 @@ export const login = asyncHandler(async (req, res) => {
 
 
 // REGISTO DE NOVO UTILIZADOR
-export const register = asyncHandler(async (req, res) => {
+export  const register = asyncHandler(async (req, res) => {
   // O req.body já vem limpo e em snake_case por causa do createUserSchema do Zod
   const authData = await authService.registerUser(req.body || {});
 
@@ -28,59 +29,58 @@ export const register = asyncHandler(async (req, res) => {
     success: true,
     data: authData
   });
-});import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import pool from "../db/connection.js";
+});
 
-async function login(req, res) {
 
-  try {
+// async function login(req, res) {
 
-    const { email, password } = req.body;
+//   try {
 
-    //verifica se email existe
-    const [users] = await pool.execute(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+//     const { email, password } = req.body;
 
-    if (users.length === 0) {
-      return res.status(401).json({
-        message: "Credenciais inválidas"
-      });
-    }
+//     //verifica se email existe
+//     const [users] = await pool.execute(
+//       "SELECT * FROM users WHERE email = ?",
+//       [email]
+//     );
 
-    const user = users[0];
+//     if (users.length === 0) {
+//       return res.status(401).json({
+//         message: "Credenciais inválidas"
+//       });
+//     }
 
-    //verifica se pass é correta
-    const isValid =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+//     const user = users[0];
 
-    if (!isValid) {
-      return res.status(401).json({
-        message: "Credenciais inválidas"
-      });
-    }
+//     //verifica se pass é correta
+//     const isValid =
+//       await bcrypt.compare(
+//         password,
+//         user.password
+//       );
 
-    //O método jwt.sign() cria (assina) um JSON Web Token (JWT) que será enviado ao cliente após o login bem-sucedido.
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+//     if (!isValid) {
+//       return res.status(401).json({
+//         message: "Credenciais inválidas"
+//       });
+//     }
 
-    return res.json({ token });
+//     //O método jwt.sign() cria (assina) um JSON Web Token (JWT) que será enviado ao cliente após o login bem-sucedido.
+//     const token = jwt.sign(
+//       { id: user.id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1h" }
+//     );
 
-  } catch (error) {
+//     return res.json({ token });
 
-    return res.status(500).json({
-      message: "Erro interno"
-    });
+//   } catch (error) {
 
-  }
-}
+//     return res.status(500).json({
+//       message: "Erro interno"
+//     });
 
-export { login };
+//   }
+// }
+
+// export { login };
