@@ -12,26 +12,28 @@ const optionalNormalizedString = z
 // 1. Definição das Regras dos Campos (Mapeado com as restrições do SQL)
 const reserveFields = {
   accommodation_id: z
-    .any()
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val) && Number.isInteger(val), {
-      message: "The field accommodation_id must be numeric.",
+    .coerce.number({ invalid_type_error: "The field accommodation_id must be numeric."
+    })
+    .int({ message: "The field accommodation_id must be an integer."
+    })
+    .positive({ message: "The field accommodation_id must be a positive number."
     }),
-    trip_id: z
-    .any()
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val) && Number.isInteger(val), {
-      message: "The field trip_id must be numeric.",
+  trip_id: z
+    .coerce.number({ invalid_type_error: "The field trip_id must be numeric."
+    })
+    .int({ message: "The field trip_id must be an integer."
+    })
+    .positive({ message: "The field trip_id must be a positive number."
     }),
-    check_in_date: z
-    .string({ required_error: "The field check_in_date is mandatory." })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: "The field check_in_date must use YYYY-MM-DD.",
+  check_in_date: z
+    .string({ required_error: "The field check_in_date is mandatory."
+    })
+    .date({ message: "The field check_in_date must use the YYYY-MM-DD format."
     }),
-    check_out_date: z
-    .string({ required_error: "The field check_out_date is mandatory." })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: "The field check_out_date must use YYYY-MM-DD.",
+  check_out_date: z
+    .string({ required_error: "The field check_out_date is mandatory."
+    })
+    .date({ message: "The field check_out_date must use the YYYY-MM-DD format."
     }),
 }
 
@@ -61,7 +63,7 @@ export const updateReserveSchema = z.object(reserveFields).partial()
 
 /* Este ficheiro pretende responder à pergunta:
 
-"quais são as regras da Trip?"
+"quais são as regras da Reserve?"
 
 Responsável por:
 - regras da entidade

@@ -14,20 +14,20 @@ const accommodationFields = {
    name: z
     .string({ required_error: "The field name is mandatory." })
     .trim()
-    .min(1, { message: "The field title cannot be empty." })
-    .max(100, { message: "The field title cannot exceed 150 characters." }),
+    .min(1, { message: "The field name cannot be empty." }) // Corrigido de "title" para "name"
+    .max(150, { message: "The field name cannot exceed 150 characters." }), // Alinhado com o VARCHAR(150) do SQL
 
    city: z
     .string({ required_error: "The field city is mandatory." })
     .trim()
     .min(1, { message: "The field city cannot be empty." })
-    .max(100, { message: "The field city cannot exceed 150 characters." }),
+    .max(100, { message: "The field city cannot exceed 100 characters." }), // Alinhado com o VARCHAR(100) do SQL
 
     country: z
     .string({ required_error: "The field country is mandatory." })
     .trim()
     .min(1, { message: "The field country cannot be empty." })
-    .max(100, { message: "The field country cannot exceed 150 characters." })
+    .max(100, { message: "The field country cannot exceed 150 characters." }) // Alinhado com o VARCHAR(100) do SQL
 }
 
 // 2. Schema de Criação Completo (POST)
@@ -44,7 +44,7 @@ export const updateAccommodationSchema = z.object(accommodationFields).partial()
 
 /* Este ficheiro pretende responder à pergunta:
 
-"quais são as regras da Trip?"
+"quais são as regras da Accommodation?"
 
 Responsável por:
 - regras da entidade
