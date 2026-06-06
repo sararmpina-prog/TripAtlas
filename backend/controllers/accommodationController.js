@@ -11,10 +11,10 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-import {listAccomodations, deleteAccommodation, createAccommodation, updateAccommodation} from '../services/accomodationService.js'
-
+// Ajustado com o nome para 'accommodation' com dois 'm' 
+import { listAccommodations, deleteAccommodation, createAccommodation, updateAccommodation } from '../services/accommodationService.js';
 export const getAccommodations = asyncHandler(async (req, res) => {
-    const accommodations = await listAccomodations();
+    const accommodations = await listAccommodations();
 
     res.json({
         success: true,
@@ -25,7 +25,8 @@ export const getAccommodations = asyncHandler(async (req, res) => {
 
 
 export const deleteAccommodationById = asyncHandler(async (req, res) => {
-    const accommodation = await deleteAccommodation(req.params.id);
+    // SUGESTÃO: Alterado de req.params.id para req.params.accommodationId para bater certo com a rota
+    const accommodation = await deleteAccommodation(req.params.accommodationId);
 
     res.json({
         success: true,
@@ -35,7 +36,7 @@ export const deleteAccommodationById = asyncHandler(async (req, res) => {
 
 
 
-export const postTrip = asyncHandler(async (req, res) => {
+export const postAccommodation = asyncHandler(async (req, res) => {
     console.log("body is controller estaadia", req.body)
     const accommodation = await createAccommodation(req.body || {});
 
@@ -47,8 +48,9 @@ export const postTrip = asyncHandler(async (req, res) => {
 
 
 export const patchAccommodation = asyncHandler(async (req, res) => {
-    console.log("Controller patch estadia id", req.params.id)
-    const accommodation = await updateAccommodation(req.params.id, req.body || {});
+    // SUGESTÃO: Alterado de req.params.id para req.params.accommodationId para bater certo com a rota
+    console.log("Controller patch estadia id", req.params.accommodationId);
+    const accommodation = await updateAccommodation(req.params.accommodationId, req.body || {});
 
     res.json({
         success: true,

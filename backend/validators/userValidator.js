@@ -12,11 +12,11 @@ const normalizedString = z
 
 // Definição do Objeto Base
 const userFields = {
-  firstName: z
-    .string({ required_error: "The field firstName is mandatory." })
+  first_name: z
+    .string({ required_error: "The field first_name is mandatory." })
     .trim()
-    .min(1, { message: "The field firstName cannot be empty." })
-    .max(100, { message: "The field firstName cannot exceed 100 characters." }),
+    .min(1, { message: "The field first_name cannot be empty." })
+    .max(100, { message: "The field first_name cannot exceed 100 characters." }),
 
   surname: z
     .string({ required_error: "The field surname is mandatory." })
@@ -30,12 +30,12 @@ const userFields = {
     .email({ message: "The field email must be a valid email address." }) // Validação de email nativa!
     .max(150, { message: "The field email cannot exceed 150 characters." }),
 
-    mobilePhone: normalizedString
+  mobile_phone: normalizedString
     .pipe(
       z.string()
-        .max(20, { message: "The field mobilePhone cannot exceed 20 characters." })
+        .max(20, { message: "The field mobile_phone cannot exceed 20 characters." })
         // Aceita apenas números, espaços opcionalmente e o sinal + no início
-        .regex(/^\+?[0-9\s]+$/, { message: "The field mobilePhone contains invalid characters." })
+        .regex(/^\+?[0-9\s]+$/, { message: "The field mobile_phone contains invalid characters." })
         .nullable()
     )
     .optional(),

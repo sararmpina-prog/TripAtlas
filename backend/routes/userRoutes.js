@@ -22,7 +22,7 @@ const router = express.Router();
 router.get('/', getUsers);
 
 // O middleware valida e limpa os dados ANTES de o controller ser executado
-router.post('/', validateBody(createUserSchema), postUser);
+router.post('/', validateBody(createUserSchema), postUser); // Rota só de admin; os novos users são criados via "register"
 
 router.patch('/:userId', validateIdParam('userId'), validateBody(updateUserSchema), patchUser);
 

@@ -5,7 +5,7 @@
 export class AppError extends Error {
   constructor(message, statusCode, code) {
     super(message);
-    this.name = new.target.name;
+    this.name = new.target.name; // cada erro herda o nome da sua classe (ex: ValidationError, NotFoundError)
     this.statusCode = statusCode;
     this.code = code;
   }

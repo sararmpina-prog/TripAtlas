@@ -24,18 +24,6 @@ FOREIGN KEY (trip_id)
 REFERENCES trips(id)
 ON DELETE CASCADE;
 
-ALTER TABLE user_flights
-ADD CONSTRAINT fk_user_flights_user
-FOREIGN KEY (user_id)
-REFERENCES users(id)
-ON DELETE CASCADE;
-
-ALTER TABLE user_flights
-ADD CONSTRAINT fk_user_flights_flight
-FOREIGN KEY (flight_id)
-REFERENCES flights(id)
-ON DELETE CASCADE;
-
 ALTER TABLE chat_history
 ADD CONSTRAINT fk_chat_history_trip
 FOREIGN KEY (trip_id)

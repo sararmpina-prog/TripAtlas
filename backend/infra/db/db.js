@@ -15,6 +15,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Definição defensiva das Tabelas do Schema Atualizado
 const tableStatements = [
   `
     CREATE TABLE IF NOT EXISTS users (
@@ -33,7 +34,7 @@ const tableStatements = [
       id INT PRIMARY KEY AUTO_INCREMENT,
       user_id INT NOT NULL,
       title VARCHAR(100) NOT NULL,
-      description VARCHAR(255),
+      description TEXT, -- CORREÇÃO: Sincronizado para TEXT
       destination VARCHAR(150) NOT NULL,
       start_date DATE NOT NULL,
       end_date DATE NOT NULL,
@@ -47,8 +48,7 @@ const tableStatements = [
       name VARCHAR(150) NOT NULL,
       city VARCHAR(100),
       country VARCHAR(100),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `,
   `
@@ -57,9 +57,7 @@ const tableStatements = [
       accommodation_id INT NOT NULL,
       trip_id INT NOT NULL,
       check_in_date DATE NOT NULL,
-      check_out_date DATE NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      check_out_date DATE NOT NULL
     )
   `,
   `
@@ -70,8 +68,8 @@ const tableStatements = [
       airline VARCHAR(100),
       departure_airport VARCHAR(15),
       arrival_airport VARCHAR(15),
-      departure_datetime DATETIME NOT NULL,
-      arrival_datetime DATETIME NOT NULL,
+      departure_datetime TIMESTAMP NULL, -- CORREÇÃO: Sincronizado para TIMESTAMP NULL
+      arrival_datetime TIMESTAMP NULL,   -- CORREÇÃO: Sincronizado para TIMESTAMP NULL
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -80,8 +78,8 @@ const tableStatements = [
     CREATE TABLE IF NOT EXISTS chat_history (
       id INT PRIMARY KEY AUTO_INCREMENT,
       trip_id INT NOT NULL,
-      user_message TEXT NOT NULL,
-      ai_response MEDIUMTEXT NOT NULL,
+      user_message TEXT,
+      ai_response MEDIUMTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `,
@@ -89,30 +87,22 @@ const tableStatements = [
     CREATE TABLE IF NOT EXISTS ai_suggestions (
       id INT PRIMARY KEY AUTO_INCREMENT,
       trip_id INT NOT NULL,
-      title VARCHAR(100) NOT NULL,
-      content TEXT NOT NULL,
+      title VARCHAR(100),
+      content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
-  `,
   `
-    CREATE TABLE IF NOT EXISTS user_flights (
-      user_id INT NOT NULL,
-      flight_id INT NOT NULL,
-      PRIMARY KEY (user_id, flight_id)
-    )
-  `,
 ];
 
+// Definição defensiva das Chaves Estrangeiras e Restrições Únicas
 const foreignKeyStatements = [
   {
     name: 'fk_trips_user',
     statement: `
       ALTER TABLE trips
       ADD CONSTRAINT fk_trips_user
-      FOREIGN KEY (user_id)
-      REFERENCES users(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     `,
   },
   {
@@ -120,9 +110,7 @@ const foreignKeyStatements = [
     statement: `
       ALTER TABLE accommodation_reserve
       ADD CONSTRAINT fk_accommodation_reserve_trip
-      FOREIGN KEY (trip_id)
-      REFERENCES trips(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
     `,
   },
   {
@@ -130,9 +118,7 @@ const foreignKeyStatements = [
     statement: `
       ALTER TABLE accommodation_reserve
       ADD CONSTRAINT fk_accommodation_reserve_accommodation
-      FOREIGN KEY (accommodation_id)
-      REFERENCES accommodations(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (accommodation_id) REFERENCES accommodations(id) ON DELETE CASCADE
     `,
   },
   {
@@ -140,29 +126,7 @@ const foreignKeyStatements = [
     statement: `
       ALTER TABLE flights
       ADD CONSTRAINT fk_flights_trip
-      FOREIGN KEY (trip_id)
-      REFERENCES trips(id)
-      ON DELETE CASCADE
-    `,
-  },
-  {
-    name: 'fk_user_flights_user',
-    statement: `
-      ALTER TABLE user_flights
-      ADD CONSTRAINT fk_user_flights_user
-      FOREIGN KEY (user_id)
-      REFERENCES users(id)
-      ON DELETE CASCADE
-    `,
-  },
-  {
-    name: 'fk_user_flights_flight',
-    statement: `
-      ALTER TABLE user_flights
-      ADD CONSTRAINT fk_user_flights_flight
-      FOREIGN KEY (flight_id)
-      REFERENCES flights(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
     `,
   },
   {
@@ -170,9 +134,7 @@ const foreignKeyStatements = [
     statement: `
       ALTER TABLE chat_history
       ADD CONSTRAINT fk_chat_history_trip
-      FOREIGN KEY (trip_id)
-      REFERENCES trips(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
     `,
   },
   {
@@ -180,12 +142,28 @@ const foreignKeyStatements = [
     statement: `
       ALTER TABLE ai_suggestions
       ADD CONSTRAINT fk_ai_suggestions_trip
-      FOREIGN KEY (trip_id)
-      REFERENCES trips(id)
-      ON DELETE CASCADE
+      FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
     `,
   },
+  // Restrições Únicas do ficheiro 05 para evitar duplicações no Auto-Heal
+  {
+    name: 'uq_accommodation',
+    statement: `
+      ALTER TABLE accommodations
+      ADD CONSTRAINT uq_accommodation UNIQUE (name, city, country)
+    `,
+  },
+  {
+    name: 'unique_reservation',
+    statement: `
+      ALTER TABLE accommodation_reserve
+      ADD CONSTRAINT unique_reservation UNIQUE (accommodation_id, trip_id, check_in_date, check_out_date)
+    `,
+  }
 ];
+
+// Configuração do pool de conexões
+
 
 export function hasDatabaseConfig() {
   return [

@@ -5,14 +5,14 @@ import { z } from 'zod';
 
 // Schema para garantir que as Variáveis de Ambiente essenciais existem
 const envSchema = z.object({
-  GEMINI_API_KEY: z.string({ required_error: 'GEMINI_API_KEY não definida no .env' }).min(1)
+  GEMINI_API_KEY: z.string({ required_error: 'GEMINI_API_KEY not defined in .env' }).min(1)
 });
 
 // Schema para validar o objeto de configuração da chamada à AI
-const configSchema = z.object({}).passthrough(); // Aceita qualquer objeto, rejeita null/arrays/primitivos
+const configSchema = z.object({}).passthrough(); // Permite passar parâmetros como temperature, maxOutputTokens ou systemInstruction; rejeita null/arrays/primitivos
 
 // Schema para o histórico conversacional (Contents) esperado pela Gemini
-const contentsSchema = z.array(z.any()).min(1, { message: 'Contents não pode estar vazio' });
+const contentsSchema = z.array(z.any()).min(1, { message: 'Contents cannot be empty' });
 
 export function validateBaseConfig(config) {
   // Valida o .env instantaneamente

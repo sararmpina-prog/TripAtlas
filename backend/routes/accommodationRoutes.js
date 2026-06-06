@@ -5,7 +5,7 @@ O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';
-import { getAccommodations, deleteAccommodationById, postTrip, patchAccommodation} from '../controllers/accommodationController.js';
+import { getAccommodations, deleteAccommodationById, postAccommodation, patchAccommodation} from '../controllers/accommodationController.js';
 import { validateIdParam } from '../middlewares/validateIdParams.js';
 import {updateAccommodationSchema, createAccommodationSchema} from '../validators/accommodationValidator.js'
 import {validateBody} from '../middlewares/validationMiddleware.js'

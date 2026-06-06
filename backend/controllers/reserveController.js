@@ -24,12 +24,9 @@ export const getAccommodationsReserves = asyncHandler(async (req, res) => {
 
 
 export const deleteAccommodationReserveById = asyncHandler(async (req, res) => {
-    const reserve = await deleteAccommodationReserve(req.params.id);
-
-    res.json({
-        success: true,
-        data: reserve,
-    });
+    // Alterado de req.params.id para req.params.reserveId para bater certo com a rota
+    const reserve = await deleteAccommodationReserve(req.params.reserveId);
+    res.json({ success: true, data: reserve });
 });
 
 export const postReserve = asyncHandler(async (req, res) => {

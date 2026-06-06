@@ -20,99 +20,76 @@ import * as tripRepository from '../repository/tripRepository.js';
 import * as userRepository from '../repository/userRepository.js'; // 1. Importação adicionada para validar utilizadores
 import { NotFoundError, ValidationError } from '../utils/appErrors.js';
 
-// Transforma o snake_case da BD para camelCase consistente no Frontend
-function normalizeTrip(row) {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    title: row.title,
-    description: row.description,
-    destination: row.destination,
-    startDate: row.start_date,
-    endDate: row.end_date,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
 // LISTA TODAS AS VIAGENS
 export async function listTrips() {
-  const trips = await tripRepository.listTrips();
-  return trips.map(normalizeTrip);
+  return await tripRepository.listTrips(); // Retorna diretamente o array em snake_case da BD
 }
 
 // CRIA UMA NOVA VIAGEM
-// Os dados de formato chegam validados, mas validamos as chaves relacionais aqui
 export async function createTrip(validatedTrip) {
-  // Valida se o utilizador associado realmente existe na BD antes de criar a viagem
-  const userExists = await userRepository.findUserById(validatedTrip.userId);
-  if (!userExists) {
+  // CORREÇÃO: Alterado de .userId para .user_id
+  const userRows = await userRepository.findUserById(validatedTrip.user_id);
+  if (!userRows || userRows.length === 0) {
     throw new NotFoundError('The associated user was not found.');
   }
 
   const tripId = await tripRepository.createTrip(validatedTrip);
-  const trip = await tripRepository.findTripById(tripId);
+  const tripRows = await tripRepository.findTripById(tripId);
 
-  return normalizeTrip(trip);
+  return tripRows[0]; // Retorna o primeiro registo em snake_case
 }
 
 // ATUALIZA UMA VIAGEM EXISTENTE
-// Os dados de formato chegam validados, mas tratamos a regra cronológica e relacional de negócio aqui
 export async function updateTrip(id, validatedTrip) {
-  // Se tentar alterar o userId, valida contra a tabela de utilizadores (userRepository)
-  if (validatedTrip.userId) {
-    const userExists = await userRepository.findUserById(validatedTrip.userId);
-    if (!userExists) {
+  if (validatedTrip.user_id) {
+    const userRows = await userRepository.findUserById(validatedTrip.user_id);
+    if (!userRows || userRows.length === 0) {
       throw new NotFoundError('The new associated user was not found.');
     }
   }
 
-  // Se tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
-  if (validatedTrip.startDate || validatedTrip.endDate) {
-    const existingTrip = await tripRepository.findTripById(id);
+  if (validatedTrip.start_date || validatedTrip.end_date) {
+    const tripRows = await tripRepository.findTripById(id);
   
-    if (!existingTrip) {
+    if (!tripRows || tripRows.length === 0) {
       throw new NotFoundError('Trip not found.');
     }
 
-    // Garantimos que criamos instâncias estáveis de Date independentemente da origem do dado
-    const startDate = validatedTrip.startDate 
-      ? new Date(validatedTrip.startDate) 
+    const existingTrip = tripRows[0];
+    
+    const startDate = validatedTrip.start_date 
+      ? new Date(validatedTrip.start_date) // new Date() para garantir que temos um objeto Date estável, independentemente de fusos horários e que as datas existem no calendário (não ter datas inválidas como 2024-02-30)
       : new Date(existingTrip.start_date);
 
-    const endDate = validatedTrip.endDate 
-      ? new Date(validatedTrip.endDate) 
+    const endDate = validatedTrip.end_date 
+      ? new Date(validatedTrip.end_date) 
       : new Date(existingTrip.end_date);
 
-    // Comparação limpa através dos timestamps primitivos:
-    if (endDate.getTime() < startDate.getTime()) {
+    if (endDate.getTime() < startDate.getTime()) { // getTime() para comparar os timestamps numéricos, evitando problemas de fuso horário ou formatos de data
       throw new ValidationError('The end date cannot be earlier than the start date.');
     }
   }
-    /* se tentarmos comparar dois objetos de data diretamente usando operadores como < ou >, podemos obter comportamentos inconsistentes ou falhas silenciosas, porque estão a ser comparados dois objetos na memória e não os valores cronológicos em si;
-    getTime() converte a data para o número de milissegundos desde 1 de Janeiro de 1970, permitindo uma comparação direta e evitando problemas de fuso horário ou formatação */
 
-  // Executa o update otimizado diretamente
   const isUpdated = await tripRepository.updateTrip(id, validatedTrip);
 
   if (!isUpdated) {
     throw new NotFoundError('Trip not found.');
   }
 
-  const updatedTrip = await tripRepository.findTripById(id);
-  return normalizeTrip(updatedTrip);
+  const updatedTripRows = await tripRepository.findTripById(id);
+  return updatedTripRows[0];
 }
 
 // APAGA UMA VIAGEM EXISTENTE
 export async function deleteTrip(id) {
-  const trip = await tripRepository.findTripById(id);
+  const tripRows = await tripRepository.findTripById(id);
 
-  if (!trip) {
+  if (!tripRows || tripRows.length === 0) {
     throw new NotFoundError('Trip not found.');
   }
 
   await tripRepository.deleteTrip(id);
-  return normalizeTrip(trip);
+  return tripRows[0];
 }
 
 /* Caminho dos erros no service:

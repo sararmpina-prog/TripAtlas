@@ -12,11 +12,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Rotas
+import authRoutes from './routes/authRoutes.js'; // Adicionado para o fluxo de Login / Registo
 import tripRoutes from './routes/tripRoutes.js';
 import flightRoutes from './routes/flightRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
 import reserveRoutes from './routes/reserveRoutes.js'
+import aiRoutes from './routes/aiRoutes.js'; // Rota para o agente conversacional da Gemini
 
 // Middlewares
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
@@ -29,7 +31,7 @@ app.use(express.json());
 // Origem do CORS deve ser ajustada para bater certo com o Live Server do frontend
 app.use(cors({ origin: 'http://127.0.0.1:5500' })); 
 
-// Endpoints Base e Health Check
+// Endpoints Base e Health Check (são rotas públicas, não precisam de autenticação)
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -46,7 +48,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Atribuição de Rotas da API
+// O fluxo de autenticação TEM de ser público para permitir Login/Registo
+app.use('/api/auth', authRoutes); 
+
+// ROTAS PROTEGIDAS (Só entram utilizadores autenticados - Só executam SE passarem pela barreira acima "'/api/auth', authRoutes")
+app.use('/api/ai', aiRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/users', userRoutes);

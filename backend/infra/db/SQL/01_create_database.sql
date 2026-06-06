@@ -3,8 +3,10 @@
 
 CREATE DATABASE tripatlas; 
 
--- Validate right db
-SELECT DATABASE(); 
-
 -- Use right db
 USE tripatlas; 
+
+
+-- Validate right db (optional: after USE statement)
+SELECT DATABASE(); 
+

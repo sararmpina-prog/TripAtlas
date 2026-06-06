@@ -1,59 +1,35 @@
-/* Gestão de contexto conversacional por utilizador.
+/* Gestão de contexto conversacional por Viagem (Trip).
+   Persistência definitiva na BD + Cache híbrida em RAM + Compressão contextual. */
 
-Combina:
-- histórico recente em RAM
-- hidratação a partir da BD
-- resumo incremental para limitar tokens
-
-Isto é uma arquitetura híbrida:
-persistência + cache + compressão contextual
-*/
-
-import { getChatHistoryByUser } from '../infra/db/chatRepository.js';
+import { getChatHistoryByTrip } from '../repository/chatRepository.js';
 import { summarizeHistory } from './chatSummaryService.js';
 
-/* Map é mais apropriado para armazenamento dinâmico indexado por chave porque:
-- permite qualquer tipo de chave
-- tem melhor semântica para cache/state
-- APIs mais claras (get/set/has)
-- evita colisões com propriedades herdadas do Object
-
-Neste caso funciona como memória temporária de contexto conversacional,
-evitando leituras constantes à base de dados durante uma conversa ativa.
-
-A persistência definitiva continua a ser feita na BD através do chat_history.
-Em caso de restart do servidor, apenas o estado temporário em memória é perdido.
-*/
-const chatStateByUser = new Map();
+// Indexado por trip_id em vez de userId para não misturar chats de viagens diferentes
+const chatStateByTrip = new Map();
 const MAX_ACTIVE_HISTORY = 5;
 
-/* *** IMPORTANTE: ***
-o userId ainda é simulado, não vem de autenticação real
-*/
-
-function getUserChatState(userId) {
-  if (!chatStateByUser.has(userId)) {
-    chatStateByUser.set(userId, {
+function getTripChatState(trip_id) {
+  if (!chatStateByTrip.has(trip_id)) {
+    chatStateByTrip.set(trip_id, {
       history: [],
       summary: null,
-      pendingTaskAction: null,
-      hydrated: false, // esta "flag" permite distinguir estado ainda não carregado, de estado já sincronizado em memória
+      hydrated: false, // Indica se já carregamos o histórico completo do SQL para esta viagem
     });
   }
 
-  return chatStateByUser.get(userId);
+  return chatStateByTrip.get(trip_id);
 }
 
-// Função lazy hydration: só carrega histórico da BD quando necessário e evita queries repetidas;
-// Depois do primeiro carregamento, o contexto fica em RAM
-export async function hydrateHistoryByUser(userId) {
-  const state = getUserChatState(userId);
+// Lazy hydration: carrega do SQL apenas no primeiro pedido do chat desta viagem
+export async function hydrateHistoryByTrip(trip_id) {
+  const state = getTripChatState(trip_id);
 
   if (state.hydrated) {
     return state;
   }
 
-  const persistedHistory = await getChatHistoryByUser(userId);
+  // Usa a função em snake_case que foi construída no repository
+  const persistedHistory = await getChatHistoryByTrip(trip_id);
   state.history.length = 0;
   state.history.push(...persistedHistory);
   state.summary = null;
@@ -62,38 +38,25 @@ export async function hydrateHistoryByUser(userId) {
   return state;
 }
 
-export function getHistoryByUser(userId) {
-  return getUserChatState(userId).history;
+export function getHistoryByTrip(trip_id) {
+  return getTripChatState(trip_id).history;
 }
 
-export function getSummaryByUser(userId) {
-  return getUserChatState(userId).summary;
+export function getSummaryByTrip(trip_id) {
+  return getTripChatState(trip_id).summary;
 }
 
-export function getPendingTaskActionByUser(userId) {
-  return getUserChatState(userId).pendingTaskAction;
-}
-
-export function setPendingTaskActionByUser(userId, pendingTaskAction) {
-  getUserChatState(userId).pendingTaskAction = pendingTaskAction || null;
-}
-
-export function clearPendingTaskActionByUser(userId) {
-  getUserChatState(userId).pendingTaskAction = null;
-}
-
-export function clearHistoryByUser(userId) {
-  chatStateByUser.set(userId, {
+export function clearHistoryByTrip(trip_id) {
+  chatStateByTrip.set(trip_id, {
     history: [],
     summary: null,
-    pendingTaskAction: null,
     hydrated: true,
   });
 }
 
-// Resume mensagens antigas e mantém apenas a janela recente ativa em RAM.
-export async function limitHistoryWithSummaryByUser(userId) {
-  const state = getUserChatState(userId);
+// Mantém apenas os últimos 5 turnos ativos em RAM e comprime o resto
+export async function limitHistoryWithSummaryByTrip(trip_id) {
+  const state = getTripChatState(trip_id);
 
   if (state.history.length <= MAX_ACTIVE_HISTORY) return;
 

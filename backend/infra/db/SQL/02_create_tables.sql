@@ -20,7 +20,7 @@ CREATE TABLE trips (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	user_id INT NOT NULL,
     title VARCHAR(100) NOT NULL,
-    description VARCHAR(255),
+    description TEXT, -- Alterado de VARCHAR(255) para TEXT para maior flexibilidade
     destination VARCHAR(150) NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -47,8 +47,8 @@ CREATE TABLE accommodation_reserve (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	accommodation_id INT NOT NULL,
 	trip_id INT NOT NULL,
-    check_in_date DATE,
-    check_out_date DATE
+    check_in_date DATE NOT NULL,  -- Recomendado NOT NULL para evitar inconsistências
+    check_out_date DATE NOT NULL   -- Recomendado NOT NULL para evitar inconsistências
 ); 
 
 
@@ -61,8 +61,8 @@ CREATE TABLE flights (
     airline VARCHAR(100),
     departure_airport VARCHAR(15),
 	arrival_airport VARCHAR(15),
-    departure_datetime  DATETIME,
-    arrival_datetime DATETIME,
+    departure_datetime TIMESTAMP NULL, -- Alterado para TIMESTAMP para gestão de fusos horários
+    arrival_datetime TIMESTAMP NULL,   -- Alterado para TIMESTAMP para gestão de fusos horários
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ON UPDATE CURRENT_TIMESTAMP
@@ -84,19 +84,10 @@ CREATE TABLE chat_history (
 -- 8. ai_suggestions 
 CREATE TABLE ai_suggestions (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    trip_id INT,
+    trip_id INT NOT NULL, -- Recomendado NOT NULL para consistência com a chave estrangeira
 	title VARCHAR(100),
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-); 
-
---- TABELAS AUXILIARES ---
-
--- Create user_flights table
--- 6. User_flights
-CREATE TABLE user_flights (
-	user_id INT NOT NULL,
-	flight_id INT NOT NULL,
-    PRIMARY KEY (user_id, flight_id)
+    ON UPDATE CURRENT_TIMESTAMP
 ); 

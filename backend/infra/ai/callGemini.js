@@ -13,7 +13,7 @@ import { GoogleGenAI } from '@google/genai';
 import 'dotenv/config';
 import { formatAIError, isTransientGeminiError } from './aiErrorMapper.js';
 import { logGeminiDebug } from './aiDebugLogger.js';
-import { validateBaseConfig, validateContents } from './aiValidators.js';
+import { validateBaseConfig, validateContents } from './geminiValidator.js';
 import { DEFAULT_GEMINI_MODEL, buildModelCandidates } from './geminiModels.js';
 
 // Inicialização correta do cliente oficial da Google

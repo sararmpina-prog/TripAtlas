@@ -19,24 +19,15 @@ Nota importante:
 import * as userRepository from '../repository/userRepository.js';
 import { NotFoundError, ValidationError } from '../utils/appErrors.js';
 
-// Transforma o snake_case da BD para camelCase consistente no Frontend
-function normalizeUser(row) {
-  return {
-    id: row.id,
-    firstName: row.first_name,
-    surname: row.surname,
-    email: row.email,
-    mobilePhone: row.mobile_phone,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    // não passamos passwordHash para o frontend por segurança
-  };
-}
-
 // LISTA TODOS OS UTILIZADORES
 export async function listUsers() {
-  const users = await userRepository.listUsers();
-  return users.map(normalizeUser);
+   return await userRepository.listUsers(); // Retorna diretamente o array em snake_case da BD
+
+  // Remove a password de todos os utilizadores da lista antes de enviar para o controller
+  return users.map(user => {
+    delete user.password_hash;
+    return user;
+  });
 }
 
 // CRIA UM NOVO UTILIZADOR
@@ -51,11 +42,14 @@ export async function createUser(validatedUser) {
 
   const userId = await userRepository.createUser(validatedUser);
   const userRows = await userRepository.findUserById(userId);
+  const user = userRows[0];
   
-  return normalizeUser(userRows[0]);
+  // Segurança: Garante que a password_hash não vaza para o cliente
+  delete user.password_hash;
+  return user;
 }
 
-/// ATUALIZA UM USER EXISTENTE
+// ATUALIZA UM USER EXISTENTE
 export async function updateUser(id, validatedUser) {
   const userRows = await userRepository.findUserById(id);
 
@@ -63,7 +57,6 @@ export async function updateUser(id, validatedUser) {
     throw new NotFoundError('User not found.');
   }
 
-  // Se o utilizador estiver a tentar alterar o email, validamos se o novo email já pertence a outra pessoa
   if (validatedUser.email) {
     const emailRows = await userRepository.findUserByEmail(validatedUser.email);
     if (emailRows && emailRows.length > 0 && emailRows[0].id !== Number(id)) {
@@ -78,7 +71,10 @@ export async function updateUser(id, validatedUser) {
   }
 
   const updatedUserRows = await userRepository.findUserById(id);
-  return normalizeUser(updatedUserRows[0]);
+  const user = updatedUserRows[0];
+  
+  delete user.password_hash;
+  return user;
 }
 
 // APAGA UM USER EXISTENTE
@@ -90,5 +86,16 @@ export async function deleteUser(id) {
   }
 
   await userRepository.deleteUser(id);
-  return normalizeUser(userRows[0]);
+  const user = userRows[0];
+  
+  delete user.password_hash;
+  return user;
 }
+
+/* Caminho dos erros no service:
+
+- Service lança erros específicos (NotFoundError, ValidationError);
+- asyncHandler no controller apanha esses erros (.catch(next)) e passa-os para a frente;
+- appErrors define a identidade do erro (statusCode, message);
+- errorHandler recebe o erro, lê as marcas de identidade que o appErrors definiu e responde ao utilizador com um formato JSON consistente e o código HTTP correto.
+*/
