@@ -54,12 +54,13 @@ app.use('/api/auth', authRoutes);
 
 // ROTAS PROTEGIDAS (Só entram utilizadores autenticados - Só executam SE passarem pela barreira acima "'/api/auth', authRoutes")
 
-// app.use('/api/ai', aiRoutes); - ******* TIRAR COMENTARIO QUANDO AS ROTAS DE AI ESTIVER PRONTA *******
+// app.use('/api/ai', aiRoutes); - ******* TIRAR COMENTARIO QUANDO A ROTA DE AI ESTIVER PRONTA *******
 app.use('/api/trips', auth, tripRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/users', auth, userRoutes);
 app.use('/api/accommodations', accommodationRoutes);
 app.use('/api/reserves', reserveRoutes);
+app.use('/api', authRoutes); 
 
 // Tratamento de Erros (Sempre no fim)
 app.use(notFoundHandler);

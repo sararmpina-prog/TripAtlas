@@ -3,6 +3,7 @@ import { ValidationError } from '../utils/appErrors.js';
 
 export const validateBody = (schema) => (req, res, next) => {
   try {
+    console.log("req.body é middleware", req.body)
     // Altera o req.body para os dados limpos/normalizados pelo Zod
     req.body = schema.parse(req.body || {});
     next();
