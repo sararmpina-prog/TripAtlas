@@ -21,15 +21,12 @@ export async function authenticateUser(email, password) {
   }
 
   // Procura o utilizador na base de dados através do repositório
-  const userRows = await userRepository.findUserByEmail(email);
+  const user = await userRepository.findUserByEmail(email);
 
-  // Como o MySQL devolve sempre um array, validamos se encontrou alguma linha
-  if (!userRows || userRows.length === 0) {
+  if (!user) {
     throw new ValidationError('Invalid email or password.'); 
     // Nota de segurança: Usar sempre uma mensagem genérica para não dar pistas a hackers
   }
-
-  const user = userRows[0];
 
   // Compara a password em texto limpo com a password_hash gravada na BD
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
@@ -64,7 +61,7 @@ export async function authenticateUser(email, password) {
 export async function registerUser(validatedData) {
   // 1. Verifica se o email já existe no sistema
   const existingUser = await userRepository.findUserByEmail(validatedData.email);
-  if (existingUser && existingUser.length > 0) {
+  if (existingUser) {
     throw new ValidationError('This email address is already registered.');
   }
 
@@ -83,8 +80,7 @@ export async function registerUser(validatedData) {
 
   // 4. Grava na BD e recupera o utilizador acabado de criar
   const newUserId = await userRepository.createUser(newUserRows);
-  const createdUserRows = await userRepository.findUserById(newUserId);
-  const user = createdUserRows[0];
+  const user = await userRepository.findUserById(newUserId);
 
   // 5. Gera automaticamente o Token JWT (assim o utilizador faz login imediato ao registar-se)
   const token = generateToken(user.id);

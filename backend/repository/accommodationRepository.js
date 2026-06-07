@@ -6,28 +6,8 @@ Base de dados → snake_case */
 import { db } from '../infra/db/db.js';
 
 
-const accommodationFieldMap = {
-  accommodationId: 'accommodation_id',
-  name: 'name',
-  city: 'city',
-  country: 'country',
-};
-
-// Converte campos de camelCase (frontend) para snake_case (BD)
-export function toDbReserveFields(data) {
-  const result = {};
-
-  for (const [camel, snake] of Object.entries(accommodationFieldMap)) {
-    if (data[camel] !== undefined) {
-      result[snake] = data[camel];
-    }
-  }
-
-  return result;
-}
-
-// LISTA TODAS AS RESERVAS
-export async function listAccomodations() {
+// LISTA TODAS AS ESTADIAS
+export async function listAccommodations() {
   const [rows] = await db.execute(`
     SELECT * FROM accommodations
   `);
@@ -46,7 +26,7 @@ export async function findAccommodationById(id) {
   );
 
   console.log("rows[0]", rows[0])
-  return rows[0];
+  return rows[0] ?? null;
 }
 
 
@@ -71,7 +51,7 @@ export async function listDuplicatedAccommodation(accommodation) {
   `,  [accommodation.name, accommodation.city, accommodation.country]);
 
   // Retorna true se eliminou um registo, false caso contrário
-  return rows.length > 0
+  return rows.length > 0;
 }
 
 
@@ -86,7 +66,7 @@ export async function createAccommodation(accommodation) {
     [accommodation.name, accommodation.city, accommodation.country]
   );
 
-    return result.insertId;
+  return result.insertId;
 }
 
 
@@ -106,7 +86,7 @@ export async function updateAccommodation(id, accommodation) {
       accommodation.city,
       accommodation.country,
       id
-    ])
+    ]);
 
-    return result.affectedRows > 0;
+  return result.affectedRows > 0;
 }

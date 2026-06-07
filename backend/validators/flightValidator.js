@@ -3,15 +3,12 @@
 no formato correto e atendam às restrições da base de dados. */
 
 import { z } from 'zod';
+// IMPORTAÇÃO DOS HELPERS CENTRALIZADOS
+import { createRequiredString, optionalNormalizedString } from '../utils/zodHelpers.js';
 
-// Helper base para limpar espaços e converter strings vazias em null
-const normalizedString = z
-  .string()
-  .trim()
-  .transform((val) => (val === '' ? null : val));
-
-// Definição do Objeto Base para podermos reutilizar no partial()
-const flightFields = {
+// SCHEMA DE CRIAÇÃO (POST / Registo)
+// Todos os campos são obrigatórios por omissão no fluxo inicial
+export const createFlightSchema = z.object({
   trip_id: z
     .coerce.number({ invalid_type_error: "The field trip_id must be numeric." })
     .int({ message: "The field trip_id must be an integer." })
@@ -19,20 +16,20 @@ const flightFields = {
     // coerce: tenta forçar a conversão do valor para número; se falhar, lança um erro de tipo inválido com a mensagem personalizada
 
   // Aplica a normalização primeiro, valida o tamanho máximo se houver texto, e permite null/undefined
-  flight_number: normalizedString
+  flight_number: optionalNormalizedString
     .pipe(z.string().max(25, { message: "The field flight_number cannot exceed 25 characters." }).nullable())
     .optional(),
     // "Pipe" de Transformação e Validação: O Zod recebe o input, remove os espaços vazios (normalizedString), converte strings vazias em null; O "pipe" recebe o valor limpo e verifica se ele cumpre a regra de ter no máximo 25 caracteres
 
-  airline: normalizedString
+  airline: optionalNormalizedString
     .pipe(z.string().max(100, { message: "The field airline cannot exceed 100 characters." }).nullable())
     .optional(),
 
-  departure_airport: normalizedString
+  departure_airport: optionalNormalizedString
     .pipe(z.string().max(15, { message: "The field departure_airport cannot exceed 15 characters." }).nullable())
     .optional(),
 
-  arrival_airport: normalizedString
+  arrival_airport: optionalNormalizedString
     .pipe(z.string().max(15, { message: "The field arrival_airport cannot exceed 15 characters." }).nullable())
     .optional(),
 
@@ -43,19 +40,46 @@ const flightFields = {
   arrival_datetime: z
     .string({ required_error: "The field arrival_datetime is mandatory." })
     .datetime({ message: "The field arrival_datetime must be a valid ISO date-time." }),
-};
-
-// Schema de Criação Completo com a validação cross-field
-export const createFlightSchema = z.object(flightFields)
+})
+// validação cross-field
   .refine((data) => new Date(data.arrival_datetime) >= new Date(data.departure_datetime), {
     message: "Arrival datetime cannot be earlier than departure datetime.",
-    path: ["arrival_datetime"], 
-  });
+    path: ["arrival_datetime"],
   // refine: para criar uma regra de validação que não existe nativamente no Zod;
   // (data): objeto completo validado até agora; se a função retornar false, o Zod adiciona um erro de validação com a mensagem e o caminho especificados
+  // path: indica que o erro deve ser associado ao campo arrival_datetime, mesmo que a regra envolva ambos os campos; isso ajuda a mapear o erro diretamente para o campo relevante no frontend
+});
+  
 
-// Schema de Atualização (Update / PATCH)
-export const updateFlightSchema = z.object(flightFields).partial()
+// SCHEMA DE ATUALIZAÇÃO (PATCH / Alterar)
+// No PATCH, nenhum campo é obrigatório de enviar, mas se for enviado, tem de ser válido
+export const updateFlightSchema = z.object({
+  trip_id: z
+    .coerce.number({ invalid_type_error: "The field trip_id must be numeric." })
+    .int({ message: "The field trip_id must be an integer." })
+    .positive({ message: "The field trip_id must be a positive number." })
+    .optional(),
+  flight_number: optionalNormalizedString
+    .pipe(z.string().max(25, { message: "The field flight_number cannot exceed 25 characters." }).nullable())
+    .optional(),
+  airline: optionalNormalizedString
+    .pipe(z.string().max(100, { message: "The field airline cannot exceed 100 characters." }).nullable())
+    .optional(),
+  departure_airport: optionalNormalizedString
+    .pipe(z.string().max(15, { message: "The field departure_airport cannot exceed 15 characters." }).nullable())
+    .optional(),
+  arrival_airport: optionalNormalizedString
+    .pipe(z.string().max(15, { message: "The field arrival_airport cannot exceed 15 characters." }).nullable())
+    .optional(),
+  departure_datetime: z
+    .string({ required_error: "The field departure_datetime is mandatory." })
+    .datetime({ message: "The field departure_datetime must be a valid ISO date-time." })
+    .optional(),
+  arrival_datetime: z
+    .string({ required_error: "The field arrival_datetime is mandatory." })
+    .datetime({ message: "The field arrival_datetime must be a valid ISO date-time." })
+    .optional(),
+})
   // Garante que pelo menos um campo foi enviado para atualização
   .refine((data) => Object.keys(data).length > 0, {
     message: "Please indicate at least one field to update.",

@@ -28,35 +28,33 @@ export async function listFlights() {
 // CRIA UM NOVO VOO
 export async function createFlight(validatedFlight) {
   // Validamos se o trip_id associado existe antes de criar o voo
-  const tripRows = await tripRepository.findTripById(validatedFlight.trip_id);
-  if (!tripRows || tripRows.length === 0) {
+  const trip = await tripRepository.findTripById(validatedFlight.trip_id);
+  if (!trip) {
     throw new NotFoundError('The associated trip was not found.');
   }
 
   const flightId = await flightRepository.createFlight(validatedFlight);
-  const flightRows = await flightRepository.findFlightById(flightId);
+  const flight = await flightRepository.findFlightById(flightId);
 
-  return flightRows[0];
+  return flight;
 }
 
 // ATUALIZA UM VOO EXISTENTE
 export async function updateFlight(id, validatedFlight) {
   // Se o utilizador estiver a tentar alterar o tripId, validamos se o novo ID existe
   if (validatedFlight.trip_id) {
-    const tripRows = await tripRepository.findTripById(validatedFlight.trip_id);
-    if (!tripRows || tripRows.length === 0) {
+    const trip = await tripRepository.findTripById(validatedFlight.trip_id);
+    if (!trip) {
       throw new NotFoundError('The new associated trip was not found.');
     }
   }
   // Se o utilizador tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
   if (validatedFlight.departure_datetime || validatedFlight.arrival_datetime) {
-    const flightRows = await flightRepository.findFlightById(id);
+    const existingFlight = await flightRepository.findFlightById(id);
   
-    if (!flightRows || flightRows.length === 0) {
+    if (!existingFlight) {
         throw new NotFoundError('Flight not found.');
     }
-
-    const existingFlight = flightRows[0];
 
     // Isolamos os objetos Date apenas para a validação numérica milimétrica
     const departureDateObject = validatedFlight.departure_datetime 
@@ -82,20 +80,20 @@ export async function updateFlight(id, validatedFlight) {
     throw new NotFoundError('Flight not found.');
   }
 
-  const updatedFlightRows = await flightRepository.findFlightById(id);
-  return updatedFlightRows[0];
+  const updatedFlight = await flightRepository.findFlightById(id);
+  return updatedFlight;
 }
 
 // APAGA UM VOO EXISTENTE
 export async function deleteFlight(id) {
-  const flightRows = await flightRepository.findFlightById(id);
+  const flight = await flightRepository.findFlightById(id);
 
-  if (!flightRows || flightRows.length === 0) {
+  if (!flight) {
     throw new NotFoundError('Flight not found.');
   }
 
   await flightRepository.deleteFlight(id);
-  return flightRows[0];
+  return flight;
 }
 
 // LISTA OS VOOS ASSOCIADOS A UMA VIAGEM

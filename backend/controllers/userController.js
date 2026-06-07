@@ -30,6 +30,13 @@ export const patchUser = asyncHandler(async (req, res) => {
   res.json({ success: true, data: user });
 });
 
+export const patchUserPassword = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  
+  const pass = await userService.updateUserPassword(userId, req.body || {});
+  res.json({ success: true, data: pass });
+});
+
 export const deleteUserById = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
 

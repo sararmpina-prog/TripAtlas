@@ -28,34 +28,32 @@ export async function listTrips() {
 // CRIA UMA NOVA VIAGEM
 export async function createTrip(validatedTrip) {
   // CORREÇÃO: Alterado de .userId para .user_id
-  const userRows = await userRepository.findUserById(validatedTrip.user_id);
-  if (!userRows || userRows.length === 0) {
+  const user = await userRepository.findUserById(validatedTrip.user_id);
+  if (!user) {
     throw new NotFoundError('The associated user was not found.');
   }
 
   const tripId = await tripRepository.createTrip(validatedTrip);
-  const tripRows = await tripRepository.findTripById(tripId);
+  const trip = await tripRepository.findTripById(tripId);
 
-  return tripRows[0]; // Retorna o primeiro registo em snake_case
+  return trip;
 }
 
 // ATUALIZA UMA VIAGEM EXISTENTE
 export async function updateTrip(id, validatedTrip) {
   if (validatedTrip.user_id) {
-    const userRows = await userRepository.findUserById(validatedTrip.user_id);
-    if (!userRows || userRows.length === 0) {
+    const user = await userRepository.findUserById(validatedTrip.user_id);
+    if (!user) {
       throw new NotFoundError('The new associated user was not found.');
     }
   }
 
   if (validatedTrip.start_date || validatedTrip.end_date) {
-    const tripRows = await tripRepository.findTripById(id);
+    const existingTrip = await tripRepository.findTripById(id);
   
-    if (!tripRows || tripRows.length === 0) {
+    if (!existingTrip) {
       throw new NotFoundError('Trip not found.');
     }
-
-    const existingTrip = tripRows[0];
     
     const startDate = validatedTrip.start_date 
       ? new Date(validatedTrip.start_date) // new Date() para garantir que temos um objeto Date estável, independentemente de fusos horários e que as datas existem no calendário (não ter datas inválidas como 2024-02-30)
@@ -76,20 +74,20 @@ export async function updateTrip(id, validatedTrip) {
     throw new NotFoundError('Trip not found.');
   }
 
-  const updatedTripRows = await tripRepository.findTripById(id);
-  return updatedTripRows[0];
+  const updatedTrip = await tripRepository.findTripById(id);
+  return updatedTrip;
 }
 
 // APAGA UMA VIAGEM EXISTENTE
 export async function deleteTrip(id) {
-  const tripRows = await tripRepository.findTripById(id);
+  const trip = await tripRepository.findTripById(id);
 
-  if (!tripRows || tripRows.length === 0) {
+  if (!trip) {
     throw new NotFoundError('Trip not found.');
   }
 
   await tripRepository.deleteTrip(id);
-  return tripRows[0];
+  return trip;
 }
 
 /* Caminho dos erros no service:

@@ -40,7 +40,7 @@ export const postReserve = asyncHandler(async (req, res) => {
 });
 
 export const patchReserve = asyncHandler(async (req, res) => {
-    console.log("Controller patch reserva id", req.params.reserveId)
+    console.log("Controller patch reserva id", req.params)
     const reserve = await updateReserve(req.params.reserveId, req.body || {});
 
     res.json({

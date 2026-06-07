@@ -22,7 +22,7 @@ export async function findTripById(id) {
     LIMIT 1
   `, [id]);
   
-  return rows[0];
+  return rows[0] ?? null;
 }
 
 // CRIA UMA NOVA VIAGEM

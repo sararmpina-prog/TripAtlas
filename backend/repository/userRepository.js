@@ -25,10 +25,10 @@ export async function findUserById(id) {
     `,
     [id]
   );
-  return rows; // Devolve o array completo conforme esperado pelo service
+  return rows[0] ?? null;
 }
 
-// ADICIONADO PARA TERÇA-FEIRA: PROCURA UM UTILIZADOR PELO EMAIL
+// PROCURA UM UTILIZADOR PELO EMAIL
 // Essencial para o fluxo de login e validação de tokens JWT
 export async function findUserByEmail(email) {
   const [rows] = await db.execute(
@@ -41,7 +41,7 @@ export async function findUserByEmail(email) {
     `,
     [email]
   );
-  return rows; // Devolve o array completo conforme esperado pelo service
+  return rows[0] ?? null;
 }
 
 // CRIA UM NOVO UTILIZADOR
@@ -76,6 +76,18 @@ export async function updateUser(id, data) {
     WHERE id = ?
   `, values);
 
+  return result.affectedRows > 0;
+}
+
+// ATUALIZA APENAS A PASSWORD DE UM UTILIZADOR EXISTENTE
+export async function updateUserPasswordHash(userId, passwordHash) {
+  const query = `
+    UPDATE users 
+    SET password_hash = ? 
+    WHERE id = ?
+  `;
+  
+  const [result] = await db.execute(query, [passwordHash, userId]);
   return result.affectedRows > 0;
 }
 

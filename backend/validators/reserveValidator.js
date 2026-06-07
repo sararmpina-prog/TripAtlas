@@ -1,65 +1,63 @@
 import { z } from 'zod';
-import { ValidationError } from '../utils/appErrors.js';
+// IMPORTAÇÃO DOS HELPERS CENTRALIZADOS
+import { createRequiredString, optionalNormalizedString } from '../utils/zodHelpers.js';
 
-// Helper reutilizável para campos de texto opcionais e normalizados
-const optionalNormalizedString = z
-  .string()
-  .trim()
-  .transform((val) => (val === '' ? null : val))
-  .optional()
-  .nullable();
-
-// 1. Definição das Regras dos Campos (Mapeado com as restrições do SQL)
-const reserveFields = {
+// SCHEMA DE CRIAÇÃO (POST / Registo)
+// Todos os campos são obrigatórios por omissão no fluxo inicial
+export const createReserveSchema = z.object({
   accommodation_id: z
-    .coerce.number({ invalid_type_error: "The field accommodation_id must be numeric."
-    })
-    .int({ message: "The field accommodation_id must be an integer."
-    })
-    .positive({ message: "The field accommodation_id must be a positive number."
-    }),
+    .coerce.number({ invalid_type_error: "The field accommodation_id must be numeric." })
+    .int({ message: "The field accommodation_id must be an integer." })
+    .positive({ message: "The field accommodation_id must be a positive number." }),
   trip_id: z
-    .coerce.number({ invalid_type_error: "The field trip_id must be numeric."
-    })
-    .int({ message: "The field trip_id must be an integer."
-    })
-    .positive({ message: "The field trip_id must be a positive number."
-    }),
+    .coerce.number({ invalid_type_error: "The field trip_id must be numeric." })
+    .int({ message: "The field trip_id must be an integer." })
+    .positive({ message: "The field trip_id must be a positive number." }),
   check_in_date: z
-    .string({ required_error: "The field check_in_date is mandatory."
-    })
-    .date({ message: "The field check_in_date must use the YYYY-MM-DD format."
-    }),
+    .string({ required_error: "The field check_in_date is mandatory." })
+    .date({ message: "The field check_in_date must use the YYYY-MM-DD format." }),
   check_out_date: z
-    .string({ required_error: "The field check_out_date is mandatory."
-    })
-    .date({ message: "The field check_out_date must use the YYYY-MM-DD format."
-    }),
-}
+    .string({ required_error: "The field check_out_date is mandatory." })
+    .date({ message: "The field check_out_date must use the YYYY-MM-DD format." }),
+})
+// Validação Cross-Field: data de fim não pode ser anterior à data de início
+.refine((data) => data.check_out_date >= data.check_in_date, {
+  message: "The check_out_date cannot be earlier than the check_in_date.",
+});
 
-// 2. Schema de Criação Completo (POST)
-export const createReserveSchema = z.object(reserveFields)
-  // Validação Cross-Field: data de fim não pode ser anterior à data de início
-  .refine((data) => data.check_out_date >= data.check_in_date, {
-    message: "The check_out_date cannot be earlier than the check_in_date.",
-    path: ["check_out_date"],
-  });
-
-// 3. Schema de Atualização Completo (PATCH)
-export const updateReserveSchema = z.object(reserveFields).partial()
-  // Garante que pelo menos um campo foi enviado para atualização
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "Please indicate at least one field to update.",
-  })
-  // Validação Cross-Field condicional para o Update
-  .refine((data) => {
-    if (!data.check_in_date || !data.check_out_date) return true;
-    return (data.check_out_date) >= (data.check_in_date);
-  }, {
-    message: "The check_out_date cannot be earlier than the check_in_date.",
-    path: ["check_out_date"],
-  });
-
+// SCHEMA DE ATUALIZAÇÃO (PATCH / Alterar Perfil)
+// No PATCH, nenhum campo é obrigatório de enviar, mas se for enviado, tem de ser válido
+export const updateReserveSchema = z.object({
+  accommodation_id: z
+    .coerce.number({ invalid_type_error: "The field accommodation_id must be numeric." })
+    .int({ message: "The field accommodation_id must be an integer." })
+    .positive({ message: "The field accommodation_id must be a positive number." })
+    .optional(),
+  trip_id: z
+    .coerce.number({ invalid_type_error: "The field trip_id must be numeric." })
+    .int({ message: "The field trip_id must be an integer." })
+    .positive({ message: "The field trip_id must be a positive number." })
+    .optional(),
+  check_in_date: z
+    .string()
+    .date({ message: "The field check_in_date must use the YYYY-MM-DD format." })
+    .optional(),
+  check_out_date: z
+    .string()
+    .date({ message: "The field check_out_date must use the YYYY-MM-DD format." })
+    .optional(),
+})
+// Garante que o corpo do PATCH não vai totalmente vazio
+.refine((data) => Object.keys(data).length > 0, {
+  message: "Please indicate at least one field to update.",
+})
+// Validação Cross-Field condicional para o Update
+.refine((data) => {
+  if (!data.check_in_date || !data.check_out_date) return true;
+  return data.check_out_date >= data.check_in_date;
+}, {
+  message: "The check_out_date cannot be earlier than the check_in_date.",
+});
 
 /* Este ficheiro pretende responder à pergunta:
 

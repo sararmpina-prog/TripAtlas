@@ -5,6 +5,24 @@ Base de dados → snake_case */
 
 import { db } from '../infra/db/db.js';
 
+function toMySqlDateTime(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 // LISTA TODOS OS VOOS
 export async function listFlights() {
   const [rows] = await db.execute(`
@@ -22,7 +40,7 @@ export async function findFlightById(id) {
     WHERE id = ?
     LIMIT 1
   `, [id]);
-  return rows; // Retorna o array completo conforme alinhado com o vosso flightService
+  return rows[0] ?? null;
 }
 
 // LISTA TODOS OS VOOS DE UMA VIAGEM
@@ -37,18 +55,23 @@ export async function getFlightsByTripId(tripId) {
 
 // CRIA UM NOVO VOO
 export async function createFlight(flightData) {
+  const normalizedFlightData = {
+    ...flightData,
+    departure_datetime: toMySqlDateTime(flightData.departure_datetime),
+    arrival_datetime: toMySqlDateTime(flightData.arrival_datetime),
+  };
 
   const [result] = await db.execute(`
     INSERT INTO flights (trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `, [
-      flightData.trip_id,
-      flightData.flight_number ?? null,
-      flightData.airline ?? null,
-      flightData.departure_airport ?? null,
-      flightData.arrival_airport ?? null,
-      flightData.departure_datetime, 
-      flightData.arrival_datetime,
+      normalizedFlightData.trip_id,
+      normalizedFlightData.flight_number ?? null,
+      normalizedFlightData.airline ?? null,
+      normalizedFlightData.departure_airport ?? null,
+      normalizedFlightData.arrival_airport ?? null,
+      normalizedFlightData.departure_datetime,
+      normalizedFlightData.arrival_datetime,
   ]);
 
   return result.insertId;
@@ -56,11 +79,17 @@ export async function createFlight(flightData) {
 
 // ATUALIZA UM VOO EXISTENTE
 export async function updateFlight(id, data) {
-  const fields = Object.keys(data);
+  const normalizedData = {
+    ...data,
+    departure_datetime: toMySqlDateTime(data.departure_datetime),
+    arrival_datetime: toMySqlDateTime(data.arrival_datetime),
+  };
+
+  const fields = Object.keys(normalizedData).filter((field) => normalizedData[field] !== undefined);
   if (fields.length === 0) return true; 
 
   const setClause = fields.map(field => `${field} = ?`).join(', ');
-  const values = fields.map(field => data[field]);
+  const values = fields.map(field => normalizedData[field]);
   values.push(id);
 
   const [result] = await db.execute(`

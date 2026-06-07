@@ -17,32 +17,33 @@ Nota importante:
 */
 
 import * as userRepository from '../repository/userRepository.js';
+import bcrypt from 'bcrypt';
 import { NotFoundError, ValidationError } from '../utils/appErrors.js';
 
 // LISTA TODOS OS UTILIZADORES
 export async function listUsers() {
-   return await userRepository.listUsers(); // Retorna diretamente o array em snake_case da BD
+  const users = await userRepository.listUsers();
 
   // Remove a password de todos os utilizadores da lista antes de enviar para o controller
-  return users.map(user => {
-    delete user.password_hash;
-    return user;
-  });
+  return users.map(({ password_hash, ...user }) => user);
 }
 
 // CRIA UM NOVO UTILIZADOR
 export async function createUser(validatedUser) {
   const existingUser = await userRepository.findUserByEmail(validatedUser.email);
-  if (existingUser && existingUser.length > 0) {
+  if (existingUser) {
     throw new ValidationError('This email address is already registered.');
   }
 
-  // Nota para terça-feira: É aqui, mesmo antes de enviar para o repository, 
-  // que vamos encriptar a password com bcrypt.hash() após a aula do professor.
+  const hashedPassword = await bcrypt.hash(validatedUser.password, 10);
 
-  const userId = await userRepository.createUser(validatedUser);
-  const userRows = await userRepository.findUserById(userId);
-  const user = userRows[0];
+  const newUser = {
+    ...validatedUser,
+    password: hashedPassword,
+  };
+
+  const userId = await userRepository.createUser(newUser);
+  const user = await userRepository.findUserById(userId);
   
   // Segurança: Garante que a password_hash não vaza para o cliente
   delete user.password_hash;
@@ -51,15 +52,15 @@ export async function createUser(validatedUser) {
 
 // ATUALIZA UM USER EXISTENTE
 export async function updateUser(id, validatedUser) {
-  const userRows = await userRepository.findUserById(id);
+  const existingUser = await userRepository.findUserById(id);
 
-  if (!userRows || userRows.length === 0) {
+  if (!existingUser) {
     throw new NotFoundError('User not found.');
   }
 
   if (validatedUser.email) {
-    const emailRows = await userRepository.findUserByEmail(validatedUser.email);
-    if (emailRows && emailRows.length > 0 && emailRows[0].id !== Number(id)) {
+    const userWithEmail = await userRepository.findUserByEmail(validatedUser.email);
+    if (userWithEmail && userWithEmail.id !== Number(id)) {
       throw new ValidationError('This email address is already in use by another user.');
     }
   }
@@ -70,23 +71,56 @@ export async function updateUser(id, validatedUser) {
     throw new NotFoundError('User not found.');
   }
 
-  const updatedUserRows = await userRepository.findUserById(id);
-  const user = updatedUserRows[0];
+  const user = await userRepository.findUserById(id);
   
   delete user.password_hash;
   return user;
 }
 
+// ATUALIZA A PASSWORD DE UM USER EXISTENTE
+// Atualiza a password de um utilizador de forma segura.
+// @param {number} userId - ID do utilizador autenticado
+// @param {object} payload - Contém current_password e new_password vindos do Zod
+
+export async function updateUserPassword(userId, payload) {
+  const { current_password, new_password } = payload;
+
+  // Validar se o utilizador existe na Base de Dados
+  const user = await userRepository.findUserById(userId);
+  if (!user) {
+    throw new NotFoundError('User not found.');
+  }
+
+  // Comparar a password atual enviada com o password_hash guardado na BD
+  // O bcrypt.compare descodifica o hash antigo e valida a correspondência de segurança
+  const isPasswordValid = await bcrypt.compare(current_password, user.password_hash);
+  if (!isPasswordValid) {
+    throw new ValidationError('Incorrect current password.');
+  }
+
+  // Gerar um salt e encriptar a nova password (padrão de 10 rands de segurança)
+  const salt = await bcrypt.genSalt(10);
+  const newPasswordHash = await bcrypt.hash(new_password, salt);
+
+  // Gravar o novo hash na base de dados através do repository em snake_case
+  await userRepository.updateUserPasswordHash(userId, newPasswordHash);
+
+  // Retorna uma mensagem de sucesso limpa (não deves expor dados confidenciais)
+  return {
+    message: 'Password updated successfully.'
+  };
+}
+
+
 // APAGA UM USER EXISTENTE
 export async function deleteUser(id) {
-  const userRows = await userRepository.findUserById(id);
+  const user = await userRepository.findUserById(id);
 
-  if (!userRows || userRows.length === 0) {
+  if (!user) {
     throw new NotFoundError('User not found.');
   }
 
   await userRepository.deleteUser(id);
-  const user = userRows[0];
   
   delete user.password_hash;
   return user;

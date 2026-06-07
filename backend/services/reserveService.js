@@ -3,27 +3,11 @@ import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
 import { NotFoundError, ValidationError} from '../utils/appErrors.js';
 
-// Transforma o snake_case da BD para camelCase consistente no Frontend
-function normalizeReserve(row) {
-  return {
-    id: row.id,
-    accommodationId: row.accommodation_id,
-    tripId: row.trip_id,
-    checkInDate: row.check_in_date,
-    checkOutDate: row.check_out_date
-
-    /* SUGESTÃO: acrescentar:
-
-    createdAt: row.created_at,
-    updatedAt: row.updated_at
-    */
-  };
-}
-
+// Lista todas as reservas de accommodation
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
 
-  return reserves.map(normalizeReserve)
+  return reserves; // Retorna o array direto da BD
 }
 
 // APAGA UMA RESERVA EXISTENTE
@@ -31,17 +15,17 @@ export async function deleteAccommodationReserve(id) {
 
   const reserve = await reserveRepository.findReserveById(id)
 
-  if (!reserve || reserve.length === 0) {
-    throw new NotFoundError('Reserva não encontrada para apagar.');
+  if (!reserve) {
+    throw new NotFoundError('Reserve not found.');
   }
 
    // Apaga a reserva diretamente da base de dados
   await reserveRepository.deleteReserve(id);
-
-  return normalizeReserve(reserve[0])
+  
+  return reserve; // Retorna a linha direta em snake_case
 }
 
-//Cria reserva 
+//Cria reserva
 export async function createReserve(payload) {
 
   console.log("Estou no serviço")
@@ -61,7 +45,7 @@ export async function createReserve(payload) {
   const trip = await tripRepository.findTripById(reserve.trip_id)
     
   if (!trip) {
-    throw new NotFoundError('Viagem não encontrada para criar reserva de estadia.');
+    throw new NotFoundError('Trip not found.');
   }
   
   console.log("Id da viagem", trip)
@@ -71,41 +55,43 @@ export async function createReserve(payload) {
   const duplicatedReserve = await reserveRepository.listDuplicatedReserves(reserve)
 
  if (duplicatedReserve) {
-    throw new ValidationError('Esta reserva já existe.');
+    throw new ValidationError('This reserve already exists.');
   }
 
  let newReserve = await reserveRepository.createReserve(reserve)
 
  let createdReserve = await reserveRepository.findReserveById(newReserve)
 
-  return normalizeReserve(createdReserve)
+  return createdReserve;
 }
 
-// ATUALIZA UMA RESERVA EXISTENTE (PUT OU PATCH)
-// Os dados de formato chegam validados, mas tratamos a regra cronológica de negócio aqui
+// ATUALIZA UMA RESERVA EXISTENTE (PATCH)
+
 export async function updateReserve(id, validatedReserve) {
 
-  //Se reversa existe 
+  //Se reserva existe 
   console.log("Service patch reserva id", id)
   const existingReserve = await reserveRepository.findReserveById(id);
 
-  if (!existingReserve || existingReserve.length === 0) {
+  if (!existingReserve) {
     throw new NotFoundError('Reserve not found.');
   }
 
-  const updateData = {};
+  const updateData = {
+    accommodation_id: validatedReserve.accommodation_id ?? existingReserve.accommodation_id,
+    trip_id: validatedReserve.trip_id ?? existingReserve.trip_id,
+  };
 
   // Se acomodação existe
   if (validatedReserve.accommodation_id !== undefined) {
 
     const accommodation = await accommodationRepository
-      .findAccommodationById(validatedReserve.accommodationId);
+      .findAccommodationById(validatedReserve.accommodation_id);
 
     if (!accommodation) {
       throw new NotFoundError('Accommodation not found.');
     }
   }
-  updateData.accommodation_id = validatedReserve.accommodation_id;
 
   // Validar trip caso seja alterada
   if (validatedReserve.trip_id !== undefined) {
@@ -117,30 +103,29 @@ export async function updateReserve(id, validatedReserve) {
       throw new NotFoundError('Trip not found.');
     }
   }
-  updateData.trip_id = validatedReserve.trip_id;
 
   // Validar datas usando o estado atual da BD
+  const checkInDate = validatedReserve.check_in_date
+    ? validatedReserve.check_in_date
+    : existingReserve.check_in_date;
+
+  const checkOutDate = validatedReserve.check_out_date
+    ? validatedReserve.check_out_date
+    : existingReserve.check_out_date;
+
   if (
     validatedReserve.check_in_date !== undefined ||
     validatedReserve.check_out_date !== undefined
   ) {
-
-    const checkInDate = validatedReserve.check_in_date
-      ? (validatedReserve.check_in_date)
-      : (existingReserve.check_in_date);
-
-    const checkOutDate = validatedReserve.check_out_date
-      ? (validatedReserve.check_out_date)
-      : (existingReserve.check_out_date);
-
     if (checkOutDate < checkInDate) {
       throw new ValidationError(
         'The check_out_date cannot be earlier than the check_in_date.'
       );
     }
-    updateData.check_in_date = checkInDate
-    updateData.check_out_date = checkOutDate;
   }
+
+  updateData.check_in_date = checkInDate;
+  updateData.check_out_date = checkOutDate;
 
 
   console.log("serviço validatedReserve", updateData)
@@ -149,6 +134,6 @@ export async function updateReserve(id, validatedReserve) {
 
   const updatedReserve = await reserveRepository.findReserveById(id);
 
-  return normalizeReserve(updatedReserve);
+  return updatedReserve;
 
 }

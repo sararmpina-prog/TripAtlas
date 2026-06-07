@@ -18,7 +18,7 @@ import flightRoutes from './routes/flightRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
 import reserveRoutes from './routes/reserveRoutes.js'
-import aiRoutes from './routes/aiRoutes.js'; // Rota para o agente conversacional da Gemini
+// mport aiRoutes from './routes/aiRoutes.js'; // Rota para o agente conversacional da Gemini
 
 // Middlewares
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
@@ -52,7 +52,8 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes); 
 
 // ROTAS PROTEGIDAS (Só entram utilizadores autenticados - Só executam SE passarem pela barreira acima "'/api/auth', authRoutes")
-app.use('/api/ai', aiRoutes);
+
+// app.use('/api/ai', aiRoutes); - ******* TIRAR COMENTARIO QUANDO AS ROTAS DE AI ESTIVER PRONTA *******
 app.use('/api/trips', tripRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/users', userRoutes);

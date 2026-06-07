@@ -5,26 +5,6 @@ Base de dados → snake_case */
 
 import { db } from '../infra/db/db.js';
 
-const reserveFieldMap = {
-  accommodationId: 'accommodation_id',
-  tripId: 'trip_id',
-  checkInDate: 'check_in_date',
-  checkOutDate: 'check_out_date',
-};
-
-// Converte campos de camelCase (frontend) para snake_case (BD)
-export function toDbReserveFields(data) {
-  const result = {};
-
-  for (const [camel, snake] of Object.entries(reserveFieldMap)) {
-    if (data[camel] !== undefined) {
-      result[snake] = data[camel];
-    }
-  }
-
-  return result;
-}
-
 // LISTA TODAS AS RESERVAS
 export async function listReserves() {
   const [rows] = await db.execute(`
@@ -43,14 +23,14 @@ export async function findReserveById(id) {
     [id]
   );
 
-  return rows[0];
+  return rows[0] ?? null;
 }
 
 // APAGA UMA RESERVA EXISTENTE
 export async function deleteReserve(id) {
   const [result] = await db.execute(
     `
-     'DELETE FROM accommodation_reserve WHERE id = ?'
+     DELETE FROM accommodation_reserve WHERE id = ?
     `,
     [id]
   );
@@ -67,7 +47,7 @@ export async function listDuplicatedReserves(reserve) {
   `,  [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]);
 
   // Retorna true se eliminou um registo, false caso contrário
-  return rows.length > 0
+  return rows.length > 0;
 }
 
 
@@ -82,7 +62,7 @@ export async function createReserve(reserve) {
     [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]
   );
 
-    return result.insertId;
+  return result.insertId;
 }
 
 // ATUALIZA UMA NOVA RESERVA
@@ -103,7 +83,7 @@ export async function updateReserve(id, reserve) {
       reserve.check_in_date,
       reserve.check_out_date,
       id
-    ])
+    ]);
 
-    return result.affectedRows > 0;
+  return result.affectedRows > 0;
 }

@@ -1,69 +1,74 @@
 /* Ficheiro de validação para a entidade User usando Zod.
-   Garante que os dados recebidos para criar ou atualizar um utilizador estejam 
-   no formato correto e atendam às restrições da base de dados. */
+   Garante que os dados recebidos para criar ou atualizar um utilizador estejam no formato correto e atendam às restrições da base de dados. */
 
 import { z } from 'zod';
+// IMPORTAÇÃO DOS HELPERS CENTRALIZADOS
+import { createRequiredString, optionalNormalizedString } from '../utils/zodHelpers.js';
 
-// Helper base para limpar espaços e converter strings vazias em null
-const normalizedString = z
-  .string()
-  .trim()
-  .transform((val) => (val === '' ? null : val));
-
-// Definição do Objeto Base
-const userFields = {
-  first_name: z
-    .string({ required_error: "The field first_name is mandatory." })
-    .trim()
+// SCHEMA DE CRIAÇÃO (POST / Registo)
+// Todos os campos são obrigatórios por omissão no fluxo inicial
+export const createUserSchema = z.object({
+  first_name: createRequiredString('first_name')
     .min(1, { message: "The field first_name cannot be empty." })
     .max(100, { message: "The field first_name cannot exceed 100 characters." }),
 
-  surname: z
-    .string({ required_error: "The field surname is mandatory." })
-    .trim()
+  surname: createRequiredString('surname')
     .min(1, { message: "The field surname cannot be empty." })
     .max(100, { message: "The field surname cannot exceed 100 characters." }),
 
-  email: z
-    .string({ required_error: "The field email is mandatory." })
-    .trim()
-    .email({ message: "The field email must be a valid email address." }) // Validação de email nativa!
+  email: createRequiredString('email')
+    .email({ message: "The field email must be a valid email address." })
     .max(150, { message: "The field email cannot exceed 150 characters." }),
 
-  mobile_phone: normalizedString
+  mobile_phone: optionalNormalizedString
     .pipe(
       z.string()
         .max(20, { message: "The field mobile_phone cannot exceed 20 characters." })
-        // Aceita apenas números, espaços opcionalmente e o sinal + no início
         .regex(/^\+?[0-9\s]+$/, { message: "The field mobile_phone contains invalid characters." })
         .nullable()
     )
     .optional(),
-    // regex para validar o formato do número de telefone, permitindo um sinal de mais opcional no início, seguido por dígitos e espaços; se a string for vazia, é convertida para null, e o campo é opcional
 
-  // Recebe a password limpa enviada pelo utilizador (será transformada em hash apenas no Service)
-  password: z
-    .string({ required_error: "The field password is mandatory." })
+  password: createRequiredString('password')
     .min(6, { message: "The field password must be at least 6 characters long." })
     .max(50, { message: "The field password cannot exceed 50 characters." }),
-};
+});
 
-// Schema de Criação Completo (POST / Registo de conta)
-export const createUserSchema = z.object(userFields);
+// SCHEMA DE ATUALIZAÇÃO (PATCH / Alterar Perfil)
+// No PATCH, nenhum campo é obrigatório de enviar, mas se for enviado, tem de ser válido
+export const updateUserSchema = z.object({
+  first_name: z.string().trim().min(1, { message: "The field first_name cannot be empty." }).max(100).optional(),
+  surname: z.string().trim().min(1, { message: "The field surname cannot be empty." }).max(100).optional(),
+  
+  email: z.string().trim().email({ message: "The field email must be a valid email address." }).max(150).optional(),
+  
+  mobile_phone: optionalNormalizedString
+    .pipe(
+      z.string()
+        .max(20, { message: "The field mobile_phone cannot exceed 20 characters." })
+        .regex(/^\+?[0-9\s]+$/, { message: "The field mobile_phone contains invalid characters." })
+        .nullable()
+    )
+    .optional(),
+  // Por questões de segurança, não se atualiza a password na mesma rota do perfil!!
+})
 
-// Schema de Atualização (PATCH / Alterar Perfil)
-// O .partial() torna todos os campos opcionais automaticamente para atualizações parciais
-export const updateUserSchema = z.object(userFields).partial()
-  // Garante que pelo menos um campo foi enviado para atualização
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "Please indicate at least one field to update.",
-  });
+// Garante que o corpo do PATCH não vai totalmente vazio
+.refine((data) => Object.keys(data).length > 0, {
+  message: "Please indicate at least one field to update.",
+});
 
-/* Este ficheiro pretende responder à pergunta:
+// ** SCHEMA EXCLUSIVO PARA ALTERAÇÃO DE PASSWORD **
+export const updatePasswordSchema = z.object({
+  current_password: createRequiredString('current_password')
+    .min(1, { message: "The field current_password cannot be empty." }),
 
-"quais são as regras do User?"
-
-Responsável por:
-- regras da entidade (tamanhos VARCHAR e regras de email do SQL)
-- mensagens de erro personalizadas
-- coerência de tipos entre campos */
+  new_password: createRequiredString('new_password')
+    .min(6, { message: "The field new_password must be at least 6 characters long." })
+    .max(50, { message: "The field new_password cannot exceed 50 characters." }),
+})
+// Regra extra: Garante que a nova password não é igual à antiga
+.refine((data) => data.current_password !== data.new_password, {
+  message: "The new_password cannot be the same as the current_password.",
+  path: ["new_password"], // O erro será mapeado diretamente para o campo new_password
+});
