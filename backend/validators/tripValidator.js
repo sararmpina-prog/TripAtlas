@@ -17,7 +17,8 @@ export const createTripSchema = z.object({
     .min(1, { message: "The field title cannot be empty." })
     .max(100, { message: "The field title cannot exceed 100 characters." }),
   description: optionalNormalizedString
-    .pipe(z.string().max(1000, { message: "The field description cannot exceed 1000 characters." }).nullable()),
+    .pipe(z.string().max(1000, { message: "The field description cannot exceed 1000 characters." }).nullable())
+    .optional(),
   destination: createRequiredString('destination')
     .min(1, { message: "The field destination cannot be empty." })
     .max(150, { message: "The field destination cannot exceed 150 characters." }),
@@ -43,7 +44,8 @@ export const updateTripSchema = z.object({
     .optional(),
   title: z.string().trim().min(1, { message: "The field title cannot be empty." }).max(100).optional(),
   description: optionalNormalizedString
-    .pipe(z.string().max(1000, { message: "The field description cannot exceed 1000 characters." }).nullable()),
+    .pipe(z.string().max(1000, { message: "The field description cannot exceed 1000 characters." }).nullable())
+    .optional(),
   destination: z.string().trim().min(1, { message: "The field destination cannot be empty." }).max(150).optional(),
   start_date: z.string().date({ message: "The field start_date must use the YYYY-MM-DD format." }).optional(),
   end_date: z.string().date({ message: "The field end_date must use the YYYY-MM-DD format." }).optional(),

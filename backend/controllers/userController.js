@@ -14,7 +14,7 @@ import { asyncHandler } from '../middlewares/asyncHandler.js';
 import * as userService from '../services/userService.js';
 
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await userService.listUsers(); 
+  const users = await userService.listUsers(req.user.id); 
   res.json({ success: true, data: users });
 });
 
@@ -26,20 +26,20 @@ export const postUser = asyncHandler(async (req, res) => {
 export const patchUser = asyncHandler(async (req, res) => {
   const userId = req.params.userId; 
 
-  const user = await userService.updateUser(userId, req.body || {});
+  const user = await userService.updateUser(userId, req.user.id, req.body || {});
   res.json({ success: true, data: user });
 });
 
 export const patchUserPassword = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
   
-  const pass = await userService.updateUserPassword(userId, req.body || {});
+  const pass = await userService.updateUserPassword(userId, req.user.id, req.body || {});
   res.json({ success: true, data: pass });
 });
 
 export const deleteUserById = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
 
-  const user = await userService.deleteUser(userId);
+  const user = await userService.deleteUser(userId, req.user.id);
   res.json({ success: true, data: user });
 });

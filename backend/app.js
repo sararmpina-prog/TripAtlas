@@ -21,6 +21,7 @@ import reserveRoutes from './routes/reserveRoutes.js'
 // mport aiRoutes from './routes/aiRoutes.js'; // Rota para o agente conversacional da Gemini
 
 // Middlewares
+import auth from './middlewares/authMiddeware.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { hasDatabaseConfig } from './infra/db/db.js';
 
@@ -54,9 +55,9 @@ app.use('/api/auth', authRoutes);
 // ROTAS PROTEGIDAS (Só entram utilizadores autenticados - Só executam SE passarem pela barreira acima "'/api/auth', authRoutes")
 
 // app.use('/api/ai', aiRoutes); - ******* TIRAR COMENTARIO QUANDO AS ROTAS DE AI ESTIVER PRONTA *******
-app.use('/api/trips', tripRoutes);
+app.use('/api/trips', auth, tripRoutes);
 app.use('/api/flights', flightRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/users', auth, userRoutes);
 app.use('/api/accommodations', accommodationRoutes);
 app.use('/api/reserves', reserveRoutes);
 

@@ -24,3 +24,10 @@ export class NotFoundError extends AppError {
     super(message, 404, 'NOT_FOUND');
   }
 }
+
+// Erro de Acesso Proibido (Ex: utilizador tenta aceder a recurso de outro utilizador) -> HTTP 403
+export class ForbiddenError extends AppError {
+  constructor(message) {
+    super(message, 403, 'FORBIDDEN');
+  }
+}

@@ -18,14 +18,19 @@ Nota importante:
 
 import * as userRepository from '../repository/userRepository.js';
 import bcrypt from 'bcrypt';
-import { NotFoundError, ValidationError } from '../utils/appErrors.js';
+import { ForbiddenError, NotFoundError, ValidationError } from '../utils/appErrors.js';
 
 // LISTA TODOS OS UTILIZADORES
-export async function listUsers() {
-  const users = await userRepository.listUsers();
+export async function listUsers(currentUserId) {
+  const user = await userRepository.findUserById(currentUserId);
+
+  if (!user) {
+    throw new NotFoundError('User not found.');
+  }
 
   // Remove a password de todos os utilizadores da lista antes de enviar para o controller
-  return users.map(({ password_hash, ...user }) => user);
+  const { password_hash, ...safeUser } = user;
+  return [safeUser];
 }
 
 // CRIA UM NOVO UTILIZADOR
@@ -51,7 +56,11 @@ export async function createUser(validatedUser) {
 }
 
 // ATUALIZA UM USER EXISTENTE
-export async function updateUser(id, validatedUser) {
+export async function updateUser(id, currentUserId, validatedUser) {
+  if (Number(id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only update your own user.');
+  }
+
   const existingUser = await userRepository.findUserById(id);
 
   if (!existingUser) {
@@ -82,7 +91,11 @@ export async function updateUser(id, validatedUser) {
 // @param {number} userId - ID do utilizador autenticado
 // @param {object} payload - Contém current_password e new_password vindos do Zod
 
-export async function updateUserPassword(userId, payload) {
+export async function updateUserPassword(userId, currentUserId, payload) {
+  if (Number(userId) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only update your own password.');
+  }
+
   const { current_password, new_password } = payload;
 
   // Validar se o utilizador existe na Base de Dados
@@ -113,7 +126,11 @@ export async function updateUserPassword(userId, payload) {
 
 
 // APAGA UM USER EXISTENTE
-export async function deleteUser(id) {
+export async function deleteUser(id, currentUserId) {
+  if (Number(id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only delete your own user.');
+  }
+
   const user = await userRepository.findUserById(id);
 
   if (!user) {

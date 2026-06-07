@@ -12,6 +12,16 @@ export async function listTrips() {
   return rows;
 }
 
+export async function listTripsByUserId(userId) {
+  const [rows] = await db.execute(`
+    SELECT id, user_id, title, description, destination, start_date, end_date, created_at, updated_at
+    FROM trips
+    WHERE user_id = ?
+  `, [userId]);
+
+  return rows;
+}
+
 
 // PROCURA UMA VIAGEM PELO ID
 export async function findTripById(id) {

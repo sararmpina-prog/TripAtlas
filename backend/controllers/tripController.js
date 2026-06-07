@@ -19,25 +19,25 @@ import {
 } from '../services/tripService.js';
 
 export const getTrips = asyncHandler(async (req, res) => {
-  const trips = await listTrips();
+  const trips = await listTrips(req.user.id);
   res.json({ success: true, data: trips });
 });
 
 export const postTrip = asyncHandler(async (req, res) => {
-  const trip = await createTrip(req.body || {});
+  const trip = await createTrip({ ...(req.body || {}), user_id: req.user.id });
   res.status(201).json({ success: true, data: trip });
 });
 
 export const patchTrip = asyncHandler(async (req, res) => {
   const tripId = req.params.tripId; 
 
-  const trip = await updateTrip(tripId, req.body || {});
+  const trip = await updateTrip(tripId, req.user.id, req.body || {});
   res.json({ success: true, data: trip });
 });
 
 export const deleteTripById = asyncHandler(async (req, res) => {
   const tripId = req.params.tripId;
 
-  const trip = await deleteTrip(tripId);
+  const trip = await deleteTrip(tripId, req.user.id);
   res.json({ success: true, data: trip });
 });

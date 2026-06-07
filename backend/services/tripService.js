@@ -18,11 +18,11 @@ Nota importante:
 
 import * as tripRepository from '../repository/tripRepository.js';
 import * as userRepository from '../repository/userRepository.js'; // 1. Importação adicionada para validar utilizadores
-import { NotFoundError, ValidationError } from '../utils/appErrors.js';
+import { ForbiddenError, NotFoundError, ValidationError } from '../utils/appErrors.js';
 
 // LISTA TODAS AS VIAGENS
-export async function listTrips() {
-  return await tripRepository.listTrips(); // Retorna diretamente o array em snake_case da BD
+export async function listTrips(currentUserId) {
+  return await tripRepository.listTripsByUserId(currentUserId);
 }
 
 // CRIA UMA NOVA VIAGEM
@@ -40,21 +40,22 @@ export async function createTrip(validatedTrip) {
 }
 
 // ATUALIZA UMA VIAGEM EXISTENTE
-export async function updateTrip(id, validatedTrip) {
-  if (validatedTrip.user_id) {
-    const user = await userRepository.findUserById(validatedTrip.user_id);
-    if (!user) {
-      throw new NotFoundError('The new associated user was not found.');
-    }
+export async function updateTrip(id, currentUserId, validatedTrip) {
+  const existingTrip = await tripRepository.findTripById(id);
+
+  if (!existingTrip) {
+    throw new NotFoundError('Trip not found.');
+  }
+
+  if (Number(existingTrip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only access your own trips.');
+  }
+
+  if (validatedTrip.user_id !== undefined && Number(validatedTrip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You cannot assign a trip to another user.');
   }
 
   if (validatedTrip.start_date || validatedTrip.end_date) {
-    const existingTrip = await tripRepository.findTripById(id);
-  
-    if (!existingTrip) {
-      throw new NotFoundError('Trip not found.');
-    }
-    
     const startDate = validatedTrip.start_date 
       ? new Date(validatedTrip.start_date) // new Date() para garantir que temos um objeto Date estável, independentemente de fusos horários e que as datas existem no calendário (não ter datas inválidas como 2024-02-30)
       : new Date(existingTrip.start_date);
@@ -68,7 +69,12 @@ export async function updateTrip(id, validatedTrip) {
     }
   }
 
-  const isUpdated = await tripRepository.updateTrip(id, validatedTrip);
+  const updateData = {
+    ...validatedTrip,
+    user_id: existingTrip.user_id,
+  };
+
+  const isUpdated = await tripRepository.updateTrip(id, updateData);
 
   if (!isUpdated) {
     throw new NotFoundError('Trip not found.');
@@ -79,11 +85,15 @@ export async function updateTrip(id, validatedTrip) {
 }
 
 // APAGA UMA VIAGEM EXISTENTE
-export async function deleteTrip(id) {
+export async function deleteTrip(id, currentUserId) {
   const trip = await tripRepository.findTripById(id);
 
   if (!trip) {
     throw new NotFoundError('Trip not found.');
+  }
+
+  if (Number(trip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only access your own trips.');
   }
 
   await tripRepository.deleteTrip(id);
