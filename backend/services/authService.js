@@ -24,7 +24,8 @@ export async function authenticateUser(email, password) {
   const user = await userRepository.findUserByEmail(email);
 
   if (!user) {
-    throw new ValidationError('Invalid email or password.'); 
+    console.log("estou aqui a validar user")
+    throw new ValidationError('Invalid credentials.'); 
     // Nota de segurança: Usar sempre uma mensagem genérica para não dar pistas a hackers
   }
 
@@ -32,7 +33,8 @@ export async function authenticateUser(email, password) {
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isPasswordValid) {
-    throw new ValidationError('Invalid email or password.');
+    console.log("estou aqui a validar password")
+    throw new ValidationError('Invalid credentials.');
   }
 
   // Cria o Token JWT através do jwtUtils.js, usando o ID do utilizador como payload

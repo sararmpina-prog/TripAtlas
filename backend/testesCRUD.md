@@ -1,6 +1,6 @@
 # REGISTO
 
-## POST http://localhost:3000/api/auth/register
+## POST http://localhost:3000/api/register
 
 ### SUCCESS
 
@@ -14,10 +14,22 @@
 
 * **Resultado Esperado**: Código 201 Created. A API vai devolver um objeto contendo o token gerado pelo JWT e os dados do utilizador sem a password.
 
+### SUCCESS
+
+{
+  "first_name": "Ana",
+  "surname": "Ramos",
+  "email": "anaramos@email.com",
+  "mobile_phone": null,
+  "password": "registo_2"
+}
+
+* **Resultado Esperado**: Código 201 Created. A API vai devolver um objeto contendo o token gerado pelo JWT e os dados do utilizador sem a password.
+
 
 # LOGIN
 
-## POST http://localhost:3000/api/auth/login
+## POST http://localhost:3000/api/login
 
 {
   "email": "carlos@email.com",
@@ -27,6 +39,14 @@
 * **Resultado Esperado**:  Código 200 OK com o JSON contendo o token.
 
 ---
+## POST http://localhost:3000/api/login
+
+{
+  "email": "anaramos@email.com",
+  "password": "registo_2"
+}
+
+* **Resultado Esperado**:  Código 200 OK com o JSON contendo o token.
 
 # Como testar as rotas protegidas:
 
