@@ -1,7 +1,6 @@
 /* Rotas REST para gerir reserves no backend principal.
 
 Este ficheiro expõe apenas o CRUD determinístico da entidade reserve.
-O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';

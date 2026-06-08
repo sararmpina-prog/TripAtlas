@@ -87,3 +87,15 @@ export async function updateReserve(id, reserve) {
 
   return result.affectedRows > 0;
 }
+
+// // LISTA TODAS AS RESERVAS DE UM UTILIZADOR ESPECÍFICO
+export async function listReservesByUserId(userId) {
+  const [rows] = await db.execute(`
+    SELECT ar.* 
+    FROM accommodation_reserve ar
+    INNER JOIN trip t ON ar.trip_id = t.id
+    WHERE t.user_id = ?
+  `, [userId]);
+
+  return rows;
+}

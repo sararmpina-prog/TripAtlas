@@ -13,8 +13,12 @@ O controller é também responsável por lidar com erros de forma consistente, u
 import { asyncHandler } from '../middlewares/asyncHandler.js';
 import {listAccommodationsReserves, deleteAccommodationReserve, createReserve, updateReserve} from '../services/reserveService.js'
 
+// Recolhe o ID injetado pelo auth middleware no app.js
+const currentUserId = req.user.id; 
+
 export const getAccommodationsReserves = asyncHandler(async (req, res) => {
-    const accommodationsReserves = await listAccommodationsReserves();
+    // Passa o ID para o service filtrar a query do cenário A
+    const accommodationsReserves = await listAccommodationsReserves(currentUserId);
 
     res.json({
         success: true,
@@ -31,8 +35,9 @@ export const deleteAccommodationReserveById = asyncHandler(async (req, res) => {
 
 export const postReserve = asyncHandler(async (req, res) => {
     console.log("body is", req.body)
-    const reserve = await createReserve(req.body || {});
 
+    // Passa o ID para verificar se a viagem associada é deste utilizador
+    const reserve = await createReserve(req.body || {}, currentUserId);
     res.status(201).json({
         success: true,
         data: reserve,
@@ -41,7 +46,8 @@ export const postReserve = asyncHandler(async (req, res) => {
 
 export const patchReserve = asyncHandler(async (req, res) => {
     console.log("Controller patch reserva id", req.params)
-    const reserve = await updateReserve(req.params.reserveId, req.body || {});
+    
+    const reserve = await updateReserve(req.params.reserveId, currentUserId, req.body || {});
 
     res.json({
         success: true,
