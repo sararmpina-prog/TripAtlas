@@ -34,7 +34,8 @@ export async function findUserByEmail(email) {
   const [rows] = await db.execute(
     `
       SELECT 
-        id, first_name, surname, email, mobile_phone, password_hash, created_at, updated_at 
+        id, first_name, surname, email, mobile_phone, password_hash, created_at, updated_at, failed_login_attempts,
+        locked_until 
       FROM users
       WHERE email = ?
       LIMIT 1

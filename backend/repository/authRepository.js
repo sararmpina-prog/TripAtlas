@@ -7,6 +7,7 @@ import { db } from '../infra/db/db.js';
 
 //ATUALIZA AS TENTATIVAS DE LOGIN
 export async function updateLoginAttempts(userId, data) {
+  console.log("data é", data)
   await db.execute(
     `
     UPDATE users

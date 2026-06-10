@@ -5,6 +5,7 @@
 
 import bcrypt from 'bcrypt';
 import * as userRepository from '../repository/userRepository.js';
+import * as authRepository from '../repository/authRepository.js'
 import { ValidationError, NotFoundError } from '../utils/appErrors.js';
 import { generateToken } from '../utils/jwtUtils.js';
 
@@ -40,7 +41,7 @@ export async function authenticateUser(email, password) {
     }
 
     // O bloqueio expirou → limpar estado
-    await userRepository.updateLoginAttempts(user.id, {
+    await authRepository.updateLoginAttempts(user.id, {
       failed_login_attempts: 0,
       locked_until: null
     });
@@ -63,7 +64,7 @@ export async function authenticateUser(email, password) {
       const lockedUntil = new Date();
       lockedUntil.setMinutes(lockedUntil.getMinutes() + 5);
 
-      await userRepository.updateLoginAttempts(user.id, {
+      await authRepository.updateLoginAttempts(user.id, {
         failed_login_attempts: failedAttempts,
         locked_until: lockedUntil
       });
@@ -71,18 +72,19 @@ export async function authenticateUser(email, password) {
       throw new ValidationError(
         'Account temporarily locked. Try again later.'
       );
-    }
+  }
 
     // Atualizar contador de tentativas falhadas
-    await userRepository.updateLoginAttempts(user.id, {
-      failed_login_attempts: failedAttempts
+    await authRepository.updateLoginAttempts(user.id, {
+      failed_login_attempts: failedAttempts,
+      locked_until: user.locked_until 
     });
 
     throw new ValidationError('Invalid credentials.');
   }
 
   // Password correta → resetar contador e bloqueio
-  await userRepository.updateLoginAttempts(user.id, {
+  await authRepository.updateLoginAttempts(user.id, {
     failed_login_attempts: 0,
     locked_until: null
   });
