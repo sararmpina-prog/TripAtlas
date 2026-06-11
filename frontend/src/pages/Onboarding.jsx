@@ -1,14 +1,15 @@
-import WelcomeCard from '../../components/WelcomeCard/WelcomeCard';
-import './Onboarding.css';
+import WelcomeCard from '../components/WelcomeCard';
 
-export default function Onboarding({ isNewAccount, onProceed }) {
+
+export default function OnBoarding({ isNewAccount, onProceed }) {
   return (
-    <div className="onboarding-background"> {/* O fundo do mar/viagem é fixo aqui */}
+    <div> {/* O fundo do mar/viagem é fixo aqui */}
       
       {isNewAccount ? (
         /* ESTADO A: Se veio do Registo */
         <WelcomeCard title="You're All Set!">
-          <p>Your account was successfully created.</p>
+          <p>Your account was created successfully.</p>
+          <p>Let's start planning your next unforgettable journey.</p>
           <button className="btn-orange" onClick={onProceed}>
             CREATE YOUR FIRST TRIP
           </button>
@@ -18,7 +19,10 @@ export default function Onboarding({ isNewAccount, onProceed }) {
         <WelcomeCard title="Welcome Back!">
           <p>Hi, traveler! Ready for your next adventure?</p>
           <button className="btn-orange" onClick={onProceed}>
-            GO TO MY DASHBOARD
+            PLAN A NEW TRIP
+          </button>
+          <button>
+            VIEW MY TRIPS
           </button>
         </WelcomeCard>
       )}

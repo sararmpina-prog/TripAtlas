@@ -1,14 +1,38 @@
+import { Routes, Route } from "react-router";
 
-import Login from '../src/pages/Login'
+import PublicLayout from "./layouts/PublicLayout";
+import MainLayout from "./layouts/MainLayout";
 
-function App() {
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import OnBoarding from "./pages/OnBoarding";
+import Dashboard from "./pages/Dashboard";
 
-
+export default function App() {
   return (
-    <>
-    <Login/>
-    </>
-  )
-}
 
-export default App
+  
+        <Routes>
+
+          {/* Páginas públicas */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/register/success"
+              element={<OnBoarding />}
+            />
+          </Route>
+
+          {/* Área autenticada */}
+          <Route path="/dashboard" element={<MainLayout />}>
+            <Route index element={<Dashboard />} />
+          </Route>
+
+        </Routes>
+
+
+  );
+}
