@@ -1,17 +1,47 @@
-import WelcomeCard from "../components/WelcomeCard"
+import WelcomeCard from "../components/WelcomeCard";
+import { useNavigate } from "react-router";
+import "../styles/Login.css";
 
 function LoginSuccess() {
+  const navigate = useNavigate();
 
-    return ( 
-        <div>
-           <WelcomeCard>
-            <h1>Hi!</h1>
-            <p>What would you like to do today?</p>
-            <button>PLAN A NEW TRIP</button>
-            <button>VIEW MY TRIPS</button>
-           </WelcomeCard>
+  const firstName = "John"; // depois vens de API / auth
+
+  return (
+    <div className="login-page">
+
+
+      <section className="login-register-side">
+    
+       
+      </section>
+
+      {/* CARD CENTRAL */}
+      <WelcomeCard>
+        <h2>Hi {firstName}!</h2>
+
+        <p>Your travel plans are waiting for you</p>
+
+        <div className="login-form">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+          >
+            PLAN A NEW TRIP
+          </button>
+
+           <button
+          className="register-btn"
+          onClick={() => navigate("/dashboard")}
+        >
+          VIEW MY TRIPS
+        </button>
+
         </div>
-    )
+      </WelcomeCard>
+
+    </div>
+  );
 }
 
-export default LoginSuccess
+export default LoginSuccess;

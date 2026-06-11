@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import OnBoarding from "./pages/OnBoarding";
 import Dashboard from "./pages/Dashboard";
+import LoginSuccess from "./pages/LoginSuccess";
+import Welcome from "./pages/Welcome";
 
 export default function App() {
   return (
@@ -19,10 +21,14 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+             <Route
+              path="/login/success"
+              element={<LoginSuccess />}
+            />
             <Route path="/register" element={<Register />} />
             <Route
               path="/register/success"
-              element={<OnBoarding />}
+              element={<Welcome />}
             />
           </Route>
 

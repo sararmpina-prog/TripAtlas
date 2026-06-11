@@ -59,3 +59,22 @@
 .register-btn:hover {
   transform: scale(1.05);
 }
+
+.btn-orange {
+  background: #f28c28;
+  color: white;
+
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+
+  font-weight: bold;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-orange:hover {
+  background: #e07b1f;
+  transform: translateY(-2px);
+}
