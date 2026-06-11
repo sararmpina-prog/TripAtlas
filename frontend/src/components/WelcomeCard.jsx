@@ -1,8 +1,9 @@
+import "../styles/WelcomeCard.css";
 
 function WelcomeCard({children}) {
 
     return ( 
-        <div>
+        <div className="welcome-card">
            {children}
         </div>
     )
