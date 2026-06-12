@@ -5,6 +5,7 @@
 
 import bcrypt from 'bcrypt';
 import * as userRepository from '../repository/userRepository.js';
+import * as authRepository from '../repository/authRepository.js'
 import { ValidationError, NotFoundError } from '../utils/appErrors.js';
 import { generateToken } from '../utils/jwtUtils.js';
 
@@ -15,30 +16,82 @@ import { generateToken } from '../utils/jwtUtils.js';
 
 // AUTENTICAÇÃO DE UTILIZADOR
 export async function authenticateUser(email, password) {
-  // Validação básica de presença de dados
+  // Validação básica
   if (!email || !password) {
     throw new ValidationError('Email and password are required fields.');
   }
 
-  // Procura o utilizador na base de dados através do repositório
+  // Procurar utilizador
   const user = await userRepository.findUserByEmail(email);
 
   if (!user) {
-    throw new ValidationError('Invalid email or password.'); 
-    // Nota de segurança: Usar sempre uma mensagem genérica para não dar pistas a hackers
+    throw new ValidationError('Invalid credentials.');
   }
 
-  // Compara a password em texto limpo com a password_hash gravada na BD
-  const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+  // Verificar se a conta está bloqueada
+  if (user.locked_until) {
+    console.log("user.locked_until", user.locked_until)
+    const lockedUntil = new Date(user.locked_until);
+    const now = new Date();
+
+    if (lockedUntil > now) {
+      throw new ValidationError(
+        'Account temporarily locked. Try again later.'
+      );
+    }
+
+    // O bloqueio expirou → limpar estado
+    await authRepository.updateLoginAttempts(user.id, {
+      failed_login_attempts: 0,
+      locked_until: null
+    });
+
+    user.failed_login_attempts = 0;
+    user.locked_until = null;
+  }
+
+  // Validar password
+  const isPasswordValid = await bcrypt.compare(
+    password,
+    user.password_hash
+  );
 
   if (!isPasswordValid) {
-    throw new ValidationError('Invalid email or password.');
+    const failedAttempts = (user.failed_login_attempts || 0) + 1;
+
+    // Se atingiu 3 tentativas, bloquear durante 5 minutos
+    if (failedAttempts >= 3) {
+      const lockedUntil = new Date();
+      lockedUntil.setMinutes(lockedUntil.getMinutes() + 5);
+
+      await authRepository.updateLoginAttempts(user.id, {
+        failed_login_attempts: failedAttempts,
+        locked_until: lockedUntil
+      });
+
+      throw new ValidationError(
+        'Account temporarily locked. Try again later.'
+      );
   }
 
-  // Cria o Token JWT através do jwtUtils.js, usando o ID do utilizador como payload
+    // Atualizar contador de tentativas falhadas
+    await authRepository.updateLoginAttempts(user.id, {
+      failed_login_attempts: failedAttempts,
+      locked_until: user.locked_until 
+    });
+
+    throw new ValidationError('Invalid credentials.');
+  }
+
+  // Password correta → resetar contador e bloqueio
+  await authRepository.updateLoginAttempts(user.id, {
+    failed_login_attempts: 0,
+    locked_until: null
+  });
+
+  // Gerar token JWT
   const token = generateToken(user.id);
 
-  // Retorna os dados em snake_case puro para o controller responder
   return {
     token,
     user: {

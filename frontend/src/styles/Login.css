@@ -1,0 +1,80 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6rem;
+
+  padding: 2rem;
+
+  /* fundo tipo viagem/mar */
+  background: url("/images/login-bg.jpg") center/cover no-repeat;
+  position: relative;
+}
+
+/* overlay escuro por cima do background */
+.login-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 60, 90, 0.55);
+  z-index: 0;
+}
+
+/* tudo por cima do overlay */
+.login-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.login-register-side {
+  max-width: 300px;
+  color: white;
+}
+
+.login-register-side h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.login-register-side p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.register-btn {
+  background: white;
+  color: #f28c28;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.register-btn:hover {
+  transform: scale(1.05);
+}
+
+.btn-orange {
+  background: #f28c28;
+  color: white;
+
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 30px;
+
+  font-weight: bold;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-orange:hover {
+  background: #e07b1f;
+  transform: translateY(-2px);
+}

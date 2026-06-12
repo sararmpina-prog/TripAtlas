@@ -10,3 +10,8 @@ UNIQUE (
   check_in_date,
   check_out_date
 );
+
+
+ALTER TABLE users
+ADD COLUMN failed_login_attempts INT DEFAULT 0,
+ADD COLUMN locked_until TIMESTAMP NULL;
