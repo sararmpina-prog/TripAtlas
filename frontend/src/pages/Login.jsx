@@ -10,6 +10,7 @@ import "../styles/LoginForm.css";
 
 function Login() {
   const navigate = useNavigate();
+  
 
 
   const [email, setEmail] = useState("");
@@ -34,11 +35,14 @@ function Login() {
     },
   });
 
+  console.log("isPending:", isPending);
+
   function handleSubmit(e) {
     e.preventDefault();
 
     setError("");
     console.log("Cliquei Login");
+    console.log("SUBMIT OK");
     console.log("antes da função mutate os dados são", email, password)
     mutate({
       email,

@@ -5,7 +5,9 @@ import "../styles/Login.css";
 function LoginSuccess() {
   const navigate = useNavigate();
 
-  const firstName = "John"; // depois vens de API / auth
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const firstName = user?.first_name || "Traveler";
 
   return (
     <div className="login-page">

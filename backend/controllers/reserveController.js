@@ -11,14 +11,17 @@ O controller é também responsável por lidar com erros de forma consistente, u
 */
 
 import { asyncHandler } from '../middlewares/asyncHandler.js';
-import {listAccommodationsReserves, deleteAccommodationReserve, createReserve, updateReserve} from '../services/reserveService.js'
+import {listAccommodationsReservesByUser, deleteAccommodationReserve, createReserve, updateReserve} from '../services/reserveService.js'
 
-// Recolhe o ID injetado pelo auth middleware no app.js
-const currentUserId = req.user.id; 
+
 
 export const getAccommodationsReserves = asyncHandler(async (req, res) => {
+
+    // Recolhe o ID injetado pelo auth middleware no app.js
+    const currentUserId = req.user.id; 
+
     // Passa o ID para o service filtrar a query do cenário A
-    const accommodationsReserves = await listAccommodationsReserves(currentUserId);
+    const accommodationsReserves = await listAccommodationsReservesByUser(currentUserId);
 
     res.json({
         success: true,
