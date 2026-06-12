@@ -1,9 +1,9 @@
 import * as reserveRepository from '../repository/reserveRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
-import { NotFoundError, ValidationError} from '../utils/appErrors.js';
+import { NotFoundError, ValidationError, ForbiddenError} from '../utils/appErrors.js';
 
-// Lista todas as reservas de accommodation
+// LISTA TODAS AS RESERVAS DE UM UTILIZADOR (Filtrado por segurança)
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
 
@@ -136,4 +136,9 @@ export async function updateReserve(id, validatedReserve) {
 
   return updatedReserve;
 
+}
+
+// LISTA TODAS AS RESERVAS DO UTILIZADOR AUTENTICADO
+export async function listAccommodationsReserves(currentUserId) {
+  return await reserveRepository.listReservesByUserId(currentUserId);
 }

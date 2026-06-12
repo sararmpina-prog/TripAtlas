@@ -12,3 +12,11 @@ git add .
 git commit
 
 git push origin Leonor
+
+
+## Parte final:
+
+git checkout main
+git pull origin main
+git merge Leonor
+git push origin main

@@ -1,0 +1,156 @@
+/* 
+Syne Font weight - Use a value from 400 to 800:
+Regular 400
+Medium 500
+SemiBold 600
+Bold 700
+ExtraBold 800
+
+
+open-sans Font weight - Use a value from 300 to 800:
+Light 300
+Regular 400
+Medium 500
+SemiBold 600
+Bold 700
+ExtraBold 800
+*/
+
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
+}
+
+:root {
+  /* Colors */
+  --color-orange: #eb5e06;
+  --color-dark-azure: #145c7a;
+  --color-medium-azure: #527997;
+  --color-light-azure: #ebf4fd;
+  --color-white: #ffffff;
+
+  /* Typography */
+  --text-heading-dark: #145c7a;
+  --text-heading-light: #ffffff;
+  --text-main: #0b395a;
+  --text-muted: #527997;
+  --text-light: #ffffff;
+
+  /* Surfaces */
+  --surface-page: #ebf4fd;
+  --surface-card: #ffffff;
+  --surface-overlay: rgba(20, 92, 122, 0.6);
+
+  /* Borders */
+  --border-light: #c6e0f7;
+  --border-main: #527997;
+  --border-dark: #0b395a;
+
+  /* Effects */
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-hard: 0 12px 36px rgba(0, 0, 0, 0.2);
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+li {
+  list-style-type: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Syne", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.heading-dark {
+  color: var(--text-heading-dark);
+}
+
+.heading-light {
+  color: var(--text-heading-light);
+}
+
+p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-main);
+}
+
+.p-white {
+  color: var(--text-light);
+}
+
+a {
+  text-decoration: none;
+}
+
+label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 33px;
+  padding: 10px 20px;
+  box-shadow: 0 2px 8px var(--shadow-soft);
+  transition: transform 0.2s ease;
+}
+
+.btn-orange {
+  background-color: var(--color-orange);
+  color: var(--color-white);
+}
+
+.btn-white {
+  background-color: var(--color-white);
+  color: var(--color-dark-azure);
+}
+
+button:hover {
+  transform: scale(1.03);
+  transition: transform 0.2s ease;
+}
+
+
+

@@ -19,25 +19,38 @@ import {
 } from '../services/flightService.js';
 
 export const getFlights = asyncHandler(async (req, res) => {
-  const flights = await listFlights();
+
+  // Passa o id do utilizador para listar apenas os voos das suas viagens
+  const currentUserId = req.user.id;
+  const flights = await listFlights(currentUserId);
+
   res.json({ success: true, data: flights });
 });
 
 export const postFlight = asyncHandler(async (req, res) => {
-  const flight = await createFlight(req.body || {});
+  // Passa o id do utilizador para validar se a viagem (trip_id) do body lhe pertence
+  const currentUserId = req.user.id;
+  const flight = await createFlight(req.body || {}, currentUserId);
+
   res.status(201).json({ success: true, data: flight });
 });
 
 export const patchFlight = asyncHandler(async (req, res) => {
   const flightId = req.params.flightId; 
 
-  const flight = await updateFlight(flightId, req.body || {});
+   // Passa o id do utilizador para validar o dono do voo atual e da nova viagem
+  const currentUserId = req.user.id;
+  const flight = await updateFlight(flightId, currentUserId, req.body || {});
+
   res.json({ success: true, data: flight });
 });
 
 export const deleteFlightById = asyncHandler(async (req, res) => {
   const flightId = req.params.flightId;
 
-  const flight = await deleteFlight(flightId);
+   // Passa o id do utilizador para garantir que só apaga voos das suas viagens
+  const currentUserId = req.user.id;
+  const flight = await deleteFlight(flightId, currentUserId);
+
   res.json({ success: true, data: flight });
 });

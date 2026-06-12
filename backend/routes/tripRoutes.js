@@ -1,7 +1,6 @@
 /* Rotas REST para gerir trips no backend principal.
 
 Este ficheiro expõe apenas o CRUD determinístico da entidade trip.
-O fluxo conversacional de AI será tratado numa camada própria.
 */
 
 import express from 'express';
