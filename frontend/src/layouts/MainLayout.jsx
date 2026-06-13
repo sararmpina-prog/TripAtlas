@@ -1,10 +1,10 @@
 import { Outlet } from "react-router";
-
+import Header from "../components/Header";
 
 function MainLayout() {
   return (
     <div>
-      <h1>TRIPATLAS</h1>
+      <Header />
 
       <main>
         <Outlet />

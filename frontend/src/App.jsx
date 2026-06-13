@@ -6,10 +6,11 @@ import MainLayout from "./layouts/MainLayout";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import OnBoarding from "./pages/OnBoarding";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import LoginSuccess from "./pages/LoginSuccess";
 import Welcome from "./pages/Welcome";
+
 
 export default function App() {
   return (
@@ -33,7 +34,14 @@ export default function App() {
           </Route>
 
           {/* Área autenticada */}
-          <Route path="/dashboard" element={<MainLayout />}>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Dashboard />} />
           </Route>
 

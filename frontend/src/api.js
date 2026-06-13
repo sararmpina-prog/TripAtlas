@@ -15,11 +15,10 @@ export async function loginUser(credentials) {
 
   const data = await response.json();
   console.log("data após o fetch é", data)
+  console.log(JSON.stringify(response, null, 2));
 
   if (!response.ok) {
     throw new Error(
-      data.message ||
-      data.error ||
       "Login failed"
     );
   }

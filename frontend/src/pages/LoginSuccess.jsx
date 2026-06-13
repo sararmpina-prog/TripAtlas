@@ -5,7 +5,10 @@ import "../styles/Login.css";
 function LoginSuccess() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(
+  localStorage.getItem("user") ||
+  sessionStorage.getItem("user")
+  );
 
   const firstName = user?.first_name || "Traveler";
 
