@@ -1,10 +1,11 @@
 import { Outlet } from "react-router";
-
+import Header from "../components/Header";
 
 function MainLayout() {
   return (
     <div>
-      {/* Removido o <h1> daqui para não duplicar com o Logo */}
+      <Header />
+
       <main>
         <Outlet />
       </main>

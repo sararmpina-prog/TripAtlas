@@ -30,7 +30,7 @@ const app = express();
 // Middlewares Globais
 app.use(express.json());
 // Origem do CORS deve ser ajustada para bater certo com o Live Server do frontend
-app.use(cors({ origin: 'http://127.0.0.1:5500' })); 
+app.use(cors({ origin: 'http://localhost:5173' })); 
 
 // Endpoints Base e Health Check (são rotas públicas, não precisam de autenticação)
 app.get('/', (req, res) => {

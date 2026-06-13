@@ -1,53 +1,51 @@
-const form = document.getElementById("loginForm");
-const message = document.getElementById("message");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [error, setError] = useState("");
 
-form.addEventListener("submit", async (e) => {
-
+async function handleSubmit(e) {
   e.preventDefault();
 
+  setError("");
+
   try {
+    
+    const [error, setError] = useState("");
 
-    message.textContent = "A autenticar...";
+    const response = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
 
-    const response = await fetch(
-      "http://localhost:3000/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: document.getElementById("email").value,
-          password: document.getElementById("password").value
-        })
-      }
-    );
-
-    const data = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.message || "Erro ao efetuar login"
-      );
+      throw new Error(result.message || "Login failed");
     }
 
+    // Guardar token
     localStorage.setItem(
       "token",
-      data.token
+      result.data.token
     );
 
-    message.textContent =
-      "Login efetuado com sucesso";
+    // Guardar utilizador
+    localStorage.setItem(
+      "user",
+      JSON.stringify(result.data.user)
+    );
 
-    window.location.href = "dashboard.html";
+    console.log("Login successful", result.data);
 
-  } catch (error) {
+    // Navegar para onboarding ou dashboard
+    navigate("/dashboard");
 
-    console.error(error);
-
-    message.textContent =
-      error.message;
-
+  } catch (err) {
+    setError(err.message);
   }
-
-});
+}
