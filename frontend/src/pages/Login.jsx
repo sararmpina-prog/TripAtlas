@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import WelcomeCard from "../components/WelcomeCard";
 import { loginUser } from "../api";
-
+import { FaEye, FaEyeSlash  } from "react-icons/fa6";
 import "../styles/Login.css";
 import "../styles/LoginForm.css";
 
@@ -116,7 +116,7 @@ function Login() {
             required
           />
 
-         <div style={{ position: "relative" }}>
+         <div className="password-input-container">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -126,16 +126,10 @@ function Login() {
             />
 
             <span
+              className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer"
-              }}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
 
