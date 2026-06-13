@@ -1,4 +1,4 @@
-import WelcomeCard from "../components/WelcomeCard";
+import InfoCard from "../components/InfoCard";
 import { useNavigate } from "react-router";
 import "../styles/Login.css";
 
@@ -17,7 +17,7 @@ function LoginSuccess() {
       </section>
 
       {/* CARD CENTRAL */}
-      <WelcomeCard>
+      <InfoCard>
         <h2>Hi {firstName}!</h2>
 
         <p>Your travel plans are waiting for you</p>
@@ -38,7 +38,7 @@ function LoginSuccess() {
         </button>
 
         </div>
-      </WelcomeCard>
+      </InfoCard>
 
     </div>
   );

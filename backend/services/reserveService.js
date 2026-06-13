@@ -139,6 +139,6 @@ export async function updateReserve(id, validatedReserve) {
 }
 
 // LISTA TODAS AS RESERVAS DO UTILIZADOR AUTENTICADO
-export async function listAccommodationsReserves(currentUserId) {
+export async function listAccommodationsReservesByUser(currentUserId) {
   return await reserveRepository.listReservesByUserId(currentUserId);
 }

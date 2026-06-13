@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import WelcomeCard from "../components/WelcomeCard";
+import InfoCard from "../components/InfoCard";
 import "../styles/Login.css";
 import "../styles/LoginForm.css";
 
@@ -9,7 +9,7 @@ function Login() {
 
       {/* COLUNA ESQUERDA */}
       <section className="login-register-side">
-        <h1>Don't have an account yet?</h1>
+        <h2>Don't have an account yet?</h2>
 
         <p>Sign up here:</p>
 
@@ -21,7 +21,7 @@ function Login() {
       </section>
 
       {/* CARD LOGIN */}
-      <WelcomeCard>
+      <InfoCard>
         <h2>Welcome Back!</h2>
         <p>Your travel plans are waiting for you</p>
 
@@ -54,7 +54,7 @@ function Login() {
           </button>
 
         </form>
-      </WelcomeCard>
+      </InfoCard>
 
     </div>
   );

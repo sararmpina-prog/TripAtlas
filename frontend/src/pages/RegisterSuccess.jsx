@@ -1,16 +1,18 @@
-import WelcomeCard from "../components/WelcomeCard";
+import InfoCard from "../components/InfoCard";
 import { useNavigate } from "react-router";
+import "../styles/Global.css";
+import "../styles/ImageLayout.css";
 import "../styles/Login.css";
 import "../styles/LoginForm.css"
 
-function Welcome() {
+function RegisterSuccess() {
   const navigate = useNavigate();
 
   return (
     <div className="login-page">
 
       {/* CARD CENTRAL */}
-      <WelcomeCard>
+      <InfoCard>
         <h2>You're All Set!</h2>
 
         <p>Your account has been created successfully.</p>
@@ -25,10 +27,10 @@ function Welcome() {
         >
           CREATE YOUR FIRST TRIP
         </button>
-      </WelcomeCard>
+      </InfoCard>
 
     </div>
   );
 }
 
-export default Welcome;
+export default RegisterSuccess;

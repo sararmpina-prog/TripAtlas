@@ -1,0 +1,102 @@
+/* src/pages/Register.css */
+.register-container {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+.register-left {
+  flex: 1;
+  max-width: 400px;
+}
+
+.register-left h2 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.register-left p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.register-right-card {
+  background-color: var(--color-dark-azure); /* Fundo azul escuro do card segundo o PDF */
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-hard);
+  width: 100%;
+  max-width: 550px;
+}
+
+.form-title {
+  color: var(--color-white) !important;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.form-subtitle {
+  color: var(--border-light);
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.register-form label {
+  color: var(--color-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.register-form input {
+  background-color: var(--color-white);
+  border: none;
+  border-radius: 25px; /* Inputs arredondados estilo pílula como no mock-up */
+  padding: 12px 20px;
+  max-width: 100%;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.password-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.btn-register-submit {
+  padding: 10px 40px;
+  background-color: var(--color-white);
+  color: var(--color-dark-azure);
+}

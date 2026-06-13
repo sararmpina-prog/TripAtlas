@@ -4,8 +4,7 @@ import { Outlet } from "react-router";
 function MainLayout() {
   return (
     <div>
-      <h1>TRIPATLAS</h1>
-
+      {/* Removido o <h1> daqui para não duplicar com o Logo */}
       <main>
         <Outlet />
       </main>

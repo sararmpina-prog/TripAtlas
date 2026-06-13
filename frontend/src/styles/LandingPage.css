@@ -1,0 +1,28 @@
+.landing-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+.account-prompt {
+  font-size: 1rem;
+  margin-top: 30px;
+}
+
+.link-highlight {
+  color: var(--color-white);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.text-center {
+  text-align: center;
+}
