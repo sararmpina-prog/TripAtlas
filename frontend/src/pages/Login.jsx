@@ -1,12 +1,11 @@
-import { Link } from "react-router";
-import InfoCard from "../components/InfoCard";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import WelcomeCard from "../components/WelcomeCard";
+import ImageLayout from "../components/ImageLayout";
+import InfoCard from "../components/InfoCard";
+import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
-import { FaEye, FaEyeSlash  } from "react-icons/fa6";
+import { saveAuthSession } from "../authStorage";
 import "../styles/Login.css";
 import "../styles/LoginForm.css";
 
@@ -17,7 +16,6 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
 
   //  useEffect(() => {
@@ -38,32 +36,7 @@ function Login() {
       const token = response.data.token;
       const user = response.data.user;
 
-
-      if (rememberMe) {
-        localStorage.setItem("token", token);
-      
-        localStorage.setItem("user", JSON.stringify(user));
-  
-
-        localStorage.setItem("teste", "sou persistente");
-
-        console.log("LOCAL STORAGE");
-        console.log(localStorage.getItem("teste"));
-
-        console.log("TOKEN GUARDADO:");
-        console.log(localStorage.getItem("token"));
-
-      } else {
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("user", JSON.stringify(user));
-
-        sessionStorage.setItem("teste", "sou temporario");
-
-        console.log("SESSION STORAGE");
-        console.log(sessionStorage.getItem("teste"));
-
-        
-      }
+      saveAuthSession({ token, user, rememberMe });
 
       navigate("/login/success");
     },
@@ -89,85 +62,69 @@ function Login() {
   }
 
   return (
-    <div className="login-page">
+    <ImageLayout bgImageClass="bg-login">
+      <div className="auth-split auth-split-login">
+        <section className="auth-side-panel">
+          <h2>Don&apos;t have an account yet?</h2>
+          <p className="auth-side-copy">Sign up here:</p>
 
-      <section className="login-register-side">
-        <h2>Don't have an account yet?</h2>
-
-        <p>Sign up here:</p>
-
-        <Link to="/register">
-          <button type="button" className="register-btn">
+          <Link to="/register" className="register-btn">
             Register
-          </button>
-        </Link>
-      </section>
+          </Link>
+        </section>
 
-      {/* CARD LOGIN */}
-      <InfoCard>
-        <h2>Welcome Back!</h2>
+        <InfoCard className="auth-card login-card">
+          <h2>Welcome Back!</h2>
+          <p>Your travel plans are waiting for you</p>
 
-        <p>Your travel plans are waiting for you</p>
-
-        <form className="login-form" onSubmit={handleSubmit}>
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-         <div className="password-input-container">
+          <form className="login-form" onSubmit={handleSubmit}>
             <input
-              type={showPassword ? "text" : "password"}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <PasswordField
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
 
-            <span
-              className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
+            <div className="login-options">
+              <label className="remember-me">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember me
+              </label>
+
+              <Link to="/forgot-password">
+                Forgot password?
+              </Link>
+            </div>
+
+            {error && (
+              <p className="login-error">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isPending}
+              className="auth-submit"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          <div className="login-options">
-            <label className="remember-me">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              Remember me
-            </label>
-
-            <Link to="/forgot-password">
-              Forgot password?
-            </Link>
-          </div>
-
-          {error && (
-            <p className="login-error">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isPending}
-          >
-            {isPending ? "Logging in..." : "Login"}
-          </button>
-
-        </form>
-      </InfoCard>
-
-    </div>
+              {isPending ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </InfoCard>
+      </div>
+    </ImageLayout>
   );
 }
 

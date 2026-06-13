@@ -1,4 +1,6 @@
 .image-layout {
+  min-width: 100vw;
+  min-height: 100vh;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -6,7 +8,7 @@
 
 /* Imagem de Fundo da Landing Page (Praia) */
 .bg-landing {
-  background-image: url('../assets/landing-img-coastal-desktop.jpg'); 
+  background-image: url('../assets/landing-img-coastal-desktop.jpg');
 }
 
 /* Imagem de Fundo do Registo (Grécia/Casas Brancas) */
@@ -16,7 +18,7 @@
 
 /* Imagem de Fundo do Login (Montanhas) */
 .bg-login {
-  background-image: url('../assets/login-img-mountains.jpg'); 
+  background-image: url('../assets/login-img-mountains-desktop.jpg');
 }
 
 .image-overlay {
@@ -24,12 +26,11 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 40px;
+  padding: 28px 40px 40px;
 }
 
-/* Nova classe condicional que criámos antes */
 .image-overlay.active-overlay {
-  background-color: var(--surface-overlay);
+  background-color: rgba(19, 83, 111, 0.58);
 }
 
 .image-content {
@@ -38,4 +39,18 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .bg-landing {
+    background-image: url('../assets/landing-img-coastal-mobile.jpg');
+  }
+
+  .bg-login {
+    background-image: url('../assets/login-img-mountains-mobile.jpg');
+  }
+
+  .image-overlay {
+    padding: 20px 18px 28px;
+  }
 }

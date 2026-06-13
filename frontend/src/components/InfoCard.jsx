@@ -1,9 +1,9 @@
 import "../styles/InfoCard.css";
 
-function InfoCard({children}) {
+function InfoCard({ children, className = "" }) {
 
-    return ( 
-        <div className="info-card">
+    return (
+        <div className={`info-card ${className}`.trim()}>
            {children}
         </div>
     )

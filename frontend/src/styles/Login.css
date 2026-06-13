@@ -1,69 +1,73 @@
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
+.auth-split {
+  width: min(1180px, 100%);
+  min-height: calc(100vh - 150px);
+  display: grid;
   align-items: center;
-  gap: 6rem;
-
-  padding: 2rem;
-
-  /* fundo tipo viagem/mar */
-  background: url("../assets/login-img-mountains.jpg") center/cover no-repeat;
-  position: relative;
+  gap: 3rem;
 }
 
-/* overlay escuro por cima do background */
-.login-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 60, 90, 0.55);
-  z-index: 0;
+.auth-split-login {
+  grid-template-columns: minmax(250px, 0.85fr) minmax(480px, 1.15fr);
 }
 
-/* tudo por cima do overlay */
-.login-page > * {
-  position: relative;
-  z-index: 1;
-}
-
-.login-register-side {
-  max-width: 300px;
+.auth-side-panel {
+  max-width: 320px;
   color: white;
+  padding-left: 1.25rem;
 }
 
-.login-register-side h2 {
-  font-size: 3rem;
+.auth-side-panel h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  color: var(--color-white);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.auth-side-copy {
+  margin-bottom: 1.8rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 1rem;
+  color: var(--color-white);
 }
 
-.login-register-side p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
+.auth-card {
+  justify-self: center;
+}
+
+.login-card {
+  width: min(100%, 560px);
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.login-card p {
+  margin-bottom: 2.2rem;
+  font-size: 1.1rem;
 }
 
 .register-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 158px;
+  padding: 0.95rem 2.2rem;
   background: white;
   color: #f28c28;
   border: none;
-  padding: 1rem 2.5rem;
   border-radius: 999px;
   font-weight: bold;
   cursor: pointer;
-
-  transition: 0.2s;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .register-btn:hover {
-  transform: scale(1.05);
-}
-
-/* .btn-orange:hover {
-  background: #e07b1f;
   transform: translateY(-2px);
-} */
+  filter: brightness(1.02);
+}
 
 .password-input-container {
   position: relative;
@@ -72,7 +76,7 @@
 
 .password-input-container input {
   width: 100%;
-  padding-right: 50px; /* espaço para o olho */
+  padding-right: 50px;
   box-sizing: border-box;
 }
 
@@ -83,4 +87,65 @@
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 1.2rem;
+  color: var(--color-medium-azure);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.login-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.success-card {
+  width: min(100%, 720px);
+  min-height: 320px;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.success-lead {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.success-highlight {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 1.4rem;
+  margin-top: 0.4rem;
+}
+
+.forgot-card {
+  min-height: 260px;
+}
+
+@media (max-width: 900px) {
+  .auth-split,
+  .auth-split-login {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    min-height: auto;
+  }
+
+  .auth-side-panel {
+    max-width: 100%;
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .auth-side-panel h2 {
+    line-height: 1.05;
+  }
 }

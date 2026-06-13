@@ -1,14 +1,10 @@
+import { clearAuthSession, getStoredUser } from "../authStorage";
+
 function Header() {
-  const user = JSON.parse(
-    localStorage.getItem("user") ||
-    sessionStorage.getItem("user")
-  );
+  const user = getStoredUser();
 
   function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    clearAuthSession();
 
     window.location.href = "/login";
   }

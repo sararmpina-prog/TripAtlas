@@ -1,9 +1,8 @@
 import { Navigate } from "react-router";
+import { getStoredToken } from "../authStorage";
 
 function ProtectedRoute({ children }) {
-  const token =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
+  const token = getStoredToken();
 
   if (!token) {
     return <Navigate to="/login" replace />;

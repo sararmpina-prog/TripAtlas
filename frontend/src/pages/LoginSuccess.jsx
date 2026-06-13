@@ -1,51 +1,41 @@
 import InfoCard from "../components/InfoCard";
 import { useNavigate } from "react-router";
+import ImageLayout from "../components/ImageLayout";
+import { getStoredUser } from "../authStorage";
 import "../styles/Login.css";
 
 function LoginSuccess() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(
-  localStorage.getItem("user") ||
-  sessionStorage.getItem("user")
-  );
+  const user = getStoredUser();
 
   const firstName = user?.first_name || "Traveler";
 
   return (
-    <div className="login-page">
-
-
-      <section className="login-register-side">
-    
-       
-      </section>
-
-      {/* CARD CENTRAL */}
-      <InfoCard>
+    <ImageLayout bgImageClass="bg-login">
+      <InfoCard className="auth-card success-card">
         <h2>Hi {firstName}!</h2>
+        <p className="success-lead">What would you like to do today?</p>
 
-        <p>Your travel plans are waiting for you</p>
-
-        <div className="login-form">
+        <div className="success-actions">
           <button
             type="button"
+            className="btn-base btn-orange"
             onClick={() => navigate("/dashboard")}
           >
             PLAN A NEW TRIP
           </button>
 
-           <button
-          className="register-btn"
-          onClick={() => navigate("/dashboard")}
-        >
-          VIEW MY TRIPS
-        </button>
-
+          <button
+            type="button"
+            className="btn-base btn-orange"
+            onClick={() => navigate("/dashboard")}
+          >
+            VIEW MY TRIPS
+          </button>
         </div>
       </InfoCard>
-
-    </div>
+    </ImageLayout>
   );
 }
 
