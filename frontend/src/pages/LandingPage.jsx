@@ -1,6 +1,5 @@
 import { Link } from 'react-router';
 import ImageLayout from '../components/ImageLayout';
-import '../styles/global.css';
 import '../styles/LandingPage.css';
 
 export default function LandingPage() {
@@ -14,7 +13,7 @@ export default function LandingPage() {
             Plan Less.<br />
             Experience More.
           </h1>
-          <p className="p-white text-center subtitle">
+          <p className="subtitle subtitle-light text-center">
             Your AI-powered travel companion for unforgettable journeys
           </p>
         </div>

@@ -1,7 +1,7 @@
 import InfoCard from "../components/InfoCard";
 import { useNavigate } from "react-router";
 import ImageLayout from "../components/ImageLayout";
-import { getStoredUser } from "../authStorage";
+import { getStoredUser } from "../auth/authStorage";
 import "../styles/Login.css";
 
 function LoginSuccess() {
@@ -12,9 +12,9 @@ function LoginSuccess() {
   const firstName = user?.first_name || "Traveler";
 
   return (
-    <ImageLayout bgImageClass="bg-login">
-      <InfoCard className="auth-card success-card">
-        <h2>Hi {firstName}!</h2>
+    <ImageLayout bgImageClass="bg-login-success">
+      <InfoCard>
+        <h3>Hi {firstName}!</h3>
         <p className="success-lead">What would you like to do today?</p>
 
         <div className="success-actions">
@@ -23,7 +23,7 @@ function LoginSuccess() {
             className="btn-base btn-orange"
             onClick={() => navigate("/dashboard")}
           >
-            PLAN A NEW TRIP
+            Plan a new trip
           </button>
 
           <button
@@ -31,7 +31,7 @@ function LoginSuccess() {
             className="btn-base btn-orange"
             onClick={() => navigate("/dashboard")}
           >
-            VIEW MY TRIPS
+            View my trips
           </button>
         </div>
       </InfoCard>

@@ -1,4 +1,4 @@
-import { clearAuthSession, getStoredUser } from "../authStorage";
+import { clearAuthSession, getStoredUser } from "../auth/authStorage";
 
 function Header() {
   const user = getStoredUser();

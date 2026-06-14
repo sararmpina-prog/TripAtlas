@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import "../styles/PasswordField.css";
 
 export default function PasswordField({
   id,
@@ -15,9 +16,18 @@ export default function PasswordField({
   ...rest
 }) {
   const [showPassword, setShowPassword] = useState(false);
+  const wrapperClasses = ["password-field", wrapperClassName]
+    .filter(Boolean)
+    .join(" ");
+  const inputClasses = ["password-field__input", inputClassName]
+    .filter(Boolean)
+    .join(" ");
+  const toggleClasses = ["password-field__toggle", toggleClassName]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className={wrapperClassName}>
+    <div className={wrapperClasses}>
       <input
         {...rest}
         id={id}
@@ -28,12 +38,12 @@ export default function PasswordField({
         placeholder={placeholder}
         required={required}
         autoComplete={autoComplete}
-        className={inputClassName}
+        className={inputClasses}
       />
 
       <button
         type="button"
-        className={toggleClassName}
+        className={toggleClasses}
         onClick={() => setShowPassword((currentValue) => !currentValue)}
         aria-label={showPassword ? "Hide password" : "Show password"}
         aria-pressed={showPassword}

@@ -22,7 +22,7 @@ function FlightCard() {
   return (
     <div className="flight-card">
       <div className="flight-info">
-        <h3>{flightDeparture.type}</h3>
+        <h4>{flightDeparture.type}</h4>
         <p>Premium segment</p>
 
         <h4>{flightDeparture.airline}</h4>
@@ -39,7 +39,7 @@ function FlightCard() {
       </div>
 
          <div className="flight-info">
-        <h3>{flightArrival.type}</h3>
+        <h4>{flightArrival.type}</h4>
         <p>Premium segment</p>
 
         <h4>{flightArrival.airline}</h4>

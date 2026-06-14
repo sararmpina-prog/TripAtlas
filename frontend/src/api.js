@@ -1,6 +1,19 @@
 // src/api.js 
 export const API_URL = 'http://localhost:3000/api'
 
+function buildApiError(data, fallbackMessage, status) {
+  const backendCode = data?.error?.code;
+  const backendMessage = data?.error?.message;
+  const message = status >= 500 || backendCode === 'INTERNAL_SERVER_ERROR'
+    ? 'Something went wrong. Please try again later.'
+    : (backendMessage || fallbackMessage);
+
+  const error = new Error(message);
+  error.code = data?.error?.code;
+  error.status = status;
+  return error;
+}
+
 
 // Autenticar utilizador (POST)
 export async function loginUser(credentials) {
@@ -18,9 +31,7 @@ export async function loginUser(credentials) {
   console.log(JSON.stringify(response, null, 2));
 
   if (!response.ok) {
-    throw new Error(
-      "Login failed"
-    );
+    throw buildApiError(data, "Login failed", response.status);
   }
 
   return data;
@@ -38,7 +49,7 @@ export async function registerUser(userData) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data?.error?.message || "Register failed");
+    throw buildApiError(data, "Register failed", response.status);
   }
 
   return data;

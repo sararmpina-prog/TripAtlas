@@ -5,11 +5,11 @@ import "../styles/Login.css";
 
 export default function ForgotPassword() {
   return (
-    <ImageLayout bgImageClass="bg-login">
-      <InfoCard className="auth-card success-card forgot-card">
-        <h2>Reset your password</h2>
-        <p>Recovery flow not implemented yet. For this delivery, this page acts as the route target for the auth journey.</p>
-        <Link to="/login" className="register-btn">
+    <ImageLayout bgImageClass="bg-login-success">
+      <InfoCard>
+        <h3 className="heading-dark">Reset your password</h3>
+        <p className="subtitle subtitle-dark">Please contact admin support for assistance.</p>
+        <Link to="/login" className="btn-base btn-orange">
           Back to login
         </Link>
       </InfoCard>

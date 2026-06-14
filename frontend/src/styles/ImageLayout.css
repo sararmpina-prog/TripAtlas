@@ -14,12 +14,20 @@
 
 /* Imagem de Fundo do Registo (Grécia/Casas Brancas) */
 .bg-register {
-  background-image: url('../assets/register-img-greece.jpg'); 
+  background-image: url('../assets/register-img-greece-desktop.jpg'); 
+}
+
+.bg-register-success {
+  background-image: url('../assets/registerSuccess-img-greece-desktop.jpg'); 
 }
 
 /* Imagem de Fundo do Login (Montanhas) */
 .bg-login {
   background-image: url('../assets/login-img-mountains-desktop.jpg');
+}
+
+.bg-login-success {
+  background-image: url('../assets/loginSuccess-img-mountains-desktop.jpg');
 }
 
 .image-overlay {
@@ -52,8 +60,20 @@
     background-image: url('../assets/landing-img-coastal-mobile.jpg');
   }
 
+  .bg-register {
+    background-image: url('../assets/register-img-greece-mobile.jpg');
+  }
+
+  .bg-register-success {
+    background-image: url('../assets/registerSuccess-img-greece-mobile.jpg');
+  }
+
   .bg-login {
     background-image: url('../assets/login-img-mountains-mobile.jpg');
+  }
+
+  .bg-login-success {
+    background-image: url('../assets/loginSuccess-img-mountains-mobile.jpg');
   }
 
   .image-overlay {

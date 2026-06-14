@@ -5,16 +5,22 @@ import ImageLayout from "../components/ImageLayout";
 import InfoCard from "../components/InfoCard";
 import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
-import { saveAuthSession } from "../authStorage";
+import { saveAuthSession } from "../auth/authStorage";
+import {
+  getLoginErrorState,
+  hasValidationErrors,
+  normalizeLoginPayload,
+  validateLoginForm,
+} from "../auth/authValidation";
 import "../styles/Login.css";
-import "../styles/LoginForm.css";
 
 function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [formError, setFormError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
 
@@ -42,7 +48,9 @@ function Login() {
     },
 
     onError: (err) => {
-      setError(err.message);
+      const nextErrorState = getLoginErrorState(err);
+      setFieldErrors(nextErrorState.fieldErrors);
+      setFormError(nextErrorState.formError);
     },
   });
 
@@ -51,50 +59,92 @@ function Login() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    setError("");
+    setFormError("");
+    setFieldErrors({});
+
+    const validationError = validateLoginForm({ email, password });
+
+    if (hasValidationErrors(validationError)) {
+      setFieldErrors(validationError);
+      return;
+    }
+
     console.log("Cliquei Login");
     console.log("SUBMIT OK");
     console.log("antes da função mutate os dados são", email, password)
-    mutate({
-      email,
-      password,
-    });
+    mutate(normalizeLoginPayload({ email, password }));
   }
 
   return (
-    <ImageLayout bgImageClass="bg-login">
+    <ImageLayout bgImageClass="bg-login" hasOverlay={false}>
       <div className="auth-split auth-split-login">
         <section className="auth-side-panel">
           <h2>Don&apos;t have an account yet?</h2>
           <p className="auth-side-copy">Sign up here:</p>
 
-          <Link to="/register" className="register-btn">
+          <Link to="/register" className="btn-base btn-light">
             Register
           </Link>
         </section>
 
-        <InfoCard className="auth-card login-card">
-          <h2>Welcome Back!</h2>
-          <p>Your travel plans are waiting for you</p>
+        <InfoCard className="login-card">
+          <h3 className="heading-dark">Welcome Back!</h3>
+          <p className="subtitle subtitle-dark">Your travel plans are waiting for you</p>
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            <div className="auth-form-field">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldErrors((currentErrors) => ({
+                    ...currentErrors,
+                    email: "",
+                  }));
+                  setFormError("");
+                }}
+                required
+                aria-invalid={Boolean(fieldErrors.email)}
+                className={fieldErrors.email ? "auth-input-error" : undefined}
+              />
 
-            <PasswordField
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+              {fieldErrors.email && (
+                <p className="auth-form-error">
+                  {fieldErrors.email}
+                </p>
+              )}
+            </div>
 
-            <div className="login-options">
-              <label className="remember-me">
+            <div className="auth-form-field">
+              <PasswordField
+                name="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setFieldErrors((currentErrors) => ({
+                    ...currentErrors,
+                    password: "",
+                  }));
+                  setFormError("");
+                }}
+                required
+                aria-invalid={Boolean(fieldErrors.password)}
+                inputClassName={fieldErrors.password ? "auth-input-error" : undefined}
+              />
+
+              {fieldErrors.password && (
+                <p className="auth-form-error">
+                  {fieldErrors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="auth-inline-options">
+              <label className="auth-checkbox">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -108,16 +158,16 @@ function Login() {
               </Link>
             </div>
 
-            {error && (
-              <p className="login-error">
-                {error}
+            {formError && (
+              <p className="auth-form-error">
+                {formError}
               </p>
             )}
 
             <button
               type="submit"
               disabled={isPending}
-              className="auth-submit"
+              className="btn-base btn-orange auth-submit"
             >
               {isPending ? "Logging in..." : "Login"}
             </button>

@@ -7,12 +7,12 @@ function RegisterSuccess() {
   const navigate = useNavigate();
 
   return (
-    <ImageLayout bgImageClass="bg-register">
-      <InfoCard className="auth-card success-card">
-        <h2>You're All Set!</h2>
-        <p>Your account has been created successfully.</p>
+    <ImageLayout bgImageClass="bg-register-success">
+      <InfoCard>
+        <h3 className="heading-dark">You're All Set!</h3>
+        <p className="subtitle-dark">Your account has been created successfully.</p>
 
-        <p className="success-highlight">
+        <p className="subtitle subtitle-dark">
           Let&apos;s start planning your next unforgettable journey.
         </p>
 
@@ -21,7 +21,7 @@ function RegisterSuccess() {
           className="btn-base btn-orange"
           onClick={() => navigate("/dashboard")}
         >
-          CREATE YOUR FIRST TRIP
+          Create your first trip
         </button>
       </InfoCard>
     </ImageLayout>
