@@ -1,17 +1,40 @@
 import { Link } from "react-router";
 import ImageLayout from "../components/ImageLayout";
 import InfoCard from "../components/InfoCard";
-import "../styles/Login.css";
+import "../styles/ForgotPassword.css";
 
 export default function ForgotPassword() {
+
+  // Configuração do email temporário
+  const adminEmail = "support@company.com";
+  const emailSubject = encodeURIComponent("Password Reset Request");
+  const emailBody = encodeURIComponent("Hi Support Team,\n\nI need assistance resetting my password.\n\nMy registered email/username is: ");
+
   return (
     <ImageLayout bgImageClass="bg-login-success">
       <InfoCard>
         <h3 className="heading-dark">Reset your password</h3>
-        <p className="subtitle subtitle-dark">Please contact admin support for assistance.</p>
-        <Link to="/login" className="btn-base btn-orange">
-          Back to login
-        </Link>
+        <p className="subtitle subtitle-dark">
+          Automatic password reset is currently unavailable. <br />
+          Please contact our support team directly to regain access.
+        </p>
+
+        {/* Botão de Contacto por Email */}
+         <a 
+          href={`mailto:${adminEmail}?subject=${emailSubject}&body=${emailBody}`} 
+          className="btn-base btn-orange">
+          Contact Support via Email
+        </a>
+
+        {/* Escape Link */}
+        <div>
+          <Link 
+            to="/login" 
+            className="back-login-link"
+          >
+            Cancel and return to login
+          </Link>
+        </div>
       </InfoCard>
     </ImageLayout>
   );

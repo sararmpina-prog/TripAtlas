@@ -18,11 +18,15 @@
   margin-bottom: 5rem;
 }
 
+.landing-top-content .subtitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
 .landing-bottom-container {
   position: relative;
   bottom: 0;
   margin-bottom: 2rem;
-
 }
 
 .btn-container {
@@ -32,7 +36,7 @@
   margin-bottom: 1.5rem;
 }
 
-.landing-center .btn-base {
+.btn-container .btn-base {
   min-width: 240px;
   display: inline-block;
   text-align: center;
@@ -48,5 +52,9 @@
 .link-highlight {
   color: var(--color-white);
   text-decoration: underline;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.link-highlight:hover {
+  color: var(--color-light-azure);
 }

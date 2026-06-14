@@ -72,11 +72,11 @@ h3 {
 }
 
 h1 {
-  font-size: 4.2rem;
+  font-size: 4.4rem;
   letter-spacing: 2px;
   line-height: 1.1;
   margin-bottom: 20px;
-  font-weight: 800;
+  font-weight: 700;
   text-shadow: var(--shadow-hard);
 }
 
@@ -108,6 +108,7 @@ h4 {
 
 .subtitle {
   font-size: 1.2rem;
+  line-height: 2;
   margin-bottom: 3rem;
   font-weight: 500;
 }
@@ -117,7 +118,7 @@ h4 {
 }
 
 .subtitle-dark {
-  color: var(--text-heading-dark);
+  color: var(--text-main);
 }
 
 p {
@@ -146,7 +147,7 @@ label {
   cursor: pointer;
   padding: 10px 40px;
   font-family: "Open Sans", sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   letter-spacing: 2.5px;
   font-weight: 700;
   text-transform: uppercase;
@@ -227,6 +228,11 @@ input:focus {
   width: 100%;
 }
 
+.auth-form-field > input::placeholder,
+.auth-form-field > .password-field > input::placeholder {
+  color: var(--text-muted);
+}
+
 .auth-form-field .auth-form-error {
   margin-top: 0.45rem;
 }
@@ -264,7 +270,7 @@ input:focus {
   margin: 0;
   border-radius: 4px;
   box-shadow: none;
-  accent-color: var(--color-orange);
+  accent-color: var(--color-dark-azure);
 }
 
 .auth-form-error {

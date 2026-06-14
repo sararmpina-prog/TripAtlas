@@ -13,7 +13,7 @@ export default function LandingPage() {
             Plan Less.<br />
             Experience More.
           </h1>
-          <p className="subtitle subtitle-light text-center">
+          <p className="subtitle p-white text-center">
             Your AI-powered travel companion for unforgettable journeys
           </p>
         </div>

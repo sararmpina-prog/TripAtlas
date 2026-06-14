@@ -35,11 +35,7 @@
   width: min(100%, 560px);
   padding-top: 3rem;
   padding-bottom: 3rem;
-}
-
-.login-card p {
-  margin-bottom: 2.2rem;
-  font-size: 1.1rem;
+  background-color: var(--color-light-azure);
 }
 
 .success-actions {
