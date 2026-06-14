@@ -3,6 +3,20 @@ import * as tripRepository from '../repository/tripRepository.js';
 import * as accommodationRepository from '../repository/accommodationRepository.js';
 import { NotFoundError, ValidationError, ForbiddenError} from '../utils/appErrors.js';
 
+async function getOwnedTripOrThrow(tripId, currentUserId, notFoundMessage = 'Trip not found.') {
+  const trip = await tripRepository.findTripById(tripId);
+
+  if (!trip) {
+    throw new NotFoundError(notFoundMessage);
+  }
+
+  if (Number(trip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only manage reserves from your own trips.');
+  }
+
+  return trip;
+}
+
 // LISTA TODAS AS RESERVAS DE UM UTILIZADOR (Filtrado por segurança)
 export async function listAccommodationsReserves() {
   const reserves = await reserveRepository.listReserves();
@@ -11,13 +25,15 @@ export async function listAccommodationsReserves() {
 }
 
 // APAGA UMA RESERVA EXISTENTE
-export async function deleteAccommodationReserve(id) {
+export async function deleteAccommodationReserve(id, currentUserId) {
 
   const reserve = await reserveRepository.findReserveById(id)
 
   if (!reserve) {
     throw new NotFoundError('Reserve not found.');
   }
+
+  await getOwnedTripOrThrow(reserve.trip_id, currentUserId);
 
    // Apaga a reserva diretamente da base de dados
   await reserveRepository.deleteReserve(id);
@@ -26,13 +42,8 @@ export async function deleteAccommodationReserve(id) {
 }
 
 //Cria reserva
-export async function createReserve(payload) {
-
-  console.log("Estou no serviço")
-
+export async function createReserve(payload, currentUserId) {
   const reserve = payload
-
-  console.log("A reserva é, após validações da data", reserve)
   
   const accommodation = await accommodationRepository.findAccommodationById(reserve.accommodation_id)
       
@@ -40,17 +51,7 @@ export async function createReserve(payload) {
     throw new NotFoundError('Accommodation not found.');
   }
 
-  console.log("Id da acomodação", reserve.accommodation_id)
-
-  const trip = await tripRepository.findTripById(reserve.trip_id)
-    
-  if (!trip) {
-    throw new NotFoundError('Trip not found.');
-  }
-  
-  console.log("Id da viagem", trip)
-
-  console.log("os meus valores a inserir são", reserve)
+  await getOwnedTripOrThrow(reserve.trip_id, currentUserId);
 
   const duplicatedReserve = await reserveRepository.listDuplicatedReserves(reserve)
 
@@ -67,15 +68,14 @@ export async function createReserve(payload) {
 
 // ATUALIZA UMA RESERVA EXISTENTE (PATCH)
 
-export async function updateReserve(id, validatedReserve) {
-
-  //Se reserva existe 
-  console.log("Service patch reserva id", id)
+export async function updateReserve(id, currentUserId, validatedReserve) {
   const existingReserve = await reserveRepository.findReserveById(id);
 
   if (!existingReserve) {
     throw new NotFoundError('Reserve not found.');
   }
+
+  await getOwnedTripOrThrow(existingReserve.trip_id, currentUserId);
 
   const updateData = {
     accommodation_id: validatedReserve.accommodation_id ?? existingReserve.accommodation_id,
@@ -95,13 +95,7 @@ export async function updateReserve(id, validatedReserve) {
 
   // Validar trip caso seja alterada
   if (validatedReserve.trip_id !== undefined) {
-
-    const trip = await tripRepository
-      .findTripById(validatedReserve.trip_id);
-
-    if (!trip) {
-      throw new NotFoundError('Trip not found.');
-    }
+    await getOwnedTripOrThrow(validatedReserve.trip_id, currentUserId);
   }
 
   // Validar datas usando o estado atual da BD
@@ -126,9 +120,6 @@ export async function updateReserve(id, validatedReserve) {
 
   updateData.check_in_date = checkInDate;
   updateData.check_out_date = checkOutDate;
-
-
-  console.log("serviço validatedReserve", updateData)
 
   await reserveRepository.updateReserve(id, updateData);
 

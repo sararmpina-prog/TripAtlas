@@ -24,11 +24,13 @@ function toMySqlDateTime(value) {
 }
 
 // LISTA TODOS OS VOOS
-export async function listFlights() {
+export async function listFlightsByUserId(userId) {
   const [rows] = await db.execute(`
-    SELECT id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, created_at, updated_at
-    FROM flights
-  `);
+    SELECT f.id, f.trip_id, f.flight_number, f.airline, f.departure_airport, f.arrival_airport, f.departure_datetime, f.arrival_datetime, f.created_at, f.updated_at
+    FROM flights f
+    INNER JOIN trips t ON f.trip_id = t.id
+    WHERE t.user_id = ?
+  `, [userId]);
   return rows;
 }
 

@@ -85,11 +85,61 @@ try {
   const patchOtherTrip = await request('PATCH', `/api/trips/${created.tripBId}`, created.tokenA, { title: 'Hack trip' });
   push('PATCH /api/trips/:id blocks other trip', patchOtherTrip.status === 403, { status: patchOtherTrip.status, body: patchOtherTrip.json });
 
+  const accommodation = await request('POST', '/api/accommodations', null, {
+    name: `Ownership Hotel ${stamp}`,
+    city: 'Coimbra',
+    country: 'Portugal',
+  });
+  push('POST /api/accommodations creates shared accommodation', accommodation.status === 201, { status: accommodation.status, body: accommodation.json });
+  created.accommodationId = accommodation.json?.data?.id;
+
+  const flightA = await request('POST', '/api/flights', created.tokenA, {
+    trip_id: created.tripAId,
+    flight_number: `OA${String(stamp).slice(-4)}`,
+    airline: 'TAP',
+    departure_airport: 'OPO',
+    arrival_airport: 'LIS',
+    departure_datetime: '2026-07-10T09:00:00.000Z',
+    arrival_datetime: '2026-07-10T10:00:00.000Z'
+  });
+  push('POST /api/flights creates flight on own trip', flightA.status === 201, { status: flightA.status, body: flightA.json });
+  created.flightAId = flightA.json?.data?.id;
+
+  const flightsA = await request('GET', '/api/flights', created.tokenA);
+  push('GET /api/flights returns only own trip flights', flightsA.status === 200 && Array.isArray(flightsA.json?.data) && flightsA.json.data.every((flight) => flight.trip_id === created.tripAId), { status: flightsA.status, body: flightsA.json });
+
+  const patchOtherFlight = await request('PATCH', `/api/flights/${created.flightAId}`, created.tokenB, { airline: 'Hack Air' });
+  push('PATCH /api/flights/:id blocks other user flight', patchOtherFlight.status === 403, { status: patchOtherFlight.status, body: patchOtherFlight.json });
+
+  const deleteOtherFlight = await request('DELETE', `/api/flights/${created.flightAId}`, created.tokenB);
+  push('DELETE /api/flights/:id blocks other user flight', deleteOtherFlight.status === 403, { status: deleteOtherFlight.status, body: deleteOtherFlight.json });
+
+  const reserveA = await request('POST', '/api/reserves', created.tokenA, {
+    accommodation_id: created.accommodationId,
+    trip_id: created.tripAId,
+    check_in_date: '2026-07-10',
+    check_out_date: '2026-07-12'
+  });
+  push('POST /api/reserves creates reserve on own trip', reserveA.status === 201, { status: reserveA.status, body: reserveA.json });
+  created.reserveAId = reserveA.json?.data?.id;
+
+  const reservesA = await request('GET', '/api/reserves', created.tokenA);
+  push('GET /api/reserves returns only own trip reserves', reservesA.status === 200 && Array.isArray(reservesA.json?.data) && reservesA.json.data.every((reserve) => reserve.trip_id === created.tripAId), { status: reservesA.status, body: reservesA.json });
+
+  const patchOtherReserve = await request('PATCH', `/api/reserves/${created.reserveAId}`, created.tokenB, { check_out_date: '2026-07-13' });
+  push('PATCH /api/reserves/:id blocks other user reserve', patchOtherReserve.status === 403, { status: patchOtherReserve.status, body: patchOtherReserve.json });
+
+  const deleteOtherReserve = await request('DELETE', `/api/reserves/${created.reserveAId}`, created.tokenB);
+  push('DELETE /api/reserves/:id blocks other user reserve', deleteOtherReserve.status === 403, { status: deleteOtherReserve.status, body: deleteOtherReserve.json });
+
   const anonymousTrips = await request('GET', '/api/trips', null);
   push('GET /api/trips requires token', anonymousTrips.status === 401, { status: anonymousTrips.status, body: anonymousTrips.json });
 } catch (error) {
   push('fatal', false, { error: error.message, created });
 } finally {
+  if (created.reserveAId) await request('DELETE', `/api/reserves/${created.reserveAId}`, created.tokenA);
+  if (created.flightAId) await request('DELETE', `/api/flights/${created.flightAId}`, created.tokenA);
+  if (created.accommodationId) await request('DELETE', `/api/accommodations/${created.accommodationId}`, null);
   if (created.tripAId) await request('DELETE', `/api/trips/${created.tripAId}`, created.tokenA);
   if (created.tripBId) await request('DELETE', `/api/trips/${created.tripBId}`, created.tokenB);
   if (created.userAId) await request('DELETE', `/api/users/${created.userAId}`, created.tokenA);

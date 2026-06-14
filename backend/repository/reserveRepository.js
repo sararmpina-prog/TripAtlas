@@ -93,7 +93,7 @@ export async function listReservesByUserId(userId) {
   const [rows] = await db.execute(`
     SELECT ar.* 
     FROM accommodation_reserve ar
-    INNER JOIN trip t ON ar.trip_id = t.id
+    INNER JOIN trips t ON ar.trip_id = t.id
     WHERE t.user_id = ?
   `, [userId]);
 

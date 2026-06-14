@@ -18,19 +18,22 @@ Nota importante:
 
 import * as flightRepository from '../repository/flightRepository.js';
 import * as tripRepository from '../repository/tripRepository.js';
-import { NotFoundError, ValidationError } from '../utils/appErrors.js';
+import { ForbiddenError, NotFoundError, ValidationError } from '../utils/appErrors.js';
 
 // LISTA TODOS OS VOOS
-export async function listFlights() {
-  return await flightRepository.listFlights(); // Retorna o array direto em snake_case
+export async function listFlights(currentUserId) {
+  return await flightRepository.listFlightsByUserId(currentUserId);
 }
 
 // CRIA UM NOVO VOO
-export async function createFlight(validatedFlight) {
-  // Validamos se o trip_id associado existe antes de criar o voo
+export async function createFlight(validatedFlight, currentUserId) {
   const trip = await tripRepository.findTripById(validatedFlight.trip_id);
   if (!trip) {
     throw new NotFoundError('The associated trip was not found.');
+  }
+
+  if (Number(trip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only manage flights from your own trips.');
   }
 
   const flightId = await flightRepository.createFlight(validatedFlight);
@@ -40,22 +43,36 @@ export async function createFlight(validatedFlight) {
 }
 
 // ATUALIZA UM VOO EXISTENTE
-export async function updateFlight(id, validatedFlight) {
-  // Se o utilizador estiver a tentar alterar o tripId, validamos se o novo ID existe
+export async function updateFlight(id, currentUserId, validatedFlight) {
+  const existingFlight = await flightRepository.findFlightById(id);
+
+  if (!existingFlight) {
+    throw new NotFoundError('Flight not found.');
+  }
+
+  const currentTrip = await tripRepository.findTripById(existingFlight.trip_id);
+
+  if (!currentTrip) {
+    throw new NotFoundError('The associated trip was not found.');
+  }
+
+  if (Number(currentTrip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only manage flights from your own trips.');
+  }
+
   if (validatedFlight.trip_id) {
     const trip = await tripRepository.findTripById(validatedFlight.trip_id);
     if (!trip) {
       throw new NotFoundError('The new associated trip was not found.');
     }
+
+    if (Number(trip.user_id) !== Number(currentUserId)) {
+      throw new ForbiddenError('You can only move flights to your own trips.');
+    }
   }
+
   // Se o utilizador tentar alterar pelo menos uma das datas, validamos contra o estado atual da BD
   if (validatedFlight.departure_datetime || validatedFlight.arrival_datetime) {
-    const existingFlight = await flightRepository.findFlightById(id);
-  
-    if (!existingFlight) {
-        throw new NotFoundError('Flight not found.');
-    }
-
     // Isolamos os objetos Date apenas para a validação numérica milimétrica
     const departureDateObject = validatedFlight.departure_datetime 
         ? new Date(validatedFlight.departure_datetime) // new Date() para garantir que temos um objeto Date estável, independentemente de fusos horários e que as datas existem no calendário (não ter datas inválidas como 2024-02-30)
@@ -85,11 +102,21 @@ export async function updateFlight(id, validatedFlight) {
 }
 
 // APAGA UM VOO EXISTENTE
-export async function deleteFlight(id) {
+export async function deleteFlight(id, currentUserId) {
   const flight = await flightRepository.findFlightById(id);
 
   if (!flight) {
     throw new NotFoundError('Flight not found.');
+  }
+
+  const trip = await tripRepository.findTripById(flight.trip_id);
+
+  if (!trip) {
+    throw new NotFoundError('The associated trip was not found.');
+  }
+
+  if (Number(trip.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only manage flights from your own trips.');
   }
 
   await flightRepository.deleteFlight(id);

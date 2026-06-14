@@ -31,15 +31,13 @@ export const getAccommodationsReserves = asyncHandler(async (req, res) => {
 
 
 export const deleteAccommodationReserveById = asyncHandler(async (req, res) => {
-    // Alterado de req.params.id para req.params.reserveId para bater certo com a rota
-    const reserve = await deleteAccommodationReserve(req.params.reserveId);
+    const currentUserId = req.user.id;
+    const reserve = await deleteAccommodationReserve(req.params.reserveId, currentUserId);
     res.json({ success: true, data: reserve });
 });
 
 export const postReserve = asyncHandler(async (req, res) => {
-    console.log("body is", req.body)
-
-    // Passa o ID para verificar se a viagem associada é deste utilizador
+    const currentUserId = req.user.id;
     const reserve = await createReserve(req.body || {}, currentUserId);
     res.status(201).json({
         success: true,
@@ -48,8 +46,7 @@ export const postReserve = asyncHandler(async (req, res) => {
 });
 
 export const patchReserve = asyncHandler(async (req, res) => {
-    console.log("Controller patch reserva id", req.params)
-    
+    const currentUserId = req.user.id;
     const reserve = await updateReserve(req.params.reserveId, currentUserId, req.body || {});
 
     res.json({

@@ -43,8 +43,8 @@ function expectSuccess(name, response, expectedStatus) {
 
 async function cleanup() {
   const deletions = [
-    ['DELETE /api/reserves/:id', created.reserveId && `/api/reserves/${created.reserveId}`, null],
-    ['DELETE /api/flights/:id', created.flightId && `/api/flights/${created.flightId}`, null],
+    ['DELETE /api/reserves/:id', created.reserveId && `/api/reserves/${created.reserveId}`, created.token],
+    ['DELETE /api/flights/:id', created.flightId && `/api/flights/${created.flightId}`, created.token],
     ['DELETE /api/accommodations/:id', created.accommodationId && `/api/accommodations/${created.accommodationId}`, null],
     ['DELETE /api/trips/:id', created.tripId && `/api/trips/${created.tripId}`, created.token],
     ['DELETE /api/users/:id', created.userId && `/api/users/${created.userId}`, created.token],
@@ -104,7 +104,7 @@ try {
     description: 'Updated trip description'
   }), 200);
 
-  const flight = expectSuccess('POST /api/flights', await request('POST', '/api/flights', null, {
+  const flight = expectSuccess('POST /api/flights', await request('POST', '/api/flights', created.token, {
     trip_id: created.tripId,
     flight_number: `TP${String(stamp).slice(-4)}`,
     airline: 'TAP',
@@ -115,8 +115,8 @@ try {
   }), 201);
   created.flightId = flight.id;
 
-  expectSuccess('GET /api/flights', await request('GET', '/api/flights'), 200);
-  expectSuccess('PATCH /api/flights/:id', await request('PATCH', `/api/flights/${created.flightId}`, null, {
+  expectSuccess('GET /api/flights', await request('GET', '/api/flights', created.token), 200);
+  expectSuccess('PATCH /api/flights/:id', await request('PATCH', `/api/flights/${created.flightId}`, created.token, {
     airline: 'TAP Air Portugal'
   }), 200);
 
@@ -132,7 +132,7 @@ try {
     city: 'Porto'
   }), 200);
 
-  const reserve = expectSuccess('POST /api/reserves', await request('POST', '/api/reserves', null, {
+  const reserve = expectSuccess('POST /api/reserves', await request('POST', '/api/reserves', created.token, {
     accommodation_id: created.accommodationId,
     trip_id: created.tripId,
     check_in_date: '2026-07-10',
@@ -140,8 +140,8 @@ try {
   }), 201);
   created.reserveId = reserve.id;
 
-  expectSuccess('GET /api/reserves', await request('GET', '/api/reserves'), 200);
-  expectSuccess('PATCH /api/reserves/:id', await request('PATCH', `/api/reserves/${created.reserveId}`, null, {
+  expectSuccess('GET /api/reserves', await request('GET', '/api/reserves', created.token), 200);
+  expectSuccess('PATCH /api/reserves/:id', await request('PATCH', `/api/reserves/${created.reserveId}`, created.token, {
     check_out_date: '2026-07-13'
   }), 200);
 } catch (error) {
