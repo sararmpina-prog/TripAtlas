@@ -8,11 +8,14 @@ import { chatMessageSchema } from '../validators/aiValidator.js';
 
 const router = express.Router();
 
-// POST /api/ai/chat/:tripId
+// POST /api/ai/chat -> chat geral do utilizador autenticado
+router.post('/chat', validateBody(chatMessageSchema), postChatMessage);
+
+// POST /api/ai/chat/:tripId -> chat associado a uma viagem específica
 router.post(
   '/chat/:tripId', 
   validateIdParam('tripId'), 
-  validateBody(chatMessageSchema), // Adicionada a barreira de validação do texto do chat
+  validateBody(chatMessageSchema),
   postChatMessage
 );
 

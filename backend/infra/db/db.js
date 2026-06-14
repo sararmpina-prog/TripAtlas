@@ -25,6 +25,8 @@ const tableStatements = [
       email VARCHAR(150) NOT NULL UNIQUE,
       mobile_phone VARCHAR(20),
       password_hash VARCHAR(255) NOT NULL,
+      failed_login_attempts INT DEFAULT 0,
+      locked_until TIMESTAMP NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -77,7 +79,8 @@ const tableStatements = [
   `
     CREATE TABLE IF NOT EXISTS chat_history (
       id INT PRIMARY KEY AUTO_INCREMENT,
-      trip_id INT NOT NULL,
+      user_id INT NOT NULL,
+      trip_id INT NULL,
       user_message TEXT,
       ai_response MEDIUMTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -130,6 +133,14 @@ const foreignKeyStatements = [
     `,
   },
   {
+    name: 'fk_chat_history_user',
+    statement: `
+      ALTER TABLE chat_history
+      ADD CONSTRAINT fk_chat_history_user
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    `,
+  },
+  {
     name: 'fk_chat_history_trip',
     statement: `
       ALTER TABLE chat_history
@@ -160,6 +171,33 @@ const foreignKeyStatements = [
       ADD CONSTRAINT unique_reservation UNIQUE (accommodation_id, trip_id, check_in_date, check_out_date)
     `,
   }
+];
+
+const columnStatements = [
+  {
+    tableName: 'users',
+    columnName: 'failed_login_attempts',
+    statement: `
+      ALTER TABLE users
+      ADD COLUMN failed_login_attempts INT DEFAULT 0
+    `,
+  },
+  {
+    tableName: 'users',
+    columnName: 'locked_until',
+    statement: `
+      ALTER TABLE users
+      ADD COLUMN locked_until TIMESTAMP NULL
+    `,
+  },
+  {
+    tableName: 'chat_history',
+    columnName: 'user_id',
+    statement: `
+      ALTER TABLE chat_history
+      ADD COLUMN user_id INT NULL AFTER id
+    `,
+  },
 ];
 
 // Configuração do pool de conexões
@@ -210,10 +248,94 @@ async function ensureForeignKey(constraintName, statement) {
   }
 }
 
+async function ensureColumn(tableName, columnName, statement) {
+  const [rows] = await db.execute(
+    `
+      SELECT COLUMN_NAME
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = ?
+        AND COLUMN_NAME = ?
+      LIMIT 1
+    `,
+    [tableName, columnName]
+  );
+
+  if (rows.length === 0) {
+    await db.execute(statement);
+  }
+}
+
+async function ensureNullableColumn(tableName, columnName, columnDefinition) {
+  const [rows] = await db.execute(
+    `
+      SELECT IS_NULLABLE
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = ?
+        AND COLUMN_NAME = ?
+      LIMIT 1
+    `,
+    [tableName, columnName]
+  );
+
+  if (rows.length > 0 && rows[0].IS_NULLABLE !== 'YES') {
+    await db.execute(
+      `
+        ALTER TABLE ${tableName}
+        MODIFY COLUMN ${columnName} ${columnDefinition} NULL
+      `
+    );
+  }
+}
+
+async function ensureNotNullColumnWhenSafe(tableName, columnName, columnDefinition) {
+  const [[column]] = await db.execute(
+    `
+      SELECT IS_NULLABLE
+      FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE()
+        AND TABLE_NAME = ?
+        AND COLUMN_NAME = ?
+      LIMIT 1
+    `,
+    [tableName, columnName]
+  );
+
+  if (!column || column.IS_NULLABLE !== 'YES') {
+    return;
+  }
+
+  const [[counts]] = await db.execute(
+    `
+      SELECT
+        COUNT(*) AS total_rows,
+        SUM(CASE WHEN ${columnName} IS NULL THEN 1 ELSE 0 END) AS null_rows
+      FROM ${tableName}
+    `
+  );
+
+  if (Number(counts?.null_rows || 0) === 0) {
+    await db.execute(
+      `
+        ALTER TABLE ${tableName}
+        MODIFY COLUMN ${columnName} ${columnDefinition} NOT NULL
+      `
+    );
+  }
+}
+
 export async function ensureTripAtlasSchema() {
   for (const statement of tableStatements) {
     await db.execute(statement);
   }
+
+  for (const column of columnStatements) {
+    await ensureColumn(column.tableName, column.columnName, column.statement);
+  }
+
+  await ensureNullableColumn('chat_history', 'trip_id', 'INT');
+  await ensureNotNullColumnWhenSafe('chat_history', 'user_id', 'INT');
 
   for (const foreignKey of foreignKeyStatements) {
     await ensureForeignKey(foreignKey.name, foreignKey.statement);

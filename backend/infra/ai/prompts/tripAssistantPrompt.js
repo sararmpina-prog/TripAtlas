@@ -2,7 +2,7 @@
 Garante respostas estruturadas, amigáveis e contextualizadas para viagens.
 */
 
-export function buildTripAssistantSystemPrompt() {
+export function buildTripAssistantSystemPrompt(tripContext = {}) {
   const today = new Date().toISOString().slice(0, 10); // Data atual no formato YYYY-MM-DD para contexto temporal
 
   return `

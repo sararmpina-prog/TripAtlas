@@ -4,35 +4,50 @@
 import * as tripRepository from '../repository/tripRepository.js';
 import * as chatRepository from '../repository/chatRepository.js';
 import { callGeminiWithContents } from '../infra/ai/callGemini.js';
-import { buildTripAssistantSystemPrompt } from '../prompts/tripAssistantPrompt.js';
+import { buildTripAssistantSystemPrompt } from '../infra/ai/prompts/tripAssistantPrompt.js';
 import { buildTripBotConfig } from '../infra/ai/tripBotConfig.js';
 import { buildConversationContents } from './chatHistoryBuilder.js';
+import { ForbiddenError, NotFoundError, ValidationError } from '../utils/appErrors.js';
 import {
-  hydrateHistoryByTrip,
-  getHistoryByTrip,
-  getSummaryByTrip,
-  limitHistoryWithSummaryByTrip
+  getHistory,
+  getSummary,
+  hydrateHistory,
+  limitHistoryWithSummary,
 } from './chatService.js';
 
-// Processa a mensagem do utilizador no chat de uma viagem e devolve a resposta da AI
-// @param {number} trip_id - ID da viagem ativa no chat
+// Processa a mensagem do utilizador e devolve a resposta da AI.
 // @param {string} user_message - Mensagem enviada pelo utilizador
 // @returns {object} Resposta estruturada com o texto da IA
-export async function handleTripAssistantMessage(trip_id, user_message) {
+export async function handleAssistantMessage({ user_id, trip_id = null, user_message }) {
   if (!user_message || typeof user_message !== 'string') {
-    throw new Error('Invalid user message provided.');
+    throw new ValidationError('Invalid user message provided.');
   }
 
-  // Hidrata o histórico em RAM a partir do SQL (apenas no primeiro turno)
-  await hydrateHistoryByTrip(trip_id);
-  const history = getHistoryByTrip(trip_id);
-  const summary = getSummaryByTrip(trip_id);
+  const chatScope = {
+    user_id,
+    trip_id: trip_id ?? null,
+  };
 
-  // Consulta os dados reais da viagem na base de dados para dar contexto à IA
-  const tripRows = await tripRepository.findTripById(trip_id);
-  const tripContext = tripRows || {}; // Dados: destination, start_date, etc.
+  await hydrateHistory(chatScope);
+  const history = getHistory(chatScope);
+  const summary = getSummary(chatScope);
 
-  // Constrói o System Prompt dinâmico (a vossa fusão em inglês com regras de segurança)
+  let tripContext = {};
+
+  if (trip_id !== null && trip_id !== undefined) {
+    const trip = await tripRepository.findTripById(trip_id);
+
+    if (!trip) {
+      throw new NotFoundError('Trip not found.');
+    }
+
+    if (Number(trip.user_id) !== Number(user_id)) {
+      throw new ForbiddenError('You do not have access to this trip chat.');
+    }
+
+    tripContext = trip;
+  }
+
   const systemPrompt = buildTripAssistantSystemPrompt(tripContext);
   const geminiConfig = buildTripBotConfig(systemPrompt);
 
@@ -54,12 +69,11 @@ export async function handleTripAssistantMessage(trip_id, user_message) {
     parts: [{ text: ai_response }]
   });
 
-  // Aplica a compressão automática em RAM se o chat já tiver mais de 5 turnos
-  await limitHistoryWithSummaryByTrip(trip_id);
+  await limitHistoryWithSummary(chatScope);
 
-  // Grava permanentemente a interação no SQL em snake_case puro
   await chatRepository.saveChat({
-    trip_id,
+    user_id,
+    trip_id: trip_id ?? null,
     user_message: user_message.trim(),
     ai_response
   });

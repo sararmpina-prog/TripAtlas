@@ -5,16 +5,17 @@ import { asyncHandler } from '../middlewares/asyncHandler.js';
 import * as aiService from '../services/aiService.js';
 
 export const postChatMessage = asyncHandler(async (req, res) => {
-  // O trip_id vem validado pelo middleware de parâmetros da URL
   const { tripId } = req.params;
   const { user_message } = req.body;
 
-  // Executa o loop principal de conversação da IA
-  const aiResult = await aiService.handleTripAssistantMessage(tripId, user_message);
+  const aiResult = await aiService.handleAssistantMessage({
+    user_id: req.user.id,
+    trip_id: tripId ? Number(tripId) : null,
+    user_message,
+  });
 
-  // Responde no padrão JSON limpo
   res.json({
     success: true,
-    data: aiResult // Contém o objeto { reply: "..." }
+    data: aiResult
   });
 });

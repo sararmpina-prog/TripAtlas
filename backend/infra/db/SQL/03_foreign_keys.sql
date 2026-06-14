@@ -25,6 +25,12 @@ REFERENCES trips(id)
 ON DELETE CASCADE;
 
 ALTER TABLE chat_history
+ADD CONSTRAINT fk_chat_history_user
+FOREIGN KEY (user_id)
+REFERENCES users(id)
+ON DELETE CASCADE;
+
+ALTER TABLE chat_history
 ADD CONSTRAINT fk_chat_history_trip
 FOREIGN KEY (trip_id)
 REFERENCES trips(id)

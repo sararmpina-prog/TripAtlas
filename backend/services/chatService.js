@@ -1,35 +1,40 @@
-/* Gestão de contexto conversacional por Viagem (Trip).
+/* Gestão de contexto conversacional por âmbito de chat.
    Persistência definitiva na BD + Cache híbrida em RAM + Compressão contextual. */
 
-import { getChatHistoryByTrip } from '../repository/chatRepository.js';
+import { getChatHistory } from '../repository/chatRepository.js';
 import { summarizeHistory } from './chatSummaryService.js';
 
-// Indexado por trip_id em vez de userId para não misturar chats de viagens diferentes
-const chatStateByTrip = new Map();
+const chatStateByScope = new Map();
 const MAX_ACTIVE_HISTORY = 5;
 
-function getTripChatState(trip_id) {
-  if (!chatStateByTrip.has(trip_id)) {
-    chatStateByTrip.set(trip_id, {
+function getChatScopeKey({ user_id, trip_id = null }) {
+  return trip_id === null || trip_id === undefined
+    ? `user:${user_id}:general`
+    : `user:${user_id}:trip:${trip_id}`;
+}
+
+function getChatScopeState(scope) {
+  const scopeKey = getChatScopeKey(scope);
+
+  if (!chatStateByScope.has(scopeKey)) {
+    chatStateByScope.set(scopeKey, {
       history: [],
       summary: null,
-      hydrated: false, // Indica se já carregamos o histórico completo do SQL para esta viagem
+      hydrated: false,
     });
   }
 
-  return chatStateByTrip.get(trip_id);
+  return chatStateByScope.get(scopeKey);
 }
 
-// Lazy hydration: carrega do SQL apenas no primeiro pedido do chat desta viagem
-export async function hydrateHistoryByTrip(trip_id) {
-  const state = getTripChatState(trip_id);
+export async function hydrateHistory(scope) {
+  const state = getChatScopeState(scope);
 
   if (state.hydrated) {
     return state;
   }
 
-  // Usa a função em snake_case que foi construída no repository
-  const persistedHistory = await getChatHistoryByTrip(trip_id);
+  const persistedHistory = await getChatHistory(scope);
   state.history.length = 0;
   state.history.push(...persistedHistory);
   state.summary = null;
@@ -38,25 +43,24 @@ export async function hydrateHistoryByTrip(trip_id) {
   return state;
 }
 
-export function getHistoryByTrip(trip_id) {
-  return getTripChatState(trip_id).history;
+export function getHistory(scope) {
+  return getChatScopeState(scope).history;
 }
 
-export function getSummaryByTrip(trip_id) {
-  return getTripChatState(trip_id).summary;
+export function getSummary(scope) {
+  return getChatScopeState(scope).summary;
 }
 
-export function clearHistoryByTrip(trip_id) {
-  chatStateByTrip.set(trip_id, {
+export function clearHistory(scope) {
+  chatStateByScope.set(getChatScopeKey(scope), {
     history: [],
     summary: null,
     hydrated: true,
   });
 }
 
-// Mantém apenas os últimos 5 turnos ativos em RAM e comprime o resto
-export async function limitHistoryWithSummaryByTrip(trip_id) {
-  const state = getTripChatState(trip_id);
+export async function limitHistoryWithSummary(scope) {
+  const state = getChatScopeState(scope);
 
   if (state.history.length <= MAX_ACTIVE_HISTORY) return;
 

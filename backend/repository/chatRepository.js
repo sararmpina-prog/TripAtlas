@@ -4,7 +4,8 @@
   Base de dados → snake_case
 
   Responsabilidade:
-  - persistir mensagens do utilizador e respostas da AI associadas a uma viagem
+  - persistir mensagens do utilizador e respostas da AI associadas a um utilizador
+  - suportar histórico geral sem viagem e histórico contextualizado por viagem
   - recuperar histórico de conversa cronológico estruturado para a Gemini API
 
   Este ficheiro NÃO contém:
@@ -19,29 +20,41 @@ import { z } from 'zod';
 const limitSchema = z.coerce.number().int().positive().catch(10);
 
 // Persiste uma interação completa no histórico de chat.
-export async function saveChat({ trip_id, user_message, ai_response }) {
+export async function saveChat({ user_id, trip_id = null, user_message, ai_response }) {
   const query = `
-    INSERT INTO chat_history (trip_id, user_message, ai_response)
-    VALUES (?, ?, ?)
+    INSERT INTO chat_history (user_id, trip_id, user_message, ai_response)
+    VALUES (?, ?, ?, ?)
   `;
 
-  const values = [trip_id, user_message, ai_response];
+  const values = [user_id, trip_id, user_message, ai_response];
   await db.execute(query, values);
 }
 
-// Recupera histórico de chat de uma viagem específica formatado para a Gemini API.
-export async function getChatHistoryByTrip(trip_id, limit = 10) {
+// Recupera histórico de chat de um utilizador, com ou sem viagem associada.
+export async function getChatHistory({ user_id, trip_id = null }, limit = 10) {
   const safeLimit = limitSchema.parse(limit);
 
-  const query = `
-    SELECT user_message, ai_response
-    FROM chat_history
-    WHERE trip_id = ?
-    ORDER BY id DESC
-    LIMIT ${safeLimit}
-  `;
+  const hasTripScope = trip_id !== null && trip_id !== undefined;
+  const query = hasTripScope
+    ? `
+        SELECT user_message, ai_response
+        FROM chat_history
+        WHERE user_id = ? AND trip_id = ?
+        ORDER BY id DESC
+        LIMIT ${safeLimit}
+      `
+    : `
+        SELECT user_message, ai_response
+        FROM chat_history
+        WHERE user_id = ? AND trip_id IS NULL
+        ORDER BY id DESC
+        LIMIT ${safeLimit}
+      `;
 
-  const [rows] = await db.execute(query, [trip_id]);
+  const [rows] = await db.execute(
+    query,
+    hasTripScope ? [user_id, trip_id] : [user_id]
+  );
 
   return rows
     .reverse() // Inverte para repor a ordem cronológica correta

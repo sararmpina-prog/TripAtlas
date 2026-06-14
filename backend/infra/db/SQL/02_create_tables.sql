@@ -74,7 +74,8 @@ CREATE TABLE flights (
 -- 7. chat_history
 CREATE TABLE chat_history (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    trip_id INT NOT NULL,
+    user_id INT NOT NULL,
+    trip_id INT NULL,
 	user_message TEXT,
     ai_response MEDIUMTEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
