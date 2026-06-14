@@ -7,21 +7,28 @@ export default function LandingPage() {
   return (
     <ImageLayout bgImageClass="bg-landing" hasOverlay={false}>
       <div className="landing-center">
-        <h1 className="heading-light text-center main-title">
-          Plan Less.<br />Experience More.
-        </h1>
-        <p className="p-white text-center subtitle">
-          Your AI-powered travel companion for unforgettable journeys
-        </p>
-        
-        {/* Altere o link/tag conforme use react-router-dom */}
-        <Link to="/login" className="btn-base btn-orange">
-          Login
-        </Link>
-        
-        <p className="p-white text-center account-prompt">
-          Don’t have an account? <Link to="/register" className="link-highlight">Sign up here</Link>
-        </p>
+
+        {/* Bloco de Texto (Top/Centro) */}
+        <div className="landing-top-content">
+          <h1 className="heading-light text-center">
+            Plan Less.<br />
+            Experience More.
+          </h1>
+          <p className="p-white text-center subtitle">
+            Your AI-powered travel companion for unforgettable journeys
+          </p>
+        </div>
+        {/* Bloco de Ações (Fundo) */}
+        <div className="landing-bottom-container">
+          <div className="btn-container">
+            <Link to="/login" className="btn-base btn-orange">
+              Login
+            </Link>
+          </div>
+          <p className="p-white text-center account-prompt">
+            Don’t have an account? <Link to="/register" className="link-highlight">Sign up here</Link>
+          </p>
+        </div>
       </div>
     </ImageLayout>
   );

@@ -16,17 +16,6 @@ Bold 700
 ExtraBold 800
 */
 
-* {
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Open Sans", sans-serif;
-}
-
 :root {
   /* Colors */
   --color-orange: #eb5e06;
@@ -61,7 +50,7 @@ input,
 textarea,
 select,
 button {
-  font: inherit;
+  font-family: "Open Sans", sans-serif;
 }
 
 li {
@@ -78,7 +67,7 @@ h3 {
 }
 
 h1 {
-  font-size: 3.8rem;
+  font-size: 4rem;
   letter-spacing: 2px;
   line-height: 1.1;
   margin-bottom: 20px;
@@ -108,6 +97,13 @@ h4 {
   color: var(--text-heading-light);
 }
 
+.subtitle {
+  max-width: 640px;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
 p {
   font-family: "Open Sans", sans-serif;
   font-size: 1rem;
@@ -119,8 +115,8 @@ p {
   color: var(--text-light);
 }
 
-a {
-  text-decoration: none;
+.text-center {
+  text-align: center;
 }
 
 label {
@@ -132,6 +128,7 @@ label {
 .btn-base {
   cursor: pointer;
   padding: 10px 40px;
+  font-family: "Open Sans", sans-serif;
   font-size: 0.8rem;
   letter-spacing: 2.5px;
   font-weight: 700;
@@ -140,7 +137,7 @@ label {
   border: none;
   border-radius: 50px;
   margin: 20px 0;
-  box-shadow: 0 2px 8px var(--shadow-hard);
+  box-shadow: var(--shadow-hard);
   transition: all 0.2s ease;
 }
 
@@ -176,3 +173,11 @@ input {
   background-position: center;
 }
 
+@media (max-width: 768px) {
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  h1 {
+    font-size: 2.5rem;
+  }
+}
