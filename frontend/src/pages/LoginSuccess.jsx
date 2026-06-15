@@ -1,11 +1,10 @@
+import { Link } from "react-router";
 import InfoCard from "../components/InfoCard";
-import { useNavigate } from "react-router";
 import ImageLayout from "../components/ImageLayout";
 import { getStoredUser } from "../auth/authStorage";
-import "../styles/Login.css";
+import "../styles/LoginSuccess.css";
 
 function LoginSuccess() {
-  const navigate = useNavigate();
 
   const user = getStoredUser();
 
@@ -14,25 +13,19 @@ function LoginSuccess() {
   return (
     <ImageLayout bgImageClass="bg-login-success">
       <InfoCard>
-        <h3>Hi {firstName}!</h3>
-        <p className="success-lead">What would you like to do today?</p>
+        <h3 className="heading-dark">Hi {firstName}!</h3>
+        <p className="subtitle subtitle-dark">What would you like to do today?</p>
 
         <div className="success-actions">
-          <button
-            type="button"
-            className="btn-base btn-orange"
-            onClick={() => navigate("/dashboard")}
-          >
+          <Link to="/dashboard" className="btn-base btn-orange">
             Plan a new trip
-          </button>
+          </Link>
 
-          <button
-            type="button"
-            className="btn-base btn-orange"
-            onClick={() => navigate("/dashboard")}
-          >
+        {/* ------- AINDA FALTA LINK PARA VER TRIPS BY USER ID -------- */}
+
+          <Link to="/dashboard" className="btn-base btn-orange">
             View my trips
-          </button>
+          </Link>
         </div>
       </InfoCard>
     </ImageLayout>

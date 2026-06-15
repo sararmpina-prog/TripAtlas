@@ -80,8 +80,8 @@ export default function Register() {
         {/* Metade Esquerda (Imagem e Info) */}
         <div className="register-left-side">
           <div className="left-content-wrapper">
-            <h2 className="heading-light split-title">Get Started!</h2>
-            <p className="p-white register-side-copy">Already have<br />an account?</p>
+            <h2 className="heading-light">Get Started!</h2>
+            <h4 className="p-white register-side-copy">Already have<br />an account?</h4>
             <Link to="/login" className="btn-base btn-light">Login</Link>
           </div>
         </div>

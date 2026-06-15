@@ -38,14 +38,6 @@
   background-color: var(--color-light-azure);
 }
 
-.success-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem 1.4rem;
-  margin-top: 0.4rem;
-}
-
 @media (max-width: 900px) {
   .auth-split,
   .auth-split-login {
