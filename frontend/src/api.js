@@ -1,5 +1,17 @@
 export const API_URL = 'http://localhost:3000/api'
 
+function createJsonHeaders(token) {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 function buildApiError(data, fallbackMessage, status) {
   const backendCode = data?.error?.code;
   const backendMessage = data?.error?.message;
@@ -21,9 +33,7 @@ export async function loginUser(credentials) {
   console.log("Estou no fetch, e a informação recebida é", credentials)
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: createJsonHeaders(),
     body: JSON.stringify(credentials),
   });
 
@@ -41,9 +51,7 @@ export async function loginUser(credentials) {
 export async function registerUser(userData) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: createJsonHeaders(),
     body: JSON.stringify(userData),
   });
 
@@ -54,4 +62,30 @@ export async function registerUser(userData) {
   }
 
   return data;
+}
+
+async function fetchProtectedResource(path, token, fallbackMessage) {
+  const response = await fetch(`${API_URL}${path}`, {
+    headers: createJsonHeaders(token),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw buildApiError(data, fallbackMessage, response.status);
+  }
+
+  return data;
+}
+
+export function getTrips(token) {
+  return fetchProtectedResource('/trips', token, 'Unable to load trips.');
+}
+
+export function getFlights(token) {
+  return fetchProtectedResource('/flights', token, 'Unable to load flights.');
+}
+
+export function getReserves(token) {
+  return fetchProtectedResource('/reserves', token, 'Unable to load accommodation reserves.');
 }
