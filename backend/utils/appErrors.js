@@ -3,18 +3,22 @@
 
 // Classe Base para erros conhecidos da aplicação
 export class AppError extends Error {
-  constructor(message, statusCode, code) {
+  constructor(message, statusCode, code, details = undefined) {
     super(message);
     this.name = new.target.name; // cada erro herda o nome da sua classe (ex: ValidationError, NotFoundError)
     this.statusCode = statusCode;
     this.code = code;
+
+    if (details) {
+      this.details = details;
+    }
   }
 }
 
 // Erro de Validação (Ex: Zod, inputs inválidos) -> HTTP 400
 export class ValidationError extends AppError {
-  constructor(message) {
-    super(message, 400, 'VALIDATION_ERROR');
+  constructor(message, details = undefined, code = 'VALIDATION_ERROR') {
+    super(message, 400, code, details);
   }
 }
 

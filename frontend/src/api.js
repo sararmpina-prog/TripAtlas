@@ -1,15 +1,16 @@
-// src/api.js 
 export const API_URL = 'http://localhost:3000/api'
 
 function buildApiError(data, fallbackMessage, status) {
   const backendCode = data?.error?.code;
   const backendMessage = data?.error?.message;
+  const backendDetails = data?.error?.details;
   const message = status >= 500 || backendCode === 'INTERNAL_SERVER_ERROR'
     ? 'Something went wrong. Please try again later.'
     : (backendMessage || fallbackMessage);
 
   const error = new Error(message);
   error.code = data?.error?.code;
+  error.details = Array.isArray(backendDetails) ? backendDetails : []; // Array para agrupar mensagens de erro por campo, se necessário
   error.status = status;
   return error;
 }

@@ -1,10 +1,8 @@
 import { Link } from "react-router";
 import InfoCard from "../components/InfoCard";
-import { useNavigate } from "react-router";
 import ImageLayout from "../components/ImageLayout";
 
 function RegisterSuccess() {
-  const navigate = useNavigate();
 
   return (
     <ImageLayout bgImageClass="bg-register-success">

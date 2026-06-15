@@ -3,11 +3,13 @@
 Os controllers apenas definem códigos de erro específicos para cada tipo de erro esperado, e o middleware global garante que esses códigos sejam incluídos nas respostas de erro.
 */
 
+import { normalizeDBError } from '../infra/db/handleDBError.js';
+
 export function notFoundHandler(req, res) {
   res.status(404).json({
     success: false,
     error: {
-      message: 'Rota não encontrada',
+      message: 'Route not found',
       code: 'NOT_FOUND',
     },
   });
@@ -16,27 +18,6 @@ export function notFoundHandler(req, res) {
 export const errorHandler = (err, req, res, next) => {
   console.error(err); // Importante para debug
 
-   if (err.code === 'ER_DUP_ENTRY') {
-    let message = 'Duplicate entry';
-
-    if (err.message.includes('users.email')) {
-      message = 'This email is already registered.';
-    }
-
-    if (err.message.includes('users.mobile_phone')) {
-      message = 'This mobile phone number is already registered.';
-    }
-
-    return res.status(409).json({
-      success: false,
-      error: {
-        message,
-        code: 'DUPLICATE_ENTRY'
-      }
-    });
-  }
-
-  // Corrigido para CamelCase para ler corretamente da sua classe AppError
   const statusCode = err?.statusCode || 500;
   const code = err?.code || 'INTERNAL_SERVER_ERROR';
   
@@ -47,7 +28,13 @@ export const errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({
     success: false,
-    error: { message, code },
+    error: {
+      message,
+      code,
+      ...(err?.details && {
+        details: err.details,
+      }),
+    },
   });
 };
 
