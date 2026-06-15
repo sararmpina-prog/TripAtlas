@@ -52,6 +52,7 @@ export async function createUser(validatedUser) {
   
   // Segurança: Garante que a password_hash não vaza para o cliente
   delete user.password_hash;
+  console.log("utilizador criado", user)
   return user;
 }
 

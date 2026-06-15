@@ -16,6 +16,9 @@ ALTER TABLE users
 ADD COLUMN failed_login_attempts INT DEFAULT 0,
 ADD COLUMN locked_until TIMESTAMP NULL;
 
+ALTER TABLE users
+ADD UNIQUE (mobile_phone);
+
 ALTER TABLE chat_history
 ADD COLUMN user_id INT NULL,
 MODIFY COLUMN trip_id INT NULL;

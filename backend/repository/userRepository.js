@@ -45,6 +45,23 @@ export async function findUserByEmail(email) {
   return rows[0] ?? null;
 }
 
+// PROCURA UM UTILIZADOR PELO NR TELEMOVEL
+// Essencial para o fluxo de registo sem duplicação
+export async function findUserByPhone(phone) {
+  const [rows] = await db.execute(
+    `
+      SELECT 
+        id, first_name, surname, email, mobile_phone, password_hash, created_at, updated_at, failed_login_attempts,
+        locked_until 
+      FROM users
+      WHERE mobile_phone = ?
+      LIMIT 1
+    `,
+    [phone]
+  );
+  return rows[0] ?? null;
+}
+
 // CRIA UM NOVO UTILIZADOR
 export async function createUser(userData) {
   // Como userData já está em snake_case vindo do Zod/Service, fazemos o insert direto!

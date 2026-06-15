@@ -26,6 +26,18 @@
 
 * **Resultado Esperado**: Código 201 Created. A API vai devolver um objeto contendo o token gerado pelo JWT e os dados do utilizador sem a password.
 
+### SUCCESS
+
+{
+  "first_name": "Ana",
+  "surname": "Ramos",
+  "email": "anaramos@email.com",
+  "mobile_phone": null,
+  "password": "registo_2"
+}
+
+* **Resultado Esperado**: Código 201 Created. A API vai devolver um objeto contendo o token gerado pelo JWT e os dados do utilizador sem a password.
+
 
 # LOGIN
 
@@ -120,11 +132,11 @@ GET http://localhost:3000/api/accommodations/reserve
 ### FAIL (email mal formatado)
 
 {
-  "first_name": "Rui",
-  "surname": "Silva",
-  "email": "ruisila.com",
-  "mobile_phone": "912345678",
-  "password": "123"
+  "first_name": "123",
+  "surname": "Pina",
+  "email": "pinofesqui@gmail.com",
+  "mobile_phone": "932451892",
+  "password": "_iwvdmmLT$W447s"
 }
 
 * **Resultado Esperado**: 400 Bad Request com a mensagem customizada: "The field email must be a valid email address."

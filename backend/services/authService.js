@@ -118,6 +118,12 @@ export async function registerUser(validatedData) {
     throw new ValidationError('This email address is already registered.');
   }
 
+  const existingPhone = await userRepository.findUserByPhone(validatedData.mobile_phone);
+
+  if (existingPhone) {
+    throw new ValidationError('This mobile phone number is already registered.');
+  }
+
   // 2. Encripta a password em texto limpo antes de ir para a BD
   // O número 10 indica o custo do algoritmo (saltRounds), o padrão de mercado seguro
   const hashedPassword = await bcrypt.hash(validatedData.password, 10);

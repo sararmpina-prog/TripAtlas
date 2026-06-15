@@ -10,11 +10,17 @@ import { createRequiredString, optionalNormalizedString } from '../utils/zodHelp
 export const createUserSchema = z.object({
   first_name: createRequiredString('first_name')
     .min(1, { message: "The field first_name cannot be empty." })
-    .max(100, { message: "The field first_name cannot exceed 100 characters." }),
+    .max(100, { message: "The field first_name cannot exceed 100 characters." })
+    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, {
+      message: "First name can only contain letters."
+      }),
 
   surname: createRequiredString('surname')
     .min(1, { message: "The field surname cannot be empty." })
-    .max(100, { message: "The field surname cannot exceed 100 characters." }),
+    .max(100, { message: "The field surname cannot exceed 100 characters." })
+    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, {
+      message: "Surname can only contain letters."
+    }),
 
   email: createRequiredString('email')
     .email({ message: "The field email must be a valid email address." })
@@ -31,8 +37,22 @@ export const createUserSchema = z.object({
 
   password: createRequiredString('password')
     .min(6, { message: "The field password must be at least 6 characters long." })
-    .max(50, { message: "The field password cannot exceed 50 characters." }),
+    .max(50, { message: "The field password cannot exceed 50 characters." })
+    .regex(/[A-Z]/, {
+    message: "Password must contain at least one uppercase letter."
+  })
+  .regex(/[a-z]/, {
+    message: "Password must contain at least one lowercase letter."
+  })
+  .regex(/[0-9]/, {
+    message: "Password must contain at least one number."
+  })
+  .regex(/[^A-Za-z0-9]/, {
+    message: "Password must contain at least one special character."
+  }),
 });
+
+
 
 // SCHEMA DE ATUALIZAÇÃO (PATCH / Alterar Perfil)
 // No PATCH, nenhum campo é obrigatório de enviar, mas se for enviado, tem de ser válido
