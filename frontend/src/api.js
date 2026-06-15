@@ -18,7 +18,7 @@ function buildApiError(data, fallbackMessage, status) {
 // Autenticar utilizador (POST)
 export async function loginUser(credentials) {
   console.log("Estou no fetch, e a informação recebida é", credentials)
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
