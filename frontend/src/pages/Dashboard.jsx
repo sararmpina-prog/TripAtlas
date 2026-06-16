@@ -35,7 +35,7 @@ function ReserveCard({ reserve }) {
     return (
         <article className="dashboard-info-card">
             <div className="dashboard-info-card__eyebrow">Accommodation reserve</div>
-            <h3>Reserve #{reserve.id}</h3>
+            <h5>Reserve #{reserve.id}</h5>
             <p>Accommodation ID: {reserve.accommodation_id}</p>
             <div className="dashboard-info-card__meta">
                 <span>Check-in: {formatDate(reserve.check_in_date)}</span>
@@ -104,7 +104,7 @@ export default function Dashboard() {
         return (
             <section className="dashboard-page">
                 <div className="dashboard-empty-state">
-                    <h1>Dashboard</h1>
+                    <h5>Dashboard</h5>
                     <p>You need to log in to view your trips.</p>
                 </div>
             </section>
@@ -115,7 +115,7 @@ export default function Dashboard() {
         return (
             <section className="dashboard-page">
                 <div className="dashboard-empty-state">
-                    <h1>Loading your dashboard...</h1>
+                    <h5>Loading your dashboard...</h5>
                 </div>
             </section>
         );
@@ -125,7 +125,7 @@ export default function Dashboard() {
         return (
             <section className="dashboard-page">
                 <div className="dashboard-empty-state">
-                    <h1>Dashboard unavailable</h1>
+                    <h5>Dashboard unavailable</h5>
                     <p>{hasError.message}</p>
                 </div>
             </section>
@@ -136,7 +136,7 @@ export default function Dashboard() {
         return (
             <section className="dashboard-page">
                 <div className="dashboard-empty-state">
-                    <h1>Welcome{user?.first_name ? `, ${user.first_name}` : ''}</h1>
+                    <h5>Welcome{user?.first_name ? `, ${user.first_name}` : ''}</h5>
                     <p>Your account is ready. Create your first trip to start seeing flights and accommodations here.</p>
                 </div>
             </section>
@@ -183,7 +183,7 @@ export default function Dashboard() {
                             ))
                         ) : (
                             <div className="dashboard-placeholder-card">
-                                <h3>No flights yet</h3>
+                                <h5>No flights yet</h5>
                                 <p>Add flights to this trip and they will appear here.</p>
                             </div>
                         )}
@@ -196,7 +196,7 @@ export default function Dashboard() {
                             ))
                         ) : (
                             <div className="dashboard-placeholder-card">
-                                <h3>No accommodation reserves yet</h3>
+                                <h5>No accommodation reserves yet</h5>
                                 <p>When you attach a reserve to this trip, it will show up in this card.</p>
                             </div>
                         )}
@@ -211,9 +211,9 @@ export default function Dashboard() {
                     </div>
                     
                     <div className="ai-chat__messages">
-                        <h3 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--text-main)' }}>
+                        <h5 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--text-main)' }}>
                             Ask anything about {selectedTrip.destination}!
-                        </h3>
+                        </h5>
                         <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', textAlign: 'center', maxWidth: '30ch', margin: 0 }}>
                             Get instant suggestions for sightseeing, local restaurants, or hidden gems.
                         </p>

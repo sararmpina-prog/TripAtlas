@@ -32,11 +32,12 @@
   color: var(--color-orange);
 }
 
-.dashboard-trip h1 {
-  margin: 0;
-  font-size: 2rem; 
+.dashboard-sidepanel h1 {
+  font-family: "Open Sans", sans-serif;
+  margin: 2rem 0;
+  font-size: 2.2rem; 
   text-shadow: none;
-  color: var(--text-heading-dark);
+  color: var(--text-main);
   line-height: 1.2;
 }
 
