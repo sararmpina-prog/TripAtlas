@@ -6,7 +6,7 @@ let listItems = [
     "Cards editáveis (Dashboard) - Botões de Guardar, Editar e Eliminar",
     "Chat Backend e Ligação Frontend",
     "Menu User/Icon Pessoa - Logout + Editar",
-    "Página Editar - User CRUD + patch password",
+    "Página Editar perfil",
     "Footer",
     "Responsividade",
     "Páginas de Erros (Opcional)",
