@@ -2,7 +2,7 @@ export default function AIChatCard({ destination }) {
     return (
         <div className="ai-chat-container">
             <div className="ai-chat__header">
-                <h2>✨ AI Co-Pilot</h2>
+                <h2>AI Assistant</h2>
                 <span className="ai-badge">Coming Soon</span>
             </div>
             
