@@ -13,6 +13,9 @@ import LoginSuccess from "./pages/LoginSuccess";
 import RegisterSuccess from "./pages/RegisterSuccess";
 
 
+import ToDoList from "./pages/ToDoList";
+
+
 
 export default function App() {
   return (
@@ -26,6 +29,11 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/register" element={<Register />} />
+
+
+            <Route path="/ToDoList" element={<ToDoList />} /> {/* Deve ser removida posteriormente */}
+
+
           </Route>
 
           {/* Área autenticada */}
