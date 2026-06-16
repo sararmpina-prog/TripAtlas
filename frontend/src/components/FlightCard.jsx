@@ -1,31 +1,35 @@
 import "../styles/FlightCard.css";
 import { FaPlane } from "react-icons/fa";
 
-function FlightCard() {
-  const flightDeparture = {
-    airline: "Ryanair",
-    type: "Direct Flight",
-    departureTime: "08:00",
-    departureAirport: "OPO",
-    arrivalAirport: "CDG",
-  };
+function formatTime(dateTimeValue) {
+  if (!dateTimeValue) {
+    return '--:--';
+  }
 
-    const flightArrival = {
-    airline: "EasyJet",
-    type: "Direct Flight",
-    departureTime: "20:00",
-    departureAirport: "CDG",
-    arrivalAirport: "OPO",
-  };
+  return new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(dateTimeValue));
+}
+
+function FlightCard({ flight }) {
+  if (!flight) {
+    return null;
+  }
+
+  const airline = flight.airline || 'Airline not defined';
+  const flightNumber = flight.flight_number || 'Flight number pending';
+  const departureAirport = flight.departure_airport || 'TBD';
+  const arrivalAirport = flight.arrival_airport || 'TBD';
 
 
   return (
     <div className="flight-card">
       <div className="flight-info">
-        <h4>{flightDeparture.type}</h4>
-        <p>Premium segment</p>
+        <h5>{flightNumber}</h5>
+        <p>{departureAirport} to {arrivalAirport}</p>
 
-        <h4>{flightDeparture.airline}</h4>
+        <h5>{airline}</h5>
       </div>
 
       <div className="flight-divider" />
@@ -35,14 +39,14 @@ function FlightCard() {
 
         <span>Departure</span>
 
-        <strong>{flightDeparture.departureTime}</strong>
+        <strong>{formatTime(flight.departure_datetime)}</strong>
       </div>
 
-         <div className="flight-info">
-        <h4>{flightArrival.type}</h4>
-        <p>Premium segment</p>
+      <div className="flight-info">
+        <h5>Arrival</h5>
+        <p>{arrivalAirport}</p>
 
-        <h4>{flightArrival.airline}</h4>
+        <h5>{airline}</h5>
       </div>
 
       <div className="flight-divider" />
@@ -52,7 +56,7 @@ function FlightCard() {
 
         <span>Arrival</span>
 
-        <strong>{flightArrival.departureTime}</strong>
+        <strong>{formatTime(flight.arrival_datetime)}</strong>
       </div>
     </div>
   );

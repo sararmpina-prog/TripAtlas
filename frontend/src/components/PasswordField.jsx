@@ -19,10 +19,10 @@ export default function PasswordField({
   const wrapperClasses = ["password-field", wrapperClassName]
     .filter(Boolean)
     .join(" ");
-  const inputClasses = ["password-field__input", inputClassName]
+  const inputClasses = ["password-field-input", inputClassName]
     .filter(Boolean)
     .join(" ");
-  const toggleClasses = ["password-field__toggle", toggleClassName]
+  const toggleClasses = ["password-field-toggle", toggleClassName]
     .filter(Boolean)
     .join(" ");
 

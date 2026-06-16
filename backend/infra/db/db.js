@@ -170,6 +170,13 @@ const foreignKeyStatements = [
       ALTER TABLE accommodation_reserve
       ADD CONSTRAINT unique_reservation UNIQUE (accommodation_id, trip_id, check_in_date, check_out_date)
     `,
+  },
+   {
+    name: 'unique_mobile',
+    statement: `
+      ALTER TABLE users
+      ADD CONSTRAINT unique_mobile UNIQUE (mobile_phone)
+    `,
   }
 ];
 

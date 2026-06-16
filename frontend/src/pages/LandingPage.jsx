@@ -25,7 +25,7 @@ export default function LandingPage() {
             </Link>
           </div>
           <p className="p-white text-center account-prompt">
-            Don’t have an account? <Link to="/register" className="link-highlight">Sign up here</Link>
+            Don&apos;t have an account? <Link to="/register" className="link-highlight">Sign up here</Link>
           </p>
         </div>
       </div>

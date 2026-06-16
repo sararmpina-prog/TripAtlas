@@ -61,7 +61,6 @@ app.use('/api/users', auth, userRoutes);
 app.use('/api/accommodations', accommodationRoutes);
 app.use('/api/reserves', auth, reserveRoutes);
 
-
 // Tratamento de Erros (Sempre no fim)
 app.use(notFoundHandler);
 app.use(errorHandler);

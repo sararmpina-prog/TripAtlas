@@ -5,21 +5,25 @@ import { z } from 'zod';
 // IMPORTAÇÃO DOS HELPERS CENTRALIZADOS
 import { createRequiredString, optionalNormalizedString } from '../utils/zodHelpers.js';
 
+const namePattern = /^[A-Za-zÀ-ÿ\s'-]+$/;
+const phonePattern = /^\+?[0-9\s]+$/;
+const specialCharacterPattern = /[^A-Za-z0-9]/;
+
 // SCHEMA DE CRIAÇÃO (POST / Registo)
 // Todos os campos são obrigatórios por omissão no fluxo inicial
 export const createUserSchema = z.object({
   first_name: createRequiredString('first_name')
-    .min(1, { message: "The field first_name cannot be empty." })
-    .max(100, { message: "The field first_name cannot exceed 100 characters." })
-    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, {
-      message: "First name can only contain letters."
-      }),
+    .min(2, { message: 'The field first_name must have at least 2 letters.' })
+    .max(100, { message: 'The field first_name cannot exceed 100 characters.' })
+    .regex(namePattern, {
+      message: 'First name can only contain letters.',
+    }),
 
   surname: createRequiredString('surname')
-    .min(1, { message: "The field surname cannot be empty." })
-    .max(100, { message: "The field surname cannot exceed 100 characters." })
-    .regex(/^[A-Za-zÀ-ÿ\s'-]+$/, {
-      message: "Surname can only contain letters."
+    .min(2, { message: 'The field surname must have at least 2 letters.' })
+    .max(100, { message: 'The field surname cannot exceed 100 characters.' })
+    .regex(namePattern, {
+      message: 'Surname can only contain letters.',
     }),
 
   email: createRequiredString('email')
@@ -29,8 +33,11 @@ export const createUserSchema = z.object({
   mobile_phone: optionalNormalizedString
     .pipe(
       z.string()
-        .max(20, { message: "The field mobile_phone cannot exceed 20 characters." })
-        .regex(/^\+?[0-9\s]+$/, { message: "The field mobile_phone contains invalid characters." })
+        .max(20, { message: 'The field mobile_phone cannot exceed 20 characters.' })
+        .regex(phonePattern, { message: 'The field mobile_phone contains invalid characters.' })
+        .refine((value) => value.replace(/\D/g, '').length >= 9, {
+          message: 'The field mobile_phone must contain at least 9 digits.',
+        })
         .nullable()
     )
     .optional(),
@@ -47,9 +54,9 @@ export const createUserSchema = z.object({
   .regex(/[0-9]/, {
     message: "Password must contain at least one number."
   })
-  .regex(/[^A-Za-z0-9]/, {
-    message: "Password must contain at least one special character."
-  }),
+  .regex(specialCharacterPattern, {
+      message: 'Password must contain at least one special character.',
+    }),
 });
 
 
@@ -57,16 +64,33 @@ export const createUserSchema = z.object({
 // SCHEMA DE ATUALIZAÇÃO (PATCH / Alterar Perfil)
 // No PATCH, nenhum campo é obrigatório de enviar, mas se for enviado, tem de ser válido
 export const updateUserSchema = z.object({
-  first_name: z.string().trim().min(1, { message: "The field first_name cannot be empty." }).max(100).optional(),
-  surname: z.string().trim().min(1, { message: "The field surname cannot be empty." }).max(100).optional(),
+  first_name: z.string()
+    .trim()
+    .min(2, { message: 'The field first_name must have at least 2 letters.' })
+    .max(100, { message: 'The field first_name cannot exceed 100 characters.' })
+    .regex(namePattern, {
+      message: 'First name can only contain letters.',
+    })
+    .optional(),
+  surname: z.string()
+    .trim()
+    .min(2, { message: 'The field surname must have at least 2 letters.' })
+    .max(100, { message: 'The field surname cannot exceed 100 characters.' })
+    .regex(namePattern, {
+      message: 'Surname can only contain letters.',
+    })
+    .optional(),
   
   email: z.string().trim().email({ message: "The field email must be a valid email address." }).max(150).optional(),
   
   mobile_phone: optionalNormalizedString
     .pipe(
       z.string()
-        .max(20, { message: "The field mobile_phone cannot exceed 20 characters." })
-        .regex(/^\+?[0-9\s]+$/, { message: "The field mobile_phone contains invalid characters." })
+        .max(20, { message: 'The field mobile_phone cannot exceed 20 characters.' })
+        .regex(phonePattern, { message: 'The field mobile_phone contains invalid characters.' })
+        .refine((value) => value.replace(/\D/g, '').length >= 9, {
+          message: 'The field mobile_phone must contain at least 9 digits.',
+        })
         .nullable()
     )
     .optional(),
@@ -84,8 +108,20 @@ export const updatePasswordSchema = z.object({
     .min(1, { message: "The field current_password cannot be empty." }),
 
   new_password: createRequiredString('new_password')
-    .min(6, { message: "The field new_password must be at least 6 characters long." })
-    .max(50, { message: "The field new_password cannot exceed 50 characters." }),
+    .min(6, { message: 'The field new_password must be at least 6 characters long.' })
+    .max(50, { message: 'The field new_password cannot exceed 50 characters.' })
+    .regex(/[A-Z]/, {
+      message: 'Password must contain at least one uppercase letter.',
+    })
+    .regex(/[a-z]/, {
+      message: 'Password must contain at least one lowercase letter.',
+    })
+    .regex(/[0-9]/, {
+      message: 'Password must contain at least one number.',
+    })
+    .regex(specialCharacterPattern, {
+      message: 'Password must contain at least one special character.',
+    }),
 })
 // Regra extra: Garante que a nova password não é igual à antiga
 .refine((data) => data.current_password !== data.new_password, {
