@@ -25,31 +25,23 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-             <Route
-              path="/login/success"
-              element={<LoginSuccess />}
-            />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/register/success"
-              element={<RegisterSuccess />}
-            />
           </Route>
 
           {/* Área autenticada */}
           <Route
-            path="/dashboard"
             element={
               <ProtectedRoute>
                 <MainLayout />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/login/success" element={<LoginSuccess />} />
+            <Route path="/register/success" element={<RegisterSuccess />} />
           </Route>
 
         </Routes>
-
 
   );
 }

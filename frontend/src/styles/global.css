@@ -55,7 +55,8 @@ input,
 textarea,
 select,
 button,
-a {
+a,
+span {
   font-family: "Open Sans", sans-serif;
 }
 
@@ -148,6 +149,10 @@ p {
 
 .p-white {
   color: var(--text-light);
+}
+
+.p-strong {
+  font-weight: 700;
 }
 
 .text-center {

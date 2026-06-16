@@ -1,64 +1,128 @@
-.flight-card {
-  background: var(--color-white);
-  border: 2px solid var(--border-light);
-  border-radius: 30px;
+/* O contentor exterior que junta os dois segmentos */
+.flight-card-container {
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column; /* 👈 Empilha os voos verticalmente */
+}
 
-  padding: 1.5rem;
-
+/* O segmento individual de voo (Ida ou Volta) */
+.flight-segment {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 90px;
+  width: 100%;
+}
 
-  min-height: 140px;
+/* Efeito visual cinzento e suave para o voo não agendado */
+.segment-pending {
+  opacity: 0.5;
+}
 
-  box-shadow: var(--shadow-soft);
+/* Linha separadora discreta entre a Ida e a Volta */
+.segments-spacer {
+  height: 1px;
+  background: var(--border-light);
+  margin: 1rem 0;
+  border: none;
 }
 
 .flight-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.15rem;
 }
 
-.flight-info h3 {
+/* Pequena etiqueta para dizer "Outbound" ou "Return" */
+.segment-type-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-orange);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.flight-info h5 {
   margin: 0;
-  font-size: 1.4rem;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-shadow: none;
 }
 
-.flight-info h4 {
-  margin: 0.5rem 0 0;
-  font-size: 1.2rem;
+.flight-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-main);
 }
 
 .flight-divider {
-  width: 2px;
+  width: 1px;
   align-self: stretch;
-
   background: repeating-linear-gradient(
     to bottom,
-    #999,
-    #999 6px,
-    transparent 6px,
-    transparent 12px
+    var(--border-main),
+    var(--border-main) 4px,
+    transparent 4px,
+    transparent 8px
   );
+  opacity: 0.2;
+  margin: 0 1rem;
 }
 
-.flight-time {
+.flight-timeline {
+  display: flex;
+  gap: 1.25rem;
+  min-width: 220px;
+  justify-content: space-between;
+}
+
+.time-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.2rem;
+  min-width: 70px;
 }
 
-.plane-icon {
-  font-size: 2rem;
-  color: #7a8fb5;
+.time-block span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.flight-time span {
-  color: #666;
+.timeline-icon-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: var(--color-medium-azure);
 }
 
-.flight-time strong {
-  font-size: 1.3rem;
+/* Avião a apontar para a direita no fluxo de tempo */
+.plane-icon-timeline {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+}
+
+/* No regresso, o avião aponta para a esquerda (Inverte o fluxo) */
+.plane-return {
+  transform: rotate(-180deg);
+  color: var(--text-muted);
+}
+
+.p-strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
 }

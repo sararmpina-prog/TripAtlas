@@ -11,8 +11,10 @@
 }
 
 .auth-side-panel {
+  display: flex;
+  flex-direction: column;
   max-width: 320px;
-  color: var(--color-white);
+  align-items: flex-start;
   padding-left: 1.25rem;
 }
 
