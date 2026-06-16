@@ -37,6 +37,8 @@ export async function loginUser(credentials) {
   return data;
 }
 
+
+//Criar utilizador
 export async function registerUser(userData) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
@@ -53,4 +55,11 @@ export async function registerUser(userData) {
   }
 
   return data;
+}
+
+
+//Obter reservas associadas a utilizador especifico
+export const getReserves = async () => {
+  console.log("fetching reserves")
+  return fetch(`${API_URL}/api/reserves`).then(res => res.json())
 }
