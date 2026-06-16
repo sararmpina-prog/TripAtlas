@@ -1,14 +1,17 @@
 import { formatDate } from '../utils/dateHelpers';
 
 export default function ReserveCard({ reserve }) {
+    // Usa o nome vindo do JOIN do backend, ou usa o ID como plano de contingência se a API ainda não tiver o campo
+    const accommodationName = reserve.accommodation_name || `Accommodation #${reserve.accommodation_id}`;
+
     return (
         <article className="dashboard-info-card">
             <div className="dashboard-info-card__eyebrow">Accommodation reserve</div>
-            <h5>Reserve #{reserve.id}</h5>
-            <p>Accommodation ID: {reserve.accommodation_id}</p>
+            {/* Substituído o ID da reserva pelo Nome do Alojamento  */}
+            <h5>{accommodationName}</h5>
             <div className="dashboard-info-card__meta">
-                <span>Check-in: {formatDate(reserve.check_in_date)}</span>
-                <span>Check-out: {formatDate(reserve.check_out_date)}</span>
+                <p>Check-in: {formatDate(reserve.check_in_date)}</p>
+                <p>Check-out: {formatDate(reserve.check_out_date)}</p>
             </div>
         </article>
     );
