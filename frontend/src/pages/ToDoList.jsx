@@ -1,23 +1,30 @@
 import '../styles/Dashboard.css';
-import {Header} from '../components/Header'
+import ImageLayout from '../components/ImageLayout';
+import InfoCard from "../components/InfoCard";
 
+let listItems = [
+    "Cards editáveis (Dashboard) - Botões de Guardar, Editar e Eliminar",
+    "Chat Backend e Ligação Frontend",
+    "Menu User/Icon Pessoa - Logout + Editar",
+    "Página Editar - User CRUD + patch password",
+    "Footer",
+    "Responsividade",
+    "Páginas de Erros (Opcional)",
+    "Adicionar funcionalidades (Calendário, packing list, Weather, Bilhetes já comprados)",
+    "Aprimorar parte visual / corrigir erros de layout"
+];
 
 export default function ToDoList() {
     return (
-        <div>
-            < Header />
-            <ul>
-                <li>Register success - New Trip/View Trips</li>
-                <li>Cards editáveis (Dashboard)</li>
-                <li>Chat Backend e Ligação Frontend</li>
-                <li>Menu User/Icon Pessoa - Logout + Editar</li>
-                <li>Página Editar User CRUD + patch password</li>
-                <li>Footer</li>
-                <li>Responsividade</li>
-                <li>Páginas de Erros (Opcional)</li>
-                <li>Adicionar funcionalidades (Calendário, packing list, Weather, Bilhetes já comprados)</li>
-                <li>Aprimorar erros visuais</li>
-            </ul>
-        </div>
+        <ImageLayout bgImageClass="bg-landing">
+            <InfoCard>
+                <h5>To-Do List</h5>
+                <ul style={{ fontFamily: 'Open Sans, sans-serif', fontWeight: '500', color: '#0b395a', textAlign: 'left', listStyleType: 'disc', paddingLeft: '1.5rem' }}>
+                    {listItems.map((item, index) => (
+                        <li key={index} style={{ fontSize: '1.4rem', lineHeight: '2.5rem' }}>{item}</li>
+                    ))}
+                </ul>
+            </InfoCard>
+        </ImageLayout>
     ) 
 }

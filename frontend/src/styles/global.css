@@ -55,13 +55,14 @@ input,
 textarea,
 select,
 button,
-a {
+a,
+span {
   font-family: "Open Sans", sans-serif;
 }
-
+/* 
 li {
   list-style-type: none;
-}
+} */
 
 h1,
 h2,
@@ -148,6 +149,10 @@ p {
 
 .p-white {
   color: var(--text-light);
+}
+
+.p-strong {
+  font-weight: 700;
 }
 
 .text-center {

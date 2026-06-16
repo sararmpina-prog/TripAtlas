@@ -1,14 +1,15 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import InfoCard from "../components/InfoCard";
 import ImageLayout from "../components/ImageLayout";
-import { getStoredUser } from "../auth/authStorage";
+import { getStoredUser, getStoredToken } from "../auth/authStorage";
 import "../styles/LoginSuccess.css";
 
 function LoginSuccess() {
 
+  const navigate = useNavigate(); 
   const user = getStoredUser();
 
-  const firstName = user?.first_name || "Traveler";
+  const firstName = user?.first_name || "Traveler"; // Traveler é um fallback caso o nome do usuário não esteja disponível / haja uma falha
 
   return (
     <ImageLayout bgImageClass="bg-login-success">
@@ -17,15 +18,21 @@ function LoginSuccess() {
         <p className="subtitle subtitle-dark">What would you like to do today?</p>
 
         <div className="success-actions">
-          <Link to="/dashboard" className="btn-base btn-orange">
+          <button 
+            type="button" 
+            className="btn-base btn-orange"
+            onClick={() => navigate("/dashboard", { state: { forcePlaceholder: true } })} // Força a exibição do placeholder para criar uma nova viagem
+          >
             Plan a new trip
-          </Link>
+          </button>
 
-        {/* ------- AINDA FALTA LINK PARA VER TRIPS BY USER ID -------- */}
-
-          <Link to="/dashboard" className="btn-base btn-orange">
+          <button 
+            type="button" 
+            className="btn-base btn-orange"
+            onClick={() => navigate("/dashboard", { state: { forcePlaceholder: false } })} // 💡 Carrega normalmente
+          >
             View my trips
-          </Link>
+          </button>
         </div>
       </InfoCard>
     </ImageLayout>

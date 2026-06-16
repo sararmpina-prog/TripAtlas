@@ -96,7 +96,7 @@ function Login() {
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="Email *"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -121,7 +121,7 @@ function Login() {
             <div className="auth-form-field">
               <PasswordField
                 name="password"
-                placeholder="Password"
+                placeholder="Password *"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);

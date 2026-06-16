@@ -1,65 +1,50 @@
 import "../styles/FlightCard.css";
-import { FaPlane } from "react-icons/fa";
+import FlightSegment from "./FlightSegment";
 
-function formatTime(dateTimeValue) {
-  if (!dateTimeValue) {
-    return '--:--';
-  }
+export default function FlightCard({ flight }) {
+  if (!flight) return null;
 
-  return new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateTimeValue));
-}
+  // Segmento de Ida (Dados Reais do Backend)
+  const outboundNumber = flight.flight_number;
+  const outboundAirline = flight.airline;
+  const outboundDep = flight.departure_airport || 'TBD';
+  const outboundArr = flight.arrival_airport || 'TBD';
+  const outboundDepTime = flight.departure_datetime;
+  const outboundArrTime = flight.arrival_datetime; // 💡 Adicionado
 
-function FlightCard({ flight }) {
-  if (!flight) {
-    return null;
-  }
-
-  const airline = flight.airline || 'Airline not defined';
-  const flightNumber = flight.flight_number || 'Flight number pending';
-  const departureAirport = flight.departure_airport || 'TBD';
-  const arrivalAirport = flight.arrival_airport || 'TBD';
-
+  // Segmento de Volta (Placeholder ou dados futuros)
+  const returnNumber = flight.return_flight_number || null;
+  const returnAirline = flight.return_airline || null;
+  const returnDep = flight.arrival_airport || 'TBD'; 
+  const returnArr = flight.departure_airport || 'TBD';
+  const returnDepTime = flight.return_departure_datetime || null;
+  const returnArrTime = flight.return_arrival_datetime || null;
 
   return (
-    <div className="flight-card">
-      <div className="flight-info">
-        <h5>{flightNumber}</h5>
-        <p>{departureAirport} to {arrivalAirport}</p>
+    <div className="flight-card-container">
+      {/* 1. Segmento de Ida */}
+      <FlightSegment 
+        type="Outbound"
+        flightNumber={outboundNumber}
+        airline={outboundAirline}
+        departure={outboundDep}
+        arrival={outboundArr}
+        depTime={outboundDepTime}
+        arrTime={outboundArrTime}
+      />
 
-        <h5>{airline}</h5>
-      </div>
+      <div className="segments-spacer" />
 
-      <div className="flight-divider" />
-
-      <div className="flight-time">
-        <FaPlane className="plane-icon" />
-
-        <span>Departure</span>
-
-        <strong>{formatTime(flight.departure_datetime)}</strong>
-      </div>
-
-      <div className="flight-info">
-        <h5>Arrival</h5>
-        <p>{arrivalAirport}</p>
-
-        <h5>{airline}</h5>
-      </div>
-
-      <div className="flight-divider" />
-
-      <div className="flight-time">
-        <FaPlane className="plane-icon" />
-
-        <span>Arrival</span>
-
-        <strong>{formatTime(flight.arrival_datetime)}</strong>
-      </div>
+      {/* 2. Segmento de Volta */}
+      <FlightSegment 
+        type="Return"
+        flightNumber={returnNumber}
+        airline={returnAirline}
+        departure={returnDep}
+        arrival={returnArr}
+        depTime={returnDepTime}
+        arrTime={returnArrTime}
+      />
     </div>
   );
 }
-
-export default FlightCard;
