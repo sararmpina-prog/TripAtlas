@@ -48,6 +48,8 @@ export async function loginUser(credentials) {
   return data;
 }
 
+
+//Criar utilizador
 export async function registerUser(userData) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
