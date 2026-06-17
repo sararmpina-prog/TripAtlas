@@ -79,7 +79,7 @@ function Login() {
     <ImageLayout bgImageClass="bg-login" hasOverlay={false}>
       <div className="auth-split auth-split-login">
         <section className="auth-side-panel">
-          <h2>Don&apos;t have an account yet?</h2>
+          <h2>Don't have an account yet?</h2>
           <h4>Sign up here:</h4>
 
           <Link to="/register" className="btn-base btn-light">

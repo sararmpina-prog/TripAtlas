@@ -40,6 +40,7 @@ export default function Dashboard() {
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
 
+    //optimizar desempenho, memoriza calculo entre renderizações so recalcula se dependencias alteradas
     const selectedTrip = useMemo(() => {
         // Se o botão "Plan a new trip" foi clicado OU se a BD não tiver viagens, mostra placeholders
         if (forcePlaceholder || !trips.length) {
