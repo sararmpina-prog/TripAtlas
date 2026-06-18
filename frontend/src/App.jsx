@@ -9,7 +9,6 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
-import LoginSuccess from "./pages/LoginSuccess";
 import RegisterSuccess from "./pages/RegisterSuccess";
 
 
@@ -45,7 +44,6 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/login/success" element={<LoginSuccess />} />
             <Route path="/register/success" element={<RegisterSuccess />} />
           </Route>
 

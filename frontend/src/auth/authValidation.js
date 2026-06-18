@@ -132,8 +132,8 @@ function getPasswordValidationMessage(password) {
 
   const requirements = [];
 
-  if (normalizedPassword.length < 6) {
-    requirements.push('at least 6 characters');
+  if (normalizedPassword.length < 6 || normalizedPassword.length > 20) {
+    requirements.push('at least 6 characters and no more than 20 characters');
   }
 
   if (!/[A-Z]/.test(normalizedPassword)) {

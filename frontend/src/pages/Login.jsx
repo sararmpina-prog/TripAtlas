@@ -44,7 +44,7 @@ function Login() {
 
       saveAuthSession({ token, user, rememberMe });
 
-      navigate("/login/success");
+      navigate("/dashboard");
     },
 
     onError: (err) => {

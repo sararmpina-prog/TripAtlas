@@ -35,3 +35,17 @@ export class ForbiddenError extends AppError {
     super(message, 403, 'FORBIDDEN');
   }
 }
+
+// Erro de Autenticação Falhada (Ex: Sem token, sessão expirada, credenciais erradas) -> HTTP 401
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Authentication required. Please log in again.') {
+    super(message, 401, 'UNAUTHORIZED');
+  }
+}
+
+// Erro de Token Inválido ou Adulterado -> HTTP 401
+export class InvalidTokenError extends AppError {
+  constructor(message = 'Session expired or invalid. Please log in again.') {
+    super(message, 401, 'INVALID_TOKEN');
+  }
+}
