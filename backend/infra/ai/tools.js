@@ -1,4 +1,4 @@
-/* Camada de definição de tools (function calling) do TaskBot.
+/* Camada de definição de tools (function calling) do TripBot.
 
   Arquitetura:
 
@@ -10,11 +10,11 @@
   Fluxo completo do system:
 
   1. tools são declaradas aqui (schema de inputs)
-  2. são injetadas em taskBotGeminiConfig.js via functionDeclarations
+  2. são injetadas no ficheiro Config.js via functionDeclarations
   3. callGemini.js envia tools para a Gemini
   4. resposta contém functionCall
-  5. taskBotReplyService.js extrai functionCall
-  6. taskBotService.js executa loop de tools
+  5.ReplyService (nome ainda provisorio) extrai functionCall
+  6. Service.js executa loop de tools
   7. backend constrói manualmente functionResponse
 
   Importante:
@@ -27,7 +27,7 @@ import { Type } from '@google/genai';
 
 // Tools divididas por funcionalidade - facilita organização e manutenção;
 
- /* Tool de criação de tarefas.
+ /* Tool de criação de ...
 
 O modelo apenas sugere os parâmetros.
 A validação e persistência são responsabilidade do backend.
