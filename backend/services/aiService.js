@@ -23,14 +23,14 @@ export async function handleAssistantMessage({ user_id, trip_id = null, user_mes
     throw new ValidationError('Invalid user message provided.');
   }
 
-  const chatScope = {
-    user_id,
-    trip_id: trip_id ?? null,
-  };
+  // const chatScope = {
+  //   user_id,
+  //   trip_id: trip_id ?? null,
+  // };
 
-  await hydrateHistory(chatScope);
-  const history = getHistory(chatScope);
-  const summary = getSummary(chatScope);
+  // await hydrateHistory(chatScope);
+  // const history = getHistory(chatScope);
+  // const summary = getSummary(chatScope);
 
   let tripContext = {};
 
