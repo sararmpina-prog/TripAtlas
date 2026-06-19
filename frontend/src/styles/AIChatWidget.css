@@ -1,14 +1,15 @@
 /* CONTAINER PRINCIPAL */
 .ai-chat-container {
-  display: flex;
+display: flex;
   flex-direction: column;
-  height: 100%; 
-  width: 100%; 
+  height: 100%;
+  width: 100%;
   background: var(--surface-card);
   border-radius: 24px;
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Animação suave de largura */
 }
 
 /* CABEÇALHO DO CHAT */
@@ -82,8 +83,8 @@
 }
 
 .user-bubble {
-  background: var(--color-orange);
-  color: #ffffff;
+  background: var(--color-light-azure);
+  color: var(--text-main);
   border-radius: 16px 16px 0px 16px;
   border: none;
 }
@@ -155,4 +156,75 @@
 .ai-chat-input-area button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ESTRUTURA DO CORPO DO CHAT (Divide entre Sidebar e Mensagens) */
+.ai-chat-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+}
+
+/* SIDEBAR DO HISTÓRICO (Estilo ChatGPT) */
+.ai-chat-sidebar {
+  width: 160px;
+  background: #f0f4f8;
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  gap: 0.5rem;
+  overflow-y: auto;
+  transition: all 0.25s ease-in-out;
+}
+
+/* Quando a barra lateral está escondida */
+.ai-chat-sidebar.closed {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: none;
+}
+
+/* ITENS DO HISTÓRICO (Botões das conversas antigas) */
+.ai-chat-history-item {
+  width: 100%;
+  padding: 0.5rem;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Corta o texto com ... se for muito longo */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-chat-history-item:hover,
+.ai-chat-history-item.active {
+  background: var(--surface-hover);
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+}
+
+/* BOTÃO DE ALTERNAR A SIDEBAR (Ícone de Menu) */
+.btn-toggle-sidebar {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.btn-toggle-sidebar:hover {
+  color: var(--color-orange);
 }

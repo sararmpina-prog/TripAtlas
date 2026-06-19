@@ -42,7 +42,7 @@ export default function Dashboard() {
     const flightsQuery = useQuery({ queryKey: ['dashboard', 'flights'], queryFn: () => getFlights(token), enabled: Boolean(token) });
     const reservesQuery = useQuery({ queryKey: ['dashboard', 'reserves'], queryFn: () => getReserves(token), enabled: Boolean(token) });
 
-    // 💡 Extração segura de dados
+    // Extração segura de dados
     const trips = tripsQuery.data?.data ?? [];
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
