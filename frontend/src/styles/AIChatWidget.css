@@ -2,7 +2,8 @@
 .ai-chat-container {
   display: flex;
   flex-direction: column;
-  height: 600px;
+  height: 100%; 
+  width: 100%; 
   background: var(--surface-card);
   border-radius: 24px;
   border: 1px solid var(--border-light);
@@ -23,6 +24,7 @@
 .ai-chat-header h2 {
   font-family: "Syne", sans-serif;
   font-size: 1.3rem;
+  text-shadow: none;
   margin: 0;
   color: var(--text-heading-dark);
 }
@@ -49,6 +51,7 @@
 .ai-chat-messages {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
   padding: 1.5rem;
   background: #fafcfe;
   display: flex;
@@ -75,7 +78,7 @@
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   line-height: 1.4;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-hard);
 }
 
 .user-bubble {
@@ -86,7 +89,7 @@
 }
 
 .ai-bubble {
-  background: #ffffff;
+  background: var(--color-white);
   color: var(--text-main);
   border-radius: 16px 16px 16px 0px;
   border: 1px solid var(--border-light);
@@ -137,7 +140,7 @@
   border-radius: 50%;
   background: var(--color-orange);
   border: none;
-  color: #ffffff;
+  color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center; /* Centra o ícone SVG lá dentro */

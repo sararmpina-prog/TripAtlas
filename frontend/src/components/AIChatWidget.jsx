@@ -1,14 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'; // Suporte a cache real
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { IoSend } from 'react-icons/io5';
-import { BiMessageSquareAdd } from 'react-icons/bi';
 import { getChatHistory, sendChatMessage } from '../api'; 
 import { getStoredToken, getStoredUser } from '../auth/authStorage';
-import '../styles/AIChatCard.css';
+import '../styles/AIChatWidget.css';
 
-// Quando o utilizador clica em "New Chat", o AIChatCard chama onTripChange(''), que limpa a viagem ativa no Dashboard.
-// O Dashboard, por sua vez, atualiza o estado selectedTripId para '', o que faz com que o AIChatCard recarregue sem um tripId específico, ativando assim o modo de chat genérico sem contexto de viagem.
-export default function AIChatCard({ selectedTrip, onTripChange }) {
+export default function AIChatWidget() {
     const token = getStoredToken();
     const user = getStoredUser();
     const queryClient = useQueryClient();
@@ -17,20 +14,19 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
     const [inputValue, setInputValue] = useState('');
     const [localMessages, setLocalMessages] = useState([]);
 
-    // Extrai o ID da viagem se ela existir, caso contrário envia null (Pergunta Genérica)
-    const currentTripId = selectedTrip?.id ? Number(selectedTrip.id) : null;
+    // O tripId passa a ser sempre null para conversas globais do utilizador
+    const currentTripId = null;
 
-    // CONSULTA: Vai buscar o histórico real à BD com base no utilizador e na viagem ativa
+    // CONSULTA: Puxa o histórico genérico de conversas do user logado
     const { data: serverHistory, isLoading: isLoadingHistory } = useQuery({
-        queryKey: ['chat', currentTripId],
+        queryKey: ['chat', 'global'], // Chave estática global
         queryFn: () => getChatHistory(currentTripId, token),
         enabled: Boolean(token),
     });
 
-    // Sincroniza as mensagens do servidor com o estado local do ecrã
+    // Sincroniza o histórico antigo
     useEffect(() => {
-        if (serverHistory?.data) {
-            // Transforma o formato achatado do SQL (user_message + ai_response) num formato legível de chat
+        if (serverHistory?.data && serverHistory.data.length > 0) {
             const formattedMessages = [];
             serverHistory.data.forEach((chat, index) => {
                 formattedMessages.push({ id: `u-${index}`, sender: 'user', text: chat.user_message });
@@ -38,30 +34,25 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
             });
             setLocalMessages(formattedMessages);
         } else {
-            // Mensagem de boas-vindas padrão se não houver histórico na BD
             setLocalMessages([
                 {
-                    id: 'welcome',
+                    id: 'welcome-global',
                     sender: 'ai',
-                    text: selectedTrip?.destination 
-                        ? `Hi! I'm your Trip Assistant. Ask me anything about your trip to ${selectedTrip.destination}!`
-                        : "Hi! Need inspiration? Get instant suggestions for your next adventure!"
+                    text: `Hello ${user?.first_name || 'Traveler'}! I'm your AI Travel Assistant. Ask me generic questions about travels, plan itineraries from scratch, or look for inspiration for your next adventure!`
                 }
             ]);
         }
-    }, [serverHistory, selectedTrip]);
+    }, [serverHistory]);
 
-    // Auto-scroll automático
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [localMessages]);
 
-    // MUTATION: Envia a nova mensagem para o Express e guarda no SQL (chat_history)
+    // MUTATION: Envia a mensagem global
     const sendMessageMutation = useMutation({
         mutationFn: (chatPayload) => sendChatMessage(chatPayload, token),
         onSuccess: () => {
-            // Invalida a cache para recarregar o histórico updated_at com a resposta da AI
-            queryClient.invalidateQueries({ queryKey: ['chat', currentTripId] });
+            queryClient.invalidateQueries({ queryKey: ['chat', 'global'] });
         }
     });
 
@@ -72,48 +63,27 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
         const textToSend = inputValue.trim();
         setInputValue('');
 
-        // Otimismo Visual: Adiciona a mensagem do utilizador no ecrã imediatamente
         setLocalMessages((prev) => [...prev, { id: 'temp-user', sender: 'user', text: textToSend }]);
 
-        // Dispara o payload exato mapeado com as colunas do MySQL
         sendMessageMutation.mutate({
             user_id: Number(user?.id),
-            trip_id: currentTripId, 
+            trip_id: null,
             user_message: textToSend
         });
     };
 
-    const handleNewGenericChat = () => {
-        if (onTripChange) {
-            onTripChange(''); // Limpa a viagem ativa no Dashboard e ativa o modo genérico
-        }
-    };
-
     return (
         <div className="ai-chat-container">
-            {/* CABEÇALHO COM AÇÕES */}
             <div className="ai-chat-header">
                 <div>
-                    <h2>Trip Assistant</h2>
-                    <p className="ai-badge">
-                        {selectedTrip ? `Context: ${selectedTrip.destination}` : 'Generic Conversation'}
-                    </p>
+                    <h2>AI Assistant</h2>
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Connected as {user?.first_name}</p>
                 </div>
-                
-                {/* Botão discreto para desassociar da viagem e abrir chat livre */}
-                <button 
-                    type="button" 
-                    title="Start generic chat (No trip)"
-                    onClick={handleNewGenericChat}
-                   >
-                    <BiMessageSquareAdd size={20} /> New Chat
-                </button>
             </div>
             
-            {/* ÁREA DE TEXTO */}
             <div className="ai-chat-messages">
                 {isLoadingHistory ? (
-                    <p>Loading conversation history...</p>
+                    <p style={{ textAlign: 'center', color: 'var(--text-muted)', margin: 'auto' }}>Loading your conversation history...</p>
                 ) : (
                     localMessages.map((msg, index) => (
                         <div key={index} className={`chat-bubble-wrapper ${msg.sender}`}>
@@ -126,29 +96,25 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
                 {sendMessageMutation.isPending && (
                     <div className="chat-bubble-wrapper ai">
                         <div className="chat-bubble ai-bubble typing">
-                            Trip Assistant is typing...
+                            Assistant is typing...
                         </div>
                     </div>
                 )}
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* BARRA INFERIOR DE INPUT */}
             <form onSubmit={handleSendMessage} className="ai-chat-input-area">
                 <input 
                     type="text"
-                    placeholder={isLoadingHistory ? "Loading conversation history..." : "Ask about hotels, planning, or packing items..."}
+                    placeholder="Ask about hotels, planning, or packing items..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     disabled={sendMessageMutation.isPending} 
                 />
-                <button
-                    type="submit" 
-                    disabled={sendMessageMutation.isPending || !inputValue.trim()} 
-                >
+                <button type="submit" disabled={sendMessageMutation.isPending || !inputValue.trim()}>
                     <IoSend size={18} />
                 </button>
             </form>
         </div>
     );
-} 
+}
