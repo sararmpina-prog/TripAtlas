@@ -18,7 +18,7 @@ import flightRoutes from './routes/flightRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import accommodationRoutes from './routes/accommodationRoutes.js'
 import reserveRoutes from './routes/reserveRoutes.js'
-import aiRoutes from './routes/aiRoutes.js';
+import aiRoutesteste from './infra/ai_Pina/aiRoutesteste.js';
 
 // Middlewares
 import auth from './middlewares/authMiddeware.js';
@@ -54,7 +54,9 @@ app.use('/api/auth', authRoutes);
 
 // ROTAS PROTEGIDAS (Só entram utilizadores autenticados - Só executam SE passarem pela barreira acima "'/api/auth', authRoutes")
 
-app.use('/api/ai', auth, aiRoutes);
+// app.use('/api/ai', auth, aiRoutes);
+
+app.use('/api/ai', auth, aiRoutesteste);
 app.use('/api/trips', auth, tripRoutes);
 app.use('/api/flights', auth, flightRoutes);
 app.use('/api/users', auth, userRoutes);

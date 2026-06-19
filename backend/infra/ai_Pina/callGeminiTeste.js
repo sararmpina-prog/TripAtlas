@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { GoogleGenAI } from '@google/genai';
 import {buildTripAssistantSystemPrompt} from '../ai/prompts/tripAssistantPrompt.js'
+import {setAiSuggestionFunctionDeclaration} from './setSuggestionFunctionDeclaration.js'
+import {createAiSuggestion} from './createAiSuggestion.js'
 
 
 // History general starts off as a empty array
@@ -41,10 +43,7 @@ const config = {
   tools: [
       {
           functionDeclarations: [
-              setTaskCreationFunctionDeclaration,
-              setTaskDeleteFunctionDeclaration,
-              setTaskUpdateFunctionDeclaration,
-              getUrgentTasksFunctionDeclaration
+              setAiSuggestionFunctionDeclaration
           ]
       }
   ],
@@ -58,7 +57,7 @@ const config = {
 
 
 //Call Api Gemini (multiple function definitions)
-export async function callGeminiWithFunctionDefinition(userPrompt) {
+export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = null) {
 
   history.push({
       role: "user",
@@ -77,8 +76,6 @@ export async function callGeminiWithFunctionDefinition(userPrompt) {
   let step = 1;
   const MAX_STEPS = 5;
 
-  let urgentTasksResult; 
-  let tasks; 
   while ( step <= MAX_STEPS) {
 
   const parts = currentResponse?.candidates?.[0]?.content?.parts || [];
@@ -130,22 +127,15 @@ export async function callGeminiWithFunctionDefinition(userPrompt) {
     const fn = p.functionCall;  
     let result;
 
+    console.log("FUNCTION ARGS:", JSON.stringify(fn.args, null, 2));
+
+    console.log("Trip ID recebido:", trip_id);
+    console.log("Function args:", fn.args);
+
     switch (fn.name) {
-      case 'set_task_creation':
-        result = await setTaskCreation(fn.args);
+      case 'set_ai_suggestion':
+        result = await createAiSuggestion({...fn.args, trip_id});
         break;
-
-      case 'set_task_delete':
-        result = await setTaskDelete(fn.args.id);
-        break;
-
-      case 'set_task_update':
-      result = await setTaskUpdate(fn.args);
-      break;
-
-      case "get_urgent_tasks":
-      result = await getUrgentTasks();
-      break;
 
       default:
       result = { error: 'Unknown function' };
@@ -180,12 +170,6 @@ export async function callGeminiWithFunctionDefinition(userPrompt) {
   currentResponse = await generateWithFallback(history, config);
     step++;
     console.log("currentResponse", currentResponse) 
-
-    urgentTasksResult = functionResults.find(
-    fr => fr.name === "get_urgent_tasks"
-  );
-
-  tasks = urgentTasksResult?.response?.tasks || null;
   }
 
   
@@ -206,15 +190,14 @@ export async function callGeminiWithFunctionDefinition(userPrompt) {
   console.log("Histórico da conversa (resposta FINALISSIMO)", history)
   console.log("Histórico:", JSON.stringify(history, null, 2))
 
-  console.log("isto são as tarefas", urgentTasksResult?.response?.tasks)
+
   console.log("isto são os textos", finalText)
 
   
 
   const finalResponse = {
       success: true,
-      message: finalText,
-      tasks: tasks
+      message: finalText
     
     };
     console.log("finalResponse", finalResponse)

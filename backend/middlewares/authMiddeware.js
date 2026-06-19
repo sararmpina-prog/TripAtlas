@@ -21,8 +21,12 @@ function auth(req, res, next) {
         
         // Guarda os dados do token (ex: id) no req.user para os controladores usarem
         req.user = decoded;
+        if (decoded.exp < Date.now() / 1000) {
+          console.log("Token expirado");
+        }
         next();
     } catch (error) {
+        console.log("JWT ERROR:", error.message);
         // Se o token for inválido ou expirar, responde no vosso padrão JSON (403)
         return res.status(403).json({
             success: false,
