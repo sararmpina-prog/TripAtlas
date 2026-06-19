@@ -41,7 +41,11 @@ export default function Dashboard() {
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
 
+<<<<<<< HEAD
     // CÁLCULO DA VIAGEM ATIVA
+=======
+    //optimizar desempenho, memoriza calculo entre renderizações so recalcula se dependencias alteradas
+>>>>>>> main
     const selectedTrip = useMemo(() => {
         if (!trips || !trips.length) {
             return null; 

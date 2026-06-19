@@ -21,6 +21,10 @@ const limitSchema = z.coerce.number().int().positive().catch(10);
 
 // Persiste uma interação completa no histórico de chat.
 export async function saveChat({ user_id, trip_id = null, user_message, ai_response }) {
+  console.log("repository trip id", trip_id)
+  console.log("repository user_id", user_id)
+  console.log("repository user_message", user_message)
+  console.log("repository ai_response", ai_response)
   const query = `
     INSERT INTO chat_history (user_id, trip_id, user_message, ai_response)
     VALUES (?, ?, ?, ?)
