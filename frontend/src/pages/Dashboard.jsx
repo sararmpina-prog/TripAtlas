@@ -96,7 +96,7 @@ export default function Dashboard() {
                     onTripChange={setSelectedTripId}
                 />
 
-                <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr' }}>
+                <div className="dashboard-grid">
                     <div className="dashboard-grid-logistics">
                         
                         {/* SECÇÃO DE VOOS */}

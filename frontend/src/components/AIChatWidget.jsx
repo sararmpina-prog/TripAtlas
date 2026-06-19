@@ -99,7 +99,7 @@ export default function AIChatWidget() {
         <div className="ai-chat-container">
             {/* CABEÇALHO DO CHAT */}
             <div className="ai-chat-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="ai-chat-header-left">
                     {/* Botão para abrir/fechar a barra de histórico */}
                     <button 
                         type="button" 
@@ -110,8 +110,8 @@ export default function AIChatWidget() {
                         {isSidebarOpen ? <LuPanelLeftClose size={20} /> : <LuPanelLeftOpen size={20} />}
                     </button>
                     <div>
-                        <h2 style={{ fontSize: '1.1rem' }}>TripAtlas Chat</h2>
-                        <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>AI Travel Assistant</p>
+                        <h2>TripAtlas Chat</h2>
+                        <p>AI Travel Assistant</p>
                     </div>
                 </div>
 
@@ -120,8 +120,7 @@ export default function AIChatWidget() {
                     type="button" 
                     onClick={() => setActiveSessionId('new')}
                     title="Start clean conversation"
-                    style={{ background: 'none', border: 'none', color: 'var(--color-orange)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.8rem', fontWeight: '700' }}
-                >
+                    >
                     <FiPlus size={16} /> New Chat
                 </button>
             </div>
@@ -131,7 +130,7 @@ export default function AIChatWidget() {
                 
                 {/* BARRA LATERAL RETRÁTIL DE HISTÓRICO */}
                 <div className={`ai-chat-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
-                    <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Recent Chats</p>
+                    <p>Recent Chats</p>
                     {mockChatSessions.map((session) => (
                         <button
                             key={session.id}
@@ -145,7 +144,7 @@ export default function AIChatWidget() {
                 </div>
 
                 {/* ÁREA DE CONVERSA PRINCIPAL */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                <div className="ai-chat-main">
                     <div className="ai-chat-messages">
                         {localMessages.map((msg, index) => (
                             <div key={index} className={`chat-bubble-wrapper ${msg.sender}`}>
