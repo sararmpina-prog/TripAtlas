@@ -1,0 +1,130 @@
+.dashboard-sidepanel {
+  width: 320px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 24px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-light);
+  position: sticky;
+  top: 2rem;
+}
+
+.dashboard-sidepanel div {
+  position: relative;
+}
+
+/* TEXTOS E CABEÇALHOS */
+.dashboard-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.dashboard-sidepanel h1 {
+  font-family: "Open Sans", sans-serif;
+  margin: 2rem 0;
+  font-size: 2.2rem; 
+  text-shadow: none;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.dashboard-trip_summary {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dashboard-trip_description {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.5;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(82, 121, 151, 0.15);
+}
+
+.dashboard-trip-picker-error {
+    color: var(--error-color-dark);
+}
+
+/* INPUTS, TEXTAREAS E SELETORES */
+.dashboard-trip-picker {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--text-heading-dark);
+}
+
+.dashboard-trip-picker span {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.dashboard-trip-picker select {
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  background: var(--surface-card);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dashboard-trip-picker input,
+.dashboard-trip-picker textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--surface-card);
+  font-size: 0.9rem;
+  color: var(--text-main);
+  outline: none;
+}
+
+.dashboard-trip-picker input:disabled,
+.dashboard-trip-picker textarea:disabled {
+  background-color: var(--background-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* BOTÕES E BOTÕES DE AÇÃO DOS FORMULÁRIOS */
+.btn-edit-trip {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  color: var(--color-orange);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.dashboard-sidepanel button {
+  width: 100%;
+}
+
+.dashboard-sidepanel-buttons {
+   display: flex;
+   gap: 0.5rem;
+   margin-top: 1rem;
+}

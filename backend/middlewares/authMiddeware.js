@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"; // biblioteca para lidar com JWTs
-import { UnauthorizedError, InvalidTokenError } from "./appErrors.js";
+import { UnauthorizedError, InvalidTokenError } from "../utils/appErrors.js";
 
 function auth(req, res, next) {
     const authHeader = req.headers.authorization;

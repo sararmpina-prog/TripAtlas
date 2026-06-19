@@ -1,50 +1,143 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createTrip, updateTrip } from '../api';
+import { getStoredToken, getStoredUser } from '../auth/authStorage';
 import { formatDate } from '../utils/dateHelpers';
+import { MdOutlineEdit } from 'react-icons/md';
+import '../styles/TripSidePanel.css';
 
 export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
+    const token = getStoredToken();
+    const user = getStoredUser();
+    const queryClient = useQueryClient();
 
-    // Estado para controlar se estamos a criar uma viagem nova no painel
+    // Estados para controlo de fluxo de ecrãs
     const [isCreating, setIsCreating] = useState(false);
-    const [newTripTitle, setNewTripTitle] = useState('');
-    const [newTripDestination, setNewTripDestination] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [formError, setFormError] = useState('');
+
+    // Estados partilhados pelos formulários (Criação e Edição)
+    const [tripTitle, setTripTitle] = useState('');
+    const [tripDestination, setTripDestination] = useState('');
+    const [tripStartDate, setTripStartDate] = useState('');
+    const [tripEndDate, setTripEndDate] = useState('');
+    const [tripDescription, setTripDescription] = useState('');
+
+    // Efeito para carregar os dados nos inputs sempre que o utilizador clica em "Editar"
+    useEffect(() => {
+    if (isEditing && selectedTrip) {
+        setTripTitle(selectedTrip.title || '');
+        setTripDestination(selectedTrip.destination || '');
+        setTripDescription(selectedTrip.description || '');
+        setTripStartDate(selectedTrip.start_date ? selectedTrip.start_date.split('T')[0] : ''); // Remove tudo o que está após a letra 'T' de forma limpa e segura
+        setTripEndDate(selectedTrip.end_date ? selectedTrip.end_date.split('T')[0] : '');
+    }
+}, [isEditing, selectedTrip]);
+
+    // MUTATION: Criar Viagem
+    const createTripMutation = useMutation({
+        mutationFn: (newTripData) => createTrip(newTripData, token),
+        onSuccess: (response) => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
+            setIsCreating(false);
+            setFormError('');
+            const newId = response?.data?.id || response?.id;
+            if (newId) onTripChange(String(newId));
+        },
+        onError: (error) => setFormError(error.message || 'Failed to create trip.')
+    });
+
+    // MUTATION: Atualizar Viagem (PATCH)
+    const updateTripMutation = useMutation({
+        mutationFn: (updatedData) => updateTrip(selectedTrip.id, updatedData, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
+            setIsEditing(false); // Fecha o formulário automaticamente no sucesso
+            setFormError('');
+        },
+        onError: (error) => {
+            setFormError(error.message || 'Failed to update trip.');
+        }
+    });
 
     const handleSaveTrip = () => {
-        // Aqui faria a chamada à API para gravar a viagem na Base de Dados
-        console.log("Gravar na BD:", { title: newTripTitle, destination: newTripDestination });
-        setIsCreating(false);
+        if (!tripTitle || !tripDestination || !tripStartDate || !tripEndDate) {
+            setFormError("Title, Destination, Start Date, and End Date are required.");
+            return;
+        }
+
+        if (!user?.id) {
+            setFormError("User session not found. Please log in again.");
+            return;
+        }
+
+        setFormError('');
+
+        const payload = {
+            user_id: Number(user.id),
+            title: tripTitle,
+            destination: tripDestination,
+            start_date: tripStartDate,
+            end_date: tripEndDate,
+            description: tripDescription || null
+        };
+
+        // Decide dinamicamente qual a mutação a disparar
+        if (isCreating) {
+            createTripMutation.mutate(payload);
+        } else if (isEditing) {
+            updateTripMutation.mutate(payload);
+        }
     };
 
-    // 💡 MODO FORMULÁRIO (Substitui o painel quando clica em criar)
-    if (isCreating) {
+    const handleCancel = () => {
+        setIsCreating(false);
+        setIsEditing(false);
+        setFormError('');
+    };
+
+    // ****** MODO FORMULÁRIO (Criar OU Editar) ******
+
+    if (isCreating || isEditing) {
+        const isPending = createTripMutation.isPending || updateTripMutation.isPending;
+        
         return (
             <div className="dashboard-sidepanel">
-                <p className="dashboard-eyebrow">Create New Adventure</p>
-                
+                <p className="dashboard-eyebrow">{isCreating ? 'Create New Adventure' : 'Edit Trip Details'}</p>
+
                 <label className="dashboard-trip-picker">
-                    <span>Trip Title</span>
-                    <input 
-                        type="text" 
-                        placeholder="e.g., Summer Vacation" 
-                        value={newTripTitle}
-                        onChange={(e) => setNewTripTitle(e.target.value)}
-                    />
+                    <span>Trip Title *</span>
+                    <input type="text" value={tripTitle} onChange={(e) => setTripTitle(e.target.value)} disabled={isPending} />
                 </label>
 
-                <label className="dashboard-trip-picker" style={{ marginTop: '0.5rem' }}>
-                    <span>Destination</span>
-                    <input 
-                        type="text" 
-                        placeholder="e.g., Paris, France" 
-                        value={newTripDestination}
-                        onChange={(e) => setNewTripDestination(e.target.value)}
-                    />
+                <label className="dashboard-trip-picker">
+                    <span>Destination *</span>
+                    <input type="text" value={tripDestination} onChange={(e) => setTripDestination(e.target.value)} disabled={isPending} />
                 </label>
 
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                    <button type="button" className="btn-base btn-orange" onClick={handleSaveTrip}>
-                        Save Trip
+                <label className="dashboard-trip-picker">
+                    <span>Start Date *</span>
+                    <input type="date" value={tripStartDate} onChange={(e) => setTripStartDate(e.target.value)} disabled={isPending} />
+                </label>
+
+                <label className="dashboard-trip-picker">
+                    <span>End Date *</span>
+                    <input type="date" value={tripEndDate} onChange={(e) => setTripEndDate(e.target.value)} disabled={isPending} />
+                </label>
+
+                <label className="dashboard-trip-picker">
+                    <span>Description (Optional)</span>
+                    <textarea value={tripDescription} onChange={(e) => setTripDescription(e.target.value)} disabled={isPending} />
+                </label>
+
+                {/* Erro posicionado de forma limpa acima dos botões */}
+                {formError && <p className="dashboard-trip-picker-error"> {formError}</p>}
+
+                <div className="dashboard-sidepanel-buttons"> 
+                    <button type="button" className="btn-base btn-orange" onClick={handleSaveTrip} disabled={isPending}>
+                        {isPending ? 'Saving...' : 'Save Changes'}
                     </button>
-                    <button type="button" className="btn-base" onClick={() => setIsCreating(false)}>
+                    <button type="button" className="btn-base" onClick={handleCancel} disabled={isPending}>
                         Cancel
                     </button>
                 </div>
@@ -52,24 +145,30 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
         );
     }
 
-    // SE NÃO HOUVER VIAGEM: Cria-se um objeto com placeholders para o ecrã não quebrar
+    // ****** MODO VISUALIZAÇÃO PADRÃO ******
+
     const tripData = selectedTrip || {
-        title: "No trips created yet",
+        title: "No trip created yet",
         destination: "Your destination",
         start_date: null,
         end_date: null,
-        description: "Create your first trip using the success button or the actions panel to unlock your dashboard.",
+        description: "Create your first trip using the action panel below to unlock your logistics dashboard.",
         id: ""
     };
 
     const hasTrips = trips && trips.length > 0;
 
-    // MODO VISUALIZAÇÃO PADRÃO
     return (
         <div className="dashboard-sidepanel">
             <div>
                 <p className="dashboard-eyebrow">My trip dashboard</p>
-                {/* Usa tripData que garante que há sempre texto */}
+                
+                {selectedTrip && (
+                    <button type="button" className="btn-edit-trip" onClick={() => setIsEditing(true)}>
+                        <MdOutlineEdit /> Edit
+                    </button>
+                )}
+
                 <h1>{tripData.title}</h1>
                 
                 <p className="dashboard-trip_summary">
@@ -85,16 +184,15 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
                 )}
             </div>
 
-            {/* NOVO BOTÃO CENTRALIZADO: O utilizador pode criar nova uma viagem aqui */}
             <button 
                 type="button" 
                 className="btn-base btn-orange" 
-                style={{ width: '100%', marginBottom: '1rem' }}
-                onClick={() => setIsCreating(true)} // Ativa o formulário inline
+                onClick={() => { setIsCreating(true); setTripTitle(''); setTripDestination(''); setTripStartDate(''); setTripEndDate(''); setTripDescription(''); }}
             >
                 Plan a new trip
             </button>
 
+            {/* CONCLUÍDO: Bloco do seletor que faltava fechar no fim do ficheiro */}
             <label className="dashboard-trip-picker">
                 <span>Select trip</span>
                 {hasTrips ? (
@@ -109,7 +207,6 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
                         ))}
                     </select>
                 ) : (
-                    /* Se não houver viagens na BD, desativa-se o select com um texto amigável */
                     <select disabled value="">
                         <option value="">No trips available</option>
                     </select>

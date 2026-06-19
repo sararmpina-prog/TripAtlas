@@ -49,6 +49,9 @@ CREATE TABLE accommodation_reserve (
 	trip_id INT NOT NULL,
     check_in_date DATE NOT NULL,  -- Recomendado NOT NULL para evitar inconsistências
     check_out_date DATE NOT NULL   -- Recomendado NOT NULL para evitar inconsistências
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 

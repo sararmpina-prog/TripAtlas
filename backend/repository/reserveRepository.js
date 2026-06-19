@@ -5,6 +5,15 @@ Base de dados → snake_case */
 
 import { db } from '../infra/db/db.js';
 
+// FUNÇÃO AUXILIAR: Atualiza o updated_at da TRIP associada para a data/hora atual
+async function touchTripTimestamp(tripId) {
+  if (!tripId) return;
+  await db.execute(
+    'UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [tripId]
+  );
+}
+
 // LISTA TODAS AS RESERVAS
 export async function listReserves() {
   const [rows] = await db.execute(`
@@ -28,6 +37,9 @@ export async function findReserveById(id) {
 
 // APAGA UMA RESERVA EXISTENTE
 export async function deleteReserve(id) {
+  // CASO DE ELIMINAÇÃO: Descobre o trip_id antes de apagar o registo da BD
+  const reserve = await findReserveById(id);
+
   const [result] = await db.execute(
     `
      DELETE FROM accommodation_reserve WHERE id = ?
@@ -35,10 +47,12 @@ export async function deleteReserve(id) {
     [id]
   );
 
-  // Retorna true se eliminou um registo, false caso contrário
+  if (result.affectedRows > 0 && reserve) {
+    await touchTripTimestamp(reserve.trip_id);
+  }
+
   return result.affectedRows > 0;
 }
-
 
 // LISTA RESERVAS DUPLICADAS
 export async function listDuplicatedReserves(reserve) {
@@ -46,14 +60,11 @@ export async function listDuplicatedReserves(reserve) {
    SELECT 1 FROM accommodation_reserve WHERE accommodation_id = ? AND trip_id = ? AND check_in_date = ? AND check_out_date = ? LIMIT 1
   `,  [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]);
 
-  // Retorna true se eliminou um registo, false caso contrário
   return rows.length > 0;
 }
 
-
 // CRIA UMA NOVA RESERVA
 export async function createReserve(reserve) {
-
   const [result] = await db.execute(
     `
       INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date)
@@ -62,12 +73,14 @@ export async function createReserve(reserve) {
     [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]
   );
 
+  // CASO DE CRIAÇÃO: O trip_id vem direto nos dados do parâmetro
+  await touchTripTimestamp(reserve.trip_id);
+
   return result.insertId;
 }
 
-// ATUALIZA UMA NOVA RESERVA
+// ATUALIZA UMA RESERVA EXISTENTE
 export async function updateReserve(id, reserve) {
-
   const [result] = await db.execute(
    `UPDATE accommodation_reserve
       SET
@@ -84,6 +97,11 @@ export async function updateReserve(id, reserve) {
       reserve.check_out_date,
       id
     ]);
+
+  if (result.affectedRows > 0) {
+    // CASO DE EDIÇÃO: Garante o "toque" na viagem correta
+    await touchTripTimestamp(reserve.trip_id);
+  }
 
   return result.affectedRows > 0;
 }
