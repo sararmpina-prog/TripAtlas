@@ -1,25 +1,28 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router";
+
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
 import ReserveCard from '../components/ReserveCard';
 import AIChatCard from '../components/AIChatCard';
 import TripSidePanel from '../components/TripSidePanel';
+
 import { getFlights, getReserves, getTrips } from '../api';
 import { getStoredToken } from '../auth/authStorage';
+
 import '../styles/Dashboard.css';
 
 function DashboardSection({ title, count, children }) {
     return (
         <section className="dashboard-section">
-            <div className="dashboard-section__header">
+            <div className="dashboard-section-header">
                 <div>
                     <h2>{title}</h2>
                     <p>{count} item{count === 1 ? '' : 's'}</p>
                 </div>
             </div>
-            <div className="dashboard-section__content">{children}</div>
+            <div className="dashboard-section-content">{children}</div>
         </section>
     );
 }
@@ -99,7 +102,7 @@ useEffect(() => {
                 />
 
                 <div className="dashboard-grid">
-                    <div className="dashboard-grid__logistics">
+                    <div className="dashboard-grid-logistics">
                         
                         {/* SECÇÃO DE VOOS */}
                         <DashboardSection title="Flights" count={selectedTripFlights.length}>

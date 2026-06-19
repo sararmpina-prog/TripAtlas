@@ -161,13 +161,15 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
     return (
         <div className="dashboard-sidepanel">
             <div>
-                <p className="dashboard-eyebrow">My trip dashboard</p>
-                
-                {selectedTrip && (
-                    <button type="button" className="btn-edit-trip" onClick={() => setIsEditing(true)}>
-                        <MdOutlineEdit /> Edit
-                    </button>
-                )}
+                <div className="dashboard-sidepanel-header">
+                    <p className="dashboard-eyebrow">My trip dashboard</p>
+                    
+                    {selectedTrip && (
+                        <button type="button" className="btn-edit-trip" onClick={() => setIsEditing(true)}>
+                            <MdOutlineEdit />
+                        </button>
+                    )}
+                </div>
 
                 <h1>{tripData.title}</h1>
                 

@@ -1,6 +1,8 @@
 import "../styles/FlightCard.css";
 import FlightSegment from "./FlightSegment";
 import { useState } from 'react';
+import { FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 export default function FlightCard({ flight }) {
   if (!flight) return null;
@@ -33,14 +35,14 @@ export default function FlightCard({ flight }) {
     return (
         <div className="logistics-card-wrapper">
             {/* CONTROLOS DISCRETOS: Só aparecem ao passar o rato */}
-            <div className="logistics-card__hover-actions">
+            <div className="logistics-card-hover-actions">
                 <button 
                     type="button" 
                     className="btn-card-action btn-card-edit" 
                     onClick={() => setIsEditing(true)}
                     title="Edit item"
                 >
-                    ✏️
+                    <FaEdit />
                 </button>
                 <button 
                     type="button" 
@@ -48,7 +50,7 @@ export default function FlightCard({ flight }) {
                     onClick={handleDelete}
                     title="Delete item"
                 >
-                    🗑️
+                    <MdDelete />
                 </button>
             </div>
 

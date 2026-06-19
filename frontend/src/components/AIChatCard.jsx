@@ -92,7 +92,7 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
     return (
         <div className="ai-chat-container">
             {/* CABEÇALHO COM AÇÕES */}
-            <div className="ai-chat__header">
+            <div className="ai-chat-header">
                 <div>
                     <h2>Trip Assistant</h2>
                     <p className="ai-badge">
@@ -111,7 +111,7 @@ export default function AIChatCard({ selectedTrip, onTripChange }) {
             </div>
             
             {/* ÁREA DE TEXTO */}
-            <div className="ai-chat__messages">
+            <div className="ai-chat-messages">
                 {isLoadingHistory ? (
                     <p>Loading conversation history...</p>
                 ) : (
