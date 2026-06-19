@@ -3,6 +3,8 @@ import { GoogleGenAI } from '@google/genai';
 import {buildTripAssistantSystemPrompt} from '../ai/prompts/tripAssistantPrompt.js'
 import {setAiSuggestionFunctionDeclaration} from './setSuggestionFunctionDeclaration.js'
 import {createAiSuggestion} from './createAiSuggestion.js'
+import { logGeminiDebug } from '../ai/aiDebugLogger.js';
+import {isTransientGeminiError,formatAIError} from '../ai/aiErrorMapper.js'
 
 
 // History general starts off as a empty array
@@ -64,14 +66,21 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
       parts: [{ text: userPrompt }]
   });
 
-  console.log("Histórico da conversa (primeiro push)", history)
-  console.log("Histórico:", JSON.stringify(history, null, 2))
+  logGeminiDebug(
+  'function-calling',
+  'history-user-push',
+  { history }
+);
 
   try {
 
   let currentResponse = await generateWithFallback(history, config);
 
-  console.log(JSON.stringify(currentResponse, null, 2));
+  logGeminiDebug(
+  'function-calling',
+  'gemini-response',
+  { currentResponse }
+);
 
   let step = 1;
   const MAX_STEPS = 5;
@@ -80,28 +89,43 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
 
   const parts = currentResponse?.candidates?.[0]?.content?.parts || [];
 
-  console.log("parts =", parts)
+  logGeminiDebug(
+  'function-calling',
+  'parts-extracted',
+  { parts }
+);
 
   if (parts && parts.length > 0) {
-  console.log("parts existe e length maior que zero")  
+ 
   history.push({
     role: "model",
     parts
   });
 }
 
-  console.log("Histórico da conversa (resposta Gemini)", history)
-  console.log("Histórico:", JSON.stringify(history, null, 2))
+  logGeminiDebug(
+    'function-calling',
+    'history-after-model-push',
+    {
+      lastModelParts: parts,
+      historyLength: history.length,
+      lastEntry: history[history.length - 1]
+    }
+  );
 
-  console.log("parts", parts)
-  console.log(`🔁 STEP ${step}`);
-  console.log("Funções pedidas pelo modelo:");
 
   //Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
   const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall)
 
 
-  console.log("functionCalls", functionCalls)
+  logGeminiDebug(
+  'function-calling',
+  'function-calls-detected',
+  {
+    count: functionCalls.length,
+    functionCalls
+  }
+);
 
  //Se não existir, sai do loop 
  if (functionCalls.length == 0) {
@@ -127,10 +151,15 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
     const fn = p.functionCall;  
     let result;
 
-    console.log("FUNCTION ARGS:", JSON.stringify(fn.args, null, 2));
-
-    console.log("Trip ID recebido:", trip_id);
-    console.log("Function args:", fn.args);
+    logGeminiDebug(
+  'function-calling',
+  'executing-function',
+  {
+    functionName: fn.name,
+    args: fn.args,
+    trip_id
+  }
+);
 
     switch (fn.name) {
       case 'set_ai_suggestion':
@@ -141,7 +170,14 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
       result = { error: 'Unknown function' };
     }
 
-    console.log(`✅ Executada: ${fn.name}`, result);
+    logGeminiDebug(
+  'function-calling',
+  'function-executed',
+  {
+    functionName: fn.name,
+    result
+  }
+);
 
     return {
       name: fn.name,
@@ -181,35 +217,40 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
   let finalText =
   finalParts.find(p => p.text)?.text;
 
-  console.log("finalText", finalText)
+  logGeminiDebug(
+  'function-calling',
+  'final-response',
+  {
+    finalText
+  }
+);
 
   if (finalText) {
     finalText = finalText?.trim()
   }
 
-  console.log("Histórico da conversa (resposta FINALISSIMO)", history)
-  console.log("Histórico:", JSON.stringify(history, null, 2))
 
-
-  console.log("isto são os textos", finalText)
-
-  
 
   const finalResponse = {
       success: true,
       message: finalText
     
     };
-    console.log("finalResponse", finalResponse)
+
     return finalResponse
  
       
 } catch (error) {
 
-  console.error(
-      "Gemini API Error:",
-      error.response?.data || error
-  );
+ logGeminiDebug(
+  'function-calling',
+  'gemini-error',
+  {
+    message: error.message,
+    response: error.response?.data,
+    stack: error.stack
+  }
+);
 
   throw error
     }
@@ -217,40 +258,89 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
 
 
 
-//Go through models: Best - gemini-2.5-flash + gemini-3.1-flash-lite 
+
+
+// Go through models: Best - gemini-2.5-flash + gemini-3.1-flash-lite
 async function generateWithFallback(contents, config) {
 
   let lastError = null;
 
   for (let i = 0; i < GEMINI_MODELS.length; i++) {
-    let model = GEMINI_MODELS[i];
+
+    const model = GEMINI_MODELS[i];
 
     try {
-    console.log("A tentar modelo:", model);
 
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: contents,
-      config: config
-    });
+      logGeminiDebug(
+        'gemini-provider',
+        'model-attempt',
+        {
+          model,
+          attempt: i + 1
+        }
+      );
 
-    console.log("Sucesso com modelo:", model);
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+        config
+      });
 
-    return response; 
+      logGeminiDebug(
+        'gemini-provider',
+        'model-success',
+        {
+          model
+        }
+      );
 
- } catch (error) {
+      return response;
 
-  console.warn("Modelo falhou porque", error.message);
+    } catch (error) {
 
-  if (error.status === 404) {
-  console.log("Modelo não existe, a continuar...");
-  continue;
-}
+      logGeminiDebug(
+        'gemini-provider',
+        'model-failure',
+        {
+          model,
+          transient: isTransientGeminiError(error),
+          formattedMessage: formatAIError(error),
+          originalMessage: error.message
+        }
+      );
 
-  lastError = error;
-}}
-  throw lastError;
+      // Modelo inexistente -> tenta o próximo
+      if (
+        error.status === 404 ||
+        formatAIError(error).includes('configured Gemini model')
+      ) {
+
+        logGeminiDebug(
+          'gemini-provider',
+          'fallback-next-model',
+          {
+            failedModel: model
+          }
+        );
+
+        continue;
+      }
+
+      lastError = error;
+    }
   }
 
+  logGeminiDebug(
+    'gemini-provider',
+    'all-models-failed',
+    {
+      modelsTried: GEMINI_MODELS,
+      finalError: formatAIError(lastError)
+    }
+  );
 
+  throw new Error(
+    formatAIError(lastError)
+  );
+}
 

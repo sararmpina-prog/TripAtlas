@@ -17,27 +17,48 @@ const geminiJsonErrorSchema = z.object({
 });
 
 function extractProviderErrorInfo(error) {
+
   const message = error?.message || '';
+  let parsedJson = null;
 
-  // O Zod testa nativamente se a string é um JSON válido e se bate certo com o Schema
-  const jsonParseResult = z.string().json().safeParse(message);
-
-  if (jsonParseResult.success) {
-    // Se for JSON, extraímos com segurança total
-    const parsedData = geminiJsonErrorSchema.parse(JSON.parse(message));
-    return {
-      code: parsedData.error.code,
-      status: parsedData.error.status,
-      message: parsedData.error.message || message,
-    };
+  try {
+    parsedJson = JSON.parse(message);
+  } catch {
+    parsedJson = null;
   }
 
-  // Fallback caso o erro venha como string simples (texto puro)
+  if (parsedJson) {
+    try {
+      const parsedData =
+        geminiJsonErrorSchema.parse(parsedJson);
+
+      return {
+        code: parsedData.error.code,
+        status: parsedData.error.status,
+        message: parsedData.error.message || message,
+      };
+    } catch {
+      // JSON existe mas não bate no schema
+    }
+  }
+
+  // fallback string-based
   return {
-    code: message.includes('429') ? 429 : message.includes('503') ? 503 : message.includes('404') ? 404 : null,
-    status: message.includes('RESOURCE_EXHAUSTED') ? 'RESOURCE_EXHAUSTED'
-          : message.includes('UNAVAILABLE') ? 'UNAVAILABLE'
-          : message.includes('NOT_FOUND') ? 'NOT_FOUND' : null,
+    code:
+      message.includes('429') ? 429 :
+      message.includes('503') ? 503 :
+      message.includes('404') ? 404 :
+      null,
+
+    status:
+      message.includes('RESOURCE_EXHAUSTED')
+        ? 'RESOURCE_EXHAUSTED'
+        : message.includes('UNAVAILABLE')
+        ? 'UNAVAILABLE'
+        : message.includes('NOT_FOUND')
+        ? 'NOT_FOUND'
+        : null,
+
     message,
   };
 }
