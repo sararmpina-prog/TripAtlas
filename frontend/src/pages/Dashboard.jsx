@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from "react-router";
+import { useNavigate } from "react-router";
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
 import ReserveCard from '../components/ReserveCard';
 import AIChatCard from '../components/AIChatCard';
 import TripSidePanel from '../components/TripSidePanel';
 import { getFlights, getReserves, getTrips } from '../api';
-import { getStoredToken, getStoredUser } from '../auth/authStorage';
+import { getStoredToken } from '../auth/authStorage';
 import '../styles/Dashboard.css';
 
 function DashboardSection({ title, count, children }) {
@@ -26,12 +26,13 @@ function DashboardSection({ title, count, children }) {
 
 export default function Dashboard() {
     const token = getStoredToken();
-    const user = getStoredUser();
-    const location = useLocation();
-    const forcePlaceholder = location.state?.forcePlaceholder ?? false; // Permite forçar o placeholder para criar nova viagem do zero
-
+    const navigate = useNavigate();
+    
+    // DECLARAÇÃO DOS ESTADOS
     const [selectedTripId, setSelectedTripId] = useState('');
+    const [isInitialized, setIsInitialized] = useState(false);
 
+    // Chamadas da API do TanStack Query
     const tripsQuery = useQuery({ queryKey: ['dashboard', 'trips'], queryFn: () => getTrips(token), enabled: Boolean(token) });
     const flightsQuery = useQuery({ queryKey: ['dashboard', 'flights'], queryFn: () => getFlights(token), enabled: Boolean(token) });
     const reservesQuery = useQuery({ queryKey: ['dashboard', 'reserves'], queryFn: () => getReserves(token), enabled: Boolean(token) });
@@ -40,84 +41,117 @@ export default function Dashboard() {
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
 
+    // CÁLCULO DA VIAGEM ATIVA
     //optimizar desempenho, memoriza calculo entre renderizações so recalcula se dependencias alteradas
     const selectedTrip = useMemo(() => {
-        // Se o botão "Plan a new trip" foi clicado OU se a BD não tiver viagens, mostra placeholders
-        if (forcePlaceholder || !trips.length) {
+        if (!trips || !trips.length) {
             return null; 
         }
 
+        if (isInitialized && selectedTripId === '') {
+            return null;
+        }
+
         const activeTripId = selectedTripId || String(trips[0].id);
+        return trips.find((trip) => String(trip.id) === String(activeTripId)) || trips[0];
+    }, [selectedTripId, trips, isInitialized]);
+
+// Atualiza o useEffect com a proteção da flag de inicialização
+useEffect(() => {
+    // Só entra aqui se o array de viagens carregar e ainda NÃO tiver sido inicializado
+    if (trips && trips.length > 0 && !isInitialized) {
         
-        return (
-            trips.find(
-                (trip) => String(trip.id) === String(activeTripId)
-            ) || trips[0]
-        );
-    }, [selectedTripId, trips, forcePlaceholder]); // Adicionado forcePlaceholder aqui
+        // Encontra a viagem com o updated_at mais recente
+        const mostRecent = [...trips].sort((a, b) => {
+            return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        })[0];
+        
+        if (mostRecent) {
+            setSelectedTripId(String(mostRecent.id));
+        }
+        
+        // Ativa a flag! A partir de agora, o React nunca mais vai forçar uma viagem sozinho
+        setIsInitialized(true);
+    }
+}, [trips, isInitialized]);
+
 
     const selectedTripFlights = useMemo(() => {
-    if (!selectedTrip) {
-        return [];
-    }
-    const allFlights = flights || []; 
-    return allFlights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
-}, [flights, selectedTrip]);
+        if (!selectedTrip) return [];
+        const allFlights = flights || []; 
+        return allFlights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
+    }, [flights, selectedTrip]);
 
-    const selectedTripReserves = useMemo(() => {
-        if (!selectedTrip) {
-            return [];
-        }
+    const selectedTripAccommodationReserves = useMemo(() => {
+        if (!selectedTrip) return [];
         const allReserves = reserves || []; 
         return allReserves.filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id));
     }, [reserves, selectedTrip]);
 
-
     return (
         <section className="dashboard-page">
             <Header />
-        <div className="dashboard-content">
-            {/* PAINEL LATERAL ISOLADO */}
-            <TripSidePanel 
-                selectedTrip={selectedTrip} 
-                trips={trips} 
-                onTripChange={setSelectedTripId}
-            />
+            <div className="dashboard-content">
+                <TripSidePanel 
+                    selectedTrip={selectedTrip} 
+                    trips={trips} 
+                    onTripChange={setSelectedTripId}
+                />
 
-            <div className="dashboard-grid">
-                {/* COLUNA DA ESQUERDA: Logística Empilhada */}
-                <div className="dashboard-grid__logistics">
-                    <DashboardSection title="Flights" count={selectedTripFlights.length}>
-                        {selectedTripFlights.length > 0 ? (
-                            selectedTripFlights.map((flight) => (
-                                <FlightCard key={flight.id} flight={flight} />
-                            ))
-                        ) : (
-                            <div className="dashboard-placeholder-card">
-                                <h5>No flights yet</h5>
-                                <p>Add flights to this trip and they will appear here.</p>
-                            </div>
-                        )}
-                    </DashboardSection>
+                <div className="dashboard-grid">
+                    <div className="dashboard-grid__logistics">
+                        
+                        {/* SECÇÃO DE VOOS */}
+                        <DashboardSection title="Flights" count={selectedTripFlights.length}>
+                            {selectedTripFlights.length > 0 ? (
+                                selectedTripFlights.map((flight) => (
+                                    <FlightCard key={flight.id} flight={flight} />
+                                ))
+                            ) : (
+                                <button 
+                                    type="button"
+                                    className={`dashboard-placeholder-card ${selectedTrip ? 'card-clickable' : 'card-disabled'}`}
+                                    disabled={!selectedTrip}
+                                    onClick={() => navigate(`/flights/create?tripId=${selectedTrip.id}`)}
+                                >
+                                    <h5>No flights yet</h5>
+                                    <p>
+                                        {selectedTrip 
+                                            ? "Click here to add flights to this trip." 
+                                            : "Plan a trip first using the sidebar to unlock flight scheduling."}
+                                    </p>
+                                </button>
+                            )}
+                        </DashboardSection>
 
-                    <DashboardSection title="Accommodations" count={selectedTripReserves.length}>
-                        {selectedTripReserves.length > 0 ? (
-                            selectedTripReserves.map((reserve) => (
-                                <ReserveCard key={reserve.id} reserve={reserve} />
-                            ))
-                        ) : (
-                            <div className="dashboard-placeholder-card">
-                                <h5>No accommodation reserves yet</h5>
-                                <p>When you attach a reserve to this trip, it will show up in this card.</p>
-                            </div>
-                        )}
-                    </DashboardSection>
+                        {/* SECÇÃO DE ALOJAMENTOS */}
+                        <DashboardSection title="Accommodations" count={selectedTripAccommodationReserves.length}>
+                            {selectedTripAccommodationReserves.length > 0 ? (
+                                selectedTripAccommodationReserves.map((reserve) => (
+                                    <ReserveCard key={reserve.id} reserve={reserve} />
+                                ))
+                            ) : (
+                                <button 
+                                    type="button"
+                                    className={`dashboard-placeholder-card ${selectedTrip ? 'card-clickable' : 'card-disabled'}`}
+                                    disabled={!selectedTrip}
+                                    onClick={() => navigate(`/accommodations/create?tripId=${selectedTrip.id}`)}
+                                >
+                                    <h5>No accommodation reserves yet</h5>
+                                    <p>
+                                        {selectedTrip 
+                                            ? "Click here to attach an accommodation reserve." 
+                                            : "Plan a trip first using the sidebar to unlock accommodation logging."}
+                                    </p>
+                                </button>
+                            )}
+                        </DashboardSection>
+                    </div>
+
+                    <AIChatCard selectedTrip={selectedTrip} onTripChange={setSelectedTripId} />
+
                 </div>
-
-                {/* COLUNA DA DIREITA: AI Chat Isolado */}
-                <AIChatCard destination={selectedTrip?.destination} />
             </div>
-        </div>
-    </section>
+        </section>
     );
 }

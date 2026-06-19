@@ -17,6 +17,7 @@ export async function listTripsByUserId(userId) {
     SELECT id, user_id, title, description, destination, start_date, end_date, created_at, updated_at
     FROM trips
     WHERE user_id = ?
+    ORDER BY title ASC
   `, [userId]);
 
   return rows;

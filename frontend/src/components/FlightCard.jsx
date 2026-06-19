@@ -1,8 +1,18 @@
 import "../styles/FlightCard.css";
 import FlightSegment from "./FlightSegment";
+import { useState } from 'react';
 
 export default function FlightCard({ flight }) {
   if (!flight) return null;
+
+  // ESTADOS DECLARADOS: Evita o erro de "ReferenceError" no browser
+  const [isEditing, setIsEditing] = useState(false);
+
+  // FUNÇÃO DECLARADA: Evita o erro de "ReferenceError" no clique do caixote do lixo
+  const handleDelete = () => {
+    alert(`Delete function triggered for flight ID: ${flight.id}`);
+  };
+
 
   // Segmento de Ida (Dados Reais do Backend)
   const outboundNumber = flight.flight_number;
@@ -10,7 +20,7 @@ export default function FlightCard({ flight }) {
   const outboundDep = flight.departure_airport || 'TBD';
   const outboundArr = flight.arrival_airport || 'TBD';
   const outboundDepTime = flight.departure_datetime;
-  const outboundArrTime = flight.arrival_datetime; // 💡 Adicionado
+  const outboundArrTime = flight.arrival_datetime;
 
   // Segmento de Volta (Placeholder ou dados futuros)
   const returnNumber = flight.return_flight_number || null;
@@ -20,31 +30,56 @@ export default function FlightCard({ flight }) {
   const returnDepTime = flight.return_departure_datetime || null;
   const returnArrTime = flight.return_arrival_datetime || null;
 
-  return (
-    <div className="flight-card-container">
-      {/* 1. Segmento de Ida */}
-      <FlightSegment 
-        type="Outbound"
-        flightNumber={outboundNumber}
-        airline={outboundAirline}
-        departure={outboundDep}
-        arrival={outboundArr}
-        depTime={outboundDepTime}
-        arrTime={outboundArrTime}
-      />
+    return (
+        <div className="logistics-card-wrapper">
+            {/* CONTROLOS DISCRETOS: Só aparecem ao passar o rato */}
+            <div className="logistics-card__hover-actions">
+                <button 
+                    type="button" 
+                    className="btn-card-action btn-card-edit" 
+                    onClick={() => setIsEditing(true)}
+                    title="Edit item"
+                >
+                    ✏️
+                </button>
+                <button 
+                    type="button" 
+                    className="btn-card-action btn-card-delete" 
+                    onClick={handleDelete}
+                    title="Delete item"
+                >
+                    🗑️
+                </button>
+            </div>
 
-      <div className="segments-spacer" />
+            <div className="flight-card-body">
+                <div className="flight-card-container">
+                {/* 1. Segmento de Ida */}
+                <FlightSegment 
+                  type="Outbound"
+                  flightNumber={outboundNumber}
+                  airline={outboundAirline}
+                  departure={outboundDep}
+                  arrival={outboundArr}
+                  depTime={outboundDepTime}
+                  arrTime={outboundArrTime}
+                />
 
-      {/* 2. Segmento de Volta */}
-      <FlightSegment 
-        type="Return"
-        flightNumber={returnNumber}
-        airline={returnAirline}
-        departure={returnDep}
-        arrival={returnArr}
-        depTime={returnDepTime}
-        arrTime={returnArrTime}
-      />
-    </div>
-  );
+                <div className="segments-spacer" />
+
+                {/* 2. Segmento de Volta */}
+                <FlightSegment 
+                  type="Return"
+                  flightNumber={returnNumber}
+                  airline={returnAirline}
+                  departure={returnDep}
+                  arrival={returnArr}
+                  depTime={returnDepTime}
+                  arrTime={returnArrTime}
+                />
+              </div>
+            </div>
+        </div>
+    );
 }
+

@@ -1,4 +1,6 @@
-.dashboard-content{
+ /* *** DASHBOARD GLOBAL LAYOUT ** */
+   
+.dashboard-content {
   min-height: calc(100vh - 88px);
   padding: 2rem;
   background: var(--surface-page);
@@ -7,117 +9,23 @@
   align-items: flex-start;
 }
 
-/* PAINEL LATERAL */
-.dashboard-sidepanel {
-  width: 320px;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 2rem;
-  border-radius: 24px;
-  background: var(--surface-card);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border-light);
-  position: sticky;
-  top: 2rem; /* Fica fixo ao fazer scroll */
-}
-
-.dashboard-eyebrow {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-orange);
-}
-
-.dashboard-info-card__eyebrow {
-  font-family: "Open Sans", sans-serif;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-orange);
-}
-
-.dashboard-info-card__meta {
-  display: flex;
-  flex-direction: column;
-  color: var(--text-main);
-}
-
-.dashboard-sidepanel h1 {
-  font-family: "Open Sans", sans-serif;
-  margin: 2rem 0;
-  font-size: 2.2rem; 
-  text-shadow: none;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.dashboard-trip_summary {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin: 0;
-  line-height: 1.4;
-}
-
-.dashboard-trip_description {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0;
-  line-height: 1.5;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(82, 121, 151, 0.15);
-}
-
-.dashboard-trip-picker {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  color: var(--text-heading-dark);
-}
-
-.dashboard-trip-picker span {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
-
-.dashboard-trip-picker select {
-  border: 2px solid var(--border-light);
-  border-radius: 14px;
-  padding: 0.75rem 1rem;
-  background: var(--surface-card);
-  color: var(--text-main);
-  font-size: 0.9rem;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-/* CONTEÚDO À DIREITA (Grelha de Duas Colunas Principais) */
+/* GRELHA PRINCIPAL: Duas Colunas (Logística vs AI Chat) */
 .dashboard-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas com tamanhos iguais */
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   align-items: flex-start;
 }
 
-/* Coluna que vai juntar Voos e Alojamentos verticalmente */
 .dashboard-grid__logistics {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* *** SECÇÕES DE LOGÍSTICA (Flights & Accommodations) *** */
+   
 .dashboard-section {
   padding: 1.75rem;
   border-radius: 24px;
@@ -153,87 +61,114 @@
   gap: 1rem;
 }
 
-/* Caixa do Chat da AI (Coluna Direita Completa) */
-.ai-chat-container {
+/* *** CARTÕES DE INFORMAÇÃO E PLACEHOLDERS INTERATIVOS *** */
+
+.dashboard-info-card__eyebrow {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.dashboard-info-card__meta {
   display: flex;
   flex-direction: column;
-  height: 600px; /* Altura fixa ideal para ver o histórico do chat */
+  color: var(--text-main);
+}
+
+/* Cartão tracejado interativo em formato <button> */
+.dashboard-placeholder-card {
+  width: 100%;
+  text-align: left;
   background: var(--surface-card);
-  border-radius: 24px;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-soft);
-  overflow: hidden;
-}
-
-.ai-chat__header {
-  padding: 1.25rem;
-  background: linear-gradient(135deg, var(--surface-page) 0%, #e6f0fa 100%);
-  border-bottom: 1px solid var(--border-light);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.ai-chat__header h2 {
-  font-family: "Syne", sans-serif;
-  font-size: 1.3rem !important;
-  margin: 0;
-  color: var(--text-heading-dark);
-  text-shadow: none;
-}
-
-.ai-badge {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 700;
-  color: var(--text-muted);
-} 
-
-/* Zona onde as mensagens vão aparecer */
-.ai-chat__messages {
-  flex: 1;
+  border: 2px dashed var(--border-main);
+  border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  background: #fafcfe;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Barra inferior simulada para digitar */
-.ai-chat__input-area {
-  padding: 1rem;
-  background: var(--surface-card);
-  border-top: 1px solid var(--border-light);
-  display: flex;
-  gap: 0.75rem;
+.card-clickable {
+  cursor: pointer;
+  border-color: var(--color-orange);
 }
 
-.ai-chat__input-placeholder {
-  flex: 1;
-  height: 44px;
-  border-radius: 22px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-page);
+.card-clickable:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.card-disabled {
+  cursor: not-allowed;
   opacity: 0.6;
-  display: flex;
-  align-items: center;
-  padding: 0 1.25rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
 }
 
-.ai-chat__btn-placeholder {
-  width: 44px;
-  height: 44px;
+/* Container que junta o cartão e os botões */
+.logistics-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* O SEGREDO DO HOVER: Caixa que segura os botões no canto superior direito */
+.logistics-card__hover-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+  opacity: 0; /* Invisível por definição */
+  transform: translateY(-5px); /* Ligeiramente subido para efeito de entrada */
+  transition: all 0.25s ease-in-out;
+}
+
+/* Quando o utilizador passa o rato no wrapper, a caixa de botões ganha vida! */
+.logistics-card-wrapper:hover .logistics-card__hover-actions {
+  opacity: 1;
+  transform: translateY(0); /* Desce suavemente para a posição correta */
+}
+
+/* Estilização dos botões minúsculos e redondos estilo iOS/SaaS moderno */
+.btn-card-action {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--color-orange);
-  opacity: 0.6;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
 }
 
-/* RESPONSIVIDADE */
+/* Efeito de foco ao passar o rato em cada botão individualmente */
+.btn-card-edit:hover {
+  background: var(--surface-page);
+  border-color: var(--color-orange);
+  transform: scale(1.1);
+}
+
+.btn-card-delete:hover {
+  background: #fff0f0;
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+  transform: scale(1.1);
+}
+
+
+/* *** RESPONSIVIDADE *** */
+
 @media (max-width: 1150px) {
   .dashboard-grid {
-    grid-template-columns: 1fr; /* Em ecrãs mais pequenos, volta a ser uma coluna */
+    grid-template-columns: 1fr;
   }
 }

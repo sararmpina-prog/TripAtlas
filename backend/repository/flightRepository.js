@@ -1,26 +1,26 @@
 /* Camada responsável pela comunicação com a BD.
 
-Importante:
-Base de dados → snake_case */
+Importante: Base de dados → snake_case */
 
 import { db } from '../infra/db/db.js';
 
 function toMySqlDateTime(value) {
-  if (value === undefined) {
-    return undefined;
-  }
-
-  if (value === null) {
-    return null;
-  }
+  if (value === undefined) return undefined;
+  if (value === null) return null;
 
   const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
+  if (Number.isNaN(date.getTime())) return value;
 
   return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+// FUNÇÃO AUXILIAR: Evita repetir código em todas as ações
+async function touchTripTimestamp(tripId) {
+  if (!tripId) return;
+  await db.execute(
+    'UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [tripId]
+  );
 }
 
 // LISTA TODOS OS VOOS
@@ -76,6 +76,9 @@ export async function createFlight(flightData) {
       normalizedFlightData.arrival_datetime,
   ]);
 
+  // CASO DE CRIAÇÃO: O trip_id vem direto nos dados do formulário
+  await touchTripTimestamp(normalizedFlightData.trip_id);
+
   return result.insertId;
 }
 
@@ -100,18 +103,27 @@ export async function updateFlight(id, data) {
     WHERE id = ?
   `, values);
 
+  if (result.affectedRows > 0) {
+    // CASO DE EDIÇÃO: Tem de se procurar o voo primeiro para saber qual é o seu trip_id
+    const flight = await findFlightById(id);
+    if (flight) await touchTripTimestamp(flight.trip_id);
+  }
+
   return result.affectedRows > 0;
 }
 
 // APAGA UM VOO EXISTENTE
 export async function deleteFlight(id) {
-  const [result] = await db.execute(
-    `
-      DELETE FROM flights
-      WHERE id = ?
-    `,
-    [id]
-  );
+  // CASO DE ELIMINAÇÃO: Tem de se descobrir o trip_id ANTES de apagar o voo da BD!
+  const flight = await findFlightById(id);
+
+  const [result] = await db.execute(`
+    DELETE FROM flights WHERE id = ?
+  `, [id]);
+
+  if (result.affectedRows > 0 && flight) {
+    await touchTripTimestamp(flight.trip_id);
+  }
 
   return result.affectedRows > 0;
 }

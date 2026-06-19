@@ -43,8 +43,8 @@ export const createUserSchema = z.object({
     .optional(),
 
   password: createRequiredString('password')
-    .min(6, { message: "The field password must be at least 6 characters long." })
-    .max(50, { message: "The field password cannot exceed 50 characters." })
+    .min(6, { message: "Password must include at least 6 characters and no more than 20 characters." })
+    .max(20, { message: "Password must include at least 6 characters and no more than 20 characters." })
     .regex(/[A-Z]/, {
     message: "Password must contain at least one uppercase letter."
   })
@@ -108,8 +108,8 @@ export const updatePasswordSchema = z.object({
     .min(1, { message: "The field current_password cannot be empty." }),
 
   new_password: createRequiredString('new_password')
-    .min(6, { message: 'The field new_password must be at least 6 characters long.' })
-    .max(50, { message: 'The field new_password cannot exceed 50 characters.' })
+    .min(6, { message: 'Password must include at least 6 characters and no more than 20 characters.' })
+    .max(20, { message: 'Password must include at least 6 characters and no more than 20 characters.' })
     .regex(/[A-Z]/, {
       message: 'Password must contain at least one uppercase letter.',
     })

@@ -59,7 +59,9 @@ const tableStatements = [
       accommodation_id INT NOT NULL,
       trip_id INT NOT NULL,
       check_in_date DATE NOT NULL,
-      check_out_date DATE NOT NULL
+      check_out_date DATE NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `,
   `

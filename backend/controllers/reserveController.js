@@ -16,7 +16,7 @@ import {listAccommodationsReservesByUser, deleteAccommodationReserve, createRese
 
 
 export const getAccommodationsReserves = asyncHandler(async (req, res) => {
-    console.log("estou no get accomodations reserves")
+    // console.log("estou no get accomodations reserves")
 
     // Recolhe o ID injetado pelo auth middleware no app.js
     const currentUserId = req.user.id; 

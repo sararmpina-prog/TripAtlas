@@ -17,7 +17,7 @@ function Header() {
 
       <div className="user-info">
         <span>
-          Hello, {user?.first_name}
+          Hello {user?.first_name}
         </span>
 
         <button onClick={logout} className="btn-base btn-white">
