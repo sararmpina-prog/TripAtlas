@@ -29,13 +29,13 @@ function push(name, ok, detail) {
   results.push({ name, ok, detail });
 }
 
-async function registerUser(label) {
+async function registerUser(label, counter) {
   const response = await request('POST', '/api/auth/register', null, {
     first_name: label,
     surname: 'Owner',
     email: `${label.toLowerCase()}-${stamp}@example.com`,
-    mobile_phone: '+351900000000',
-    password: 'secret123',
+    mobile_phone: `+35190${String(stamp).slice(-5)}${counter}`,
+    password: 'Secret123!',
   });
 
   if (response.status !== 201 || response.json?.success !== true) {
@@ -46,15 +46,15 @@ async function registerUser(label) {
 }
 
 try {
-  const userA = await registerUser('Alpha');
-  const userB = await registerUser('Beta');
+  const userA = await registerUser('Alpha', '1');
+  const userB = await registerUser('Beta', '2');
   created.userAId = userA.user.id;
   created.userBId = userB.user.id;
   created.tokenA = userA.token;
   created.tokenB = userB.token;
 
   const tripA = await request('POST', '/api/trips', created.tokenA, {
-    user_id: 999,
+    user_id: created.userAId,
     title: `Trip A ${stamp}`,
     destination: 'Porto',
     start_date: '2026-07-10',
@@ -64,7 +64,7 @@ try {
   created.tripAId = tripA.json?.data?.id;
 
   const tripB = await request('POST', '/api/trips', created.tokenB, {
-    user_id: 999,
+    user_id: created.userBId,
     title: `Trip B ${stamp}`,
     destination: 'Lisboa',
     start_date: '2026-08-10',
@@ -87,6 +87,7 @@ try {
 
   const accommodation = await request('POST', '/api/accommodations', null, {
     name: `Ownership Hotel ${stamp}`,
+    address: 'Ownership Street 77',
     city: 'Coimbra',
     country: 'Portugal',
   });
@@ -100,7 +101,8 @@ try {
     departure_airport: 'OPO',
     arrival_airport: 'LIS',
     departure_datetime: '2026-07-10T09:00:00.000Z',
-    arrival_datetime: '2026-07-10T10:00:00.000Z'
+    arrival_datetime: '2026-07-10T10:00:00.000Z',
+    direction: 'outbound' 
   });
   push('POST /api/flights creates flight on own trip', flightA.status === 201, { status: flightA.status, body: flightA.json });
   created.flightAId = flightA.json?.data?.id;
@@ -137,6 +139,7 @@ try {
 } catch (error) {
   push('fatal', false, { error: error.message, created });
 } finally {
+
   if (created.reserveAId) await request('DELETE', `/api/reserves/${created.reserveAId}`, created.tokenA);
   if (created.flightAId) await request('DELETE', `/api/flights/${created.flightAId}`, created.tokenA);
   if (created.accommodationId) await request('DELETE', `/api/accommodations/${created.accommodationId}`, null);

@@ -40,6 +40,12 @@ export const createFlightSchema = z.object({
   arrival_datetime: z
     .string({ required_error: "The field arrival_datetime is mandatory." })
     .datetime({ message: "The field arrival_datetime must be a valid ISO date-time." }),
+
+  direction: z
+    .string({ required_error: 'The field direction is mandatory.' })
+    .refine((value) => value === 'outbound' || value === 'return', {
+      message: 'The field direction must be either outbound or return.',
+    }),
 })
 // validação cross-field
   .refine((data) => new Date(data.arrival_datetime) >= new Date(data.departure_datetime), {
@@ -78,6 +84,12 @@ export const updateFlightSchema = z.object({
   arrival_datetime: z
     .string({ required_error: "The field arrival_datetime is mandatory." })
     .datetime({ message: "The field arrival_datetime must be a valid ISO date-time." })
+    .optional(),
+  direction: z
+    .string()
+    .refine((value) => value === 'outbound' || value === 'return', {
+      message: 'The field direction must be either outbound or return.',
+    })
     .optional(),
 })
   // Garante que pelo menos um campo foi enviado para atualização

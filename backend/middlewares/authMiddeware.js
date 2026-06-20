@@ -23,11 +23,6 @@ function auth(req, res, next) {
         }
         next();
     } catch (error) {
-<<<<<<< HEAD
-        // Caso 2: O token expirou ou foi adulterado. 
-        // 401 UNAUTHORIZED para o React saber que deve forçar um novo login.
-        return next(new InvalidTokenError());
-=======
         console.log("JWT ERROR:", error.message);
         // Se o token for inválido ou expirar, responde no vosso padrão JSON (403)
         return res.status(403).json({
@@ -37,7 +32,6 @@ function auth(req, res, next) {
                 code: "FORBIDDEN"
             }
         });
->>>>>>> main
     }
 }
 

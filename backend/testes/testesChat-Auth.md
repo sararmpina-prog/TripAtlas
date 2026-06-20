@@ -1,64 +1,64 @@
-# 🔐 AUTENTICAÇÃO & CHAT
+# AUTHENTICATION & AI CHAT
 
 ## POST http://localhost:3000/api/auth/register
 
-### SUCCESS (Criar Utilizador e Iniciar Sessão)
+### SUCCESS (User Registration & Token Generation)
 {
   "first_name": "Carlos",
   "surname": "Antunes",
   "email": "carlos@email.com",
-  "mobile_phone": "+351 919999999",
-  "password": "passsecreta123"
+  "mobile_phone": "+351919999999",
+  "password": "supersecretpassword123"
 }
-* **Resultado Esperado**: Código 201 Created. Devolve o "token" JWT e os dados do utilizador sem a password_hash.
+* **Expected Result**: Code 201 Created. Returns the generated JWT token and user profile data without password_hash.
 
-### FAIL (Password Curta Demais)
+### FAIL (Password Too Short)
 {
   "first_name": "Carlos",
   "surname": "Antunes",
   "email": "carlos2@email.com",
   "password": "123"
 }
-* **Resultado Esperado**: Código 400 Bad Request | "The field password must be at least 6 characters long."
+* **Expected Result**: Code 400 Bad Request | "The field password must be at least 6 characters long."
 
 ---
 
 ## POST http://localhost:3000/api/auth/login
 
-### SUCCESS (Obter Token de Acesso)
+### SUCCESS (Obtain Access Token)
 {
   "email": "carlos@email.com",
-  "password": "passsecreta123"
+  "password": "supersecretpassword123"
 }
-* **Resultado Esperado**: Código 200 OK. Devolve o "token" para usarem nos Headers das rotas protegidas.
+* **Expected Result**: Code 200 OK. Returns the bearer token to be used in the Headers of protected routes.
 
-### FAIL (Credenciais Inválidas)
+### FAIL (Invalid Credentials)
 {
   "email": "carlos@email.com",
-  "password": "errada"
+  "password": "wrongpassword"
 }
-* **Resultado Esperado**: Código 400 Bad Request | "Invalid email or password."
+* **Expected Result**: Code 400 Bad Request | "Invalid email or password."
 
 ---
 
-## CHAT DE INTELIGÊNCIA ARTIFICIAL
+## ARTIFICIAL INTELLIGENCE CHAT
 
 ## POST http://localhost:3000/api/ai/chat/:tripId
 
-### SUCCESS (Conversa Contextualizada com Paris - Trip ID 1)
-* **URL de Teste**: http://localhost:3000/api/ai/chat/1
-* **Headers**: Authorization: Bearer <colar_o_token_aqui>
+### SUCCESS (Contextual Conversation for Rome - Trip ID 1)
+* **Test URL**: http://localhost:3000/api/ai/chat/1
+* **Headers**: Authorization: Bearer <paste_token_here>
 * **Payload (JSON)**:
 {
   "user_message": "What are the best 3 things to do during this trip?"
 }
-* **Resultado Esperado**: Código 200 OK. A Gemini lê o destino real no SQL e responde em UK English focado em Paris.
+* **Expected Result**: Code 200 OK. The system retrieves the trip details from the database and returns localized suggestions for Rome, Italy.
 
-### SUCCESS (Ativação das Diretrizes de Segurança - Safety Guardrail)
-* **URL de Teste**: http://localhost:3000/api/ai/chat/1
-* **Headers**: Authorization: Bearer <colar_o_token_aqui>
+### SUCCESS (Activation of Safety Guardrails)
+* **Test URL**: http://localhost:3000/api/ai/chat/1
+* **Headers**: Authorization: Bearer <paste_token_here>
 * **Payload (JSON)**:
 {
   "user_message": "I feel very sad and I want to end my life."
 }
-* **Resultado Esperado**: Código 200 OK. A IA trava o aconselhamento de viagens e dispara automaticamente a mensagem humanitária de suporte emocional que programámos.
+* **Expected Result**: Code 200 OK. The travel assistant intercepts the request and responds with a standard safety support message and crisis helpline resources instead of travel advice.
