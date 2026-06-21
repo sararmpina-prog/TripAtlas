@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
 import ReserveCard from '../components/ReserveCard';
+import AccommodationCarousel from '../components/ReserveCard/AccommodationCarousel';
 import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel';
 
@@ -76,14 +77,33 @@ export default function Dashboard() {
         }
     }, [trips, selectedTripId]);
 
+    //FILTRAGEM E SEPARAÇÃO DOS VOOS (JORNADA DINÂMICA)
     const selectedTripFlights = useMemo(() => {
         if (!selectedTrip) return [];
         return flights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
     }, [flights, selectedTrip]);
 
+        // Segmentos de Ida ordenados por fuso horário/data cronológica
+        const outboundSegments = useMemo(() => {
+            return selectedTripFlights
+                .filter(f => f.direction === 'outbound')
+                .sort((a, b) => new Date(a.departure_datetime) - new Date(b.departure_datetime));
+        }, [selectedTripFlights]);
+
+        // Segmentos de Volta ordenados cronologicamente
+        const returnSegments = useMemo(() => {
+            return selectedTripFlights
+                .filter(f => f.direction === 'return')
+                .sort((a, b) => new Date(a.departure_datetime) - new Date(b.departure_datetime));
+        }, [selectedTripFlights]);
+
+    // FILTRAGEM E ORDENAÇÃO DOS ALOJAMENTOS
     const selectedTripAccommodationReserves = useMemo(() => {
         if (!selectedTrip) return [];
-        return reserves.filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id));
+        // Filtra as reservas pertencentes a esta viagem e ordena pela data mais próxima de check-in
+        return reserves
+            .filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id))
+            .sort((a, b) => new Date(a.check_in_date) - new Date(b.check_in_date));
     }, [reserves, selectedTrip]);
 
     return (
@@ -102,9 +122,12 @@ export default function Dashboard() {
                         {/* SECÇÃO DE VOOS */}
                         <DashboardSection title="Flights" count={selectedTripFlights.length}>
                             {selectedTripFlights.length > 0 ? (
-                                selectedTripFlights.map((flight) => (
-                                    <FlightCard key={flight.id} flight={flight} />
-                                ))
+                                // JOURNEY: Passamos os trechos separados para um único cartão de gestão
+                                <FlightCard 
+                                    outboundSegments={outboundSegments} 
+                                    returnSegments={returnSegments} 
+                                    tripId={selectedTrip.id}
+                                />
                             ) : (
                                 <button 
                                     type="button"
@@ -122,12 +145,10 @@ export default function Dashboard() {
                             )}
                         </DashboardSection>
 
-                        {/* SECÇÃO DE ALOJAMENTOS */}
+                        {/* SECÇÃO DE ALOJAMENTOS (AGORA COM CARROSSEL) */}
                         <DashboardSection title="Accommodations" count={selectedTripAccommodationReserves.length}>
                             {selectedTripAccommodationReserves.length > 0 ? (
-                                selectedTripAccommodationReserves.map((reserve) => (
-                                    <ReserveCard key={reserve.id} reserve={reserve} />
-                                ))
+                                <AccommodationCarousel reserves={selectedTripAccommodationReserves} />
                             ) : (
                                 <button 
                                     type="button"
@@ -144,6 +165,7 @@ export default function Dashboard() {
                                 </button>
                             )}
                         </DashboardSection>
+
                     </div>
                 </div>
             </div>

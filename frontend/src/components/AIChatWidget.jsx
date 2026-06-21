@@ -10,37 +10,38 @@ import { getStoredToken, getStoredUser } from '../auth/authStorage';
 
 import '../styles/AIChatWidget.css';
 
+// ******* MOCKDATA TEMPORÁRIO - SUBSTITUIR PELA API REAL DE HISTÓRICO DE CONVERSAS *********
+const MOCK_CHAT_SESSIONS = [
+    { id: 'session-1', title: '💡 Packing list Easter', messages: [
+        { sender: 'user', text: 'What should I pack for a 5-day Easter break?' },
+        { sender: 'ai', text: 'For a 5-day Easter break, I recommend layers, comfortable walking shoes, a light raincoat, and a small first-aid kit.' }
+    ]},
+    { id: 'session-2', title: '🍕 Rome restaurants', messages: [
+        { sender: 'user', text: 'Give me hidden gem restaurants in Rome' },
+        { sender: 'ai', text: 'In Rome, avoid tourist traps and try "Trattoria Da Enzo al 29" in Trastevere for amazing carbonara.' }
+    ]},
+    { id: 'session-3', title: '🗺️ Weekend in Paris', messages: [
+        { sender: 'user', text: 'Plan a 2-day itinerary for Paris' },
+        { sender: 'ai', text: 'Day 1: Louvre and Eiffel Tower. Day 2: Montmartre, Notre Dame, and a cruise along the Seine.' }
+    ]}
+];
+
 export default function AIChatWidget() {
     const token = getStoredToken();
     const user = getStoredUser();
     const queryClient = useQueryClient();
     const messagesEndRef = useRef(null);
+    const textareaRef = useRef(null);
 
     // ESTADOS DE CONTROLO DE INTERFACE
     const [inputValue, setInputValue] = useState('');
     const [localMessages, setLocalMessages] = useState([]);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // 💡 Controla se o histórico está visível
-    const [activeSessionId, setActiveSessionId] = useState('session-1'); // 💡 Simula a conversa ativa
-
-    // ****** DADOS FICTÍCIOS **********
-    const mockChatSessions = [
-        { id: 'session-1', title: '💡 Packing list Easter', messages: [
-            { sender: 'user', text: 'What should I pack for a 5-day Easter break?' },
-            { sender: 'ai', text: 'For a 5-day Easter break, I recommend layers, comfortable walking shoes, a light raincoat, and a small first-aid kit.' }
-        ]},
-        { id: 'session-2', title: '🍕 Rome restaurants', messages: [
-            { sender: 'user', text: 'Give me hidden gem restaurants in Rome' },
-            { sender: 'ai', text: 'In Rome, avoid tourist traps and try "Trattoria Da Enzo al 29" in Trastevere for amazing carbonara.' }
-        ]},
-        { id: 'session-3', title: '🗺️ Weekend in Paris', messages: [
-            { sender: 'user', text: 'Plan a 2-day itinerary for Paris' },
-            { sender: 'ai', text: 'Day 1: Louvre and Eiffel Tower. Day 2: Montmartre, Notre Dame, and a cruise along the Seine.' }
-        ]}
-    ];
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+    const [activeSessionId, setActiveSessionId] = useState('session-1'); 
 
     const currentTripId = null;
 
-    // CONSULTA REAL (Continuará ativa para quando o backend estiver pronto)
+    // CONSULTA REAL
     const { data: serverHistory, isLoading: isLoadingHistory } = useQuery({
         queryKey: ['chat', 'global'],
         queryFn: () => getChatHistory(currentTripId, token),
@@ -49,13 +50,11 @@ export default function AIChatWidget() {
 
     // SINCRONIZAÇÃO INTELIGENTE: Carrega as mensagens da conversa selecionada na barra lateral
     useEffect(() => {
-        // Por enquanto, lê do nosso mock data com base na sessão ativa
-        const currentSession = mockChatSessions.find(s => s.id === activeSessionId);
+        const currentSession = MOCK_CHAT_SESSIONS.find(s => s.id === activeSessionId);
         
         if (currentSession) {
             setLocalMessages(currentSession.messages);
         } else {
-            // Se clicar em "New Chat", inicia uma conversa em branco
             setLocalMessages([
                 {
                     id: 'welcome-global',
@@ -64,11 +63,20 @@ export default function AIChatWidget() {
                 }
             ]);
         }
-    }, [activeSessionId]);
+    }, [activeSessionId, user?.first_name]);
 
+    // Scroll automático para a última mensagem
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [localMessages]);
+
+    // Auto-ajuste de altura do textarea conforme o user vai escrevendo
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+        }
+    }, [inputValue]);
 
     // MUTATION REAL PARA ENVIAR MENSAGENS
     const sendMessageMutation = useMutation({
@@ -81,13 +89,12 @@ export default function AIChatWidget() {
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (!inputValue.trim() || sendMessageMutation.isPending) return;
-
         const textToSend = inputValue.trim();
         setInputValue('');
+        
+        if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
-        // Otimismo Visual: Adiciona a mensagem imediatamente no ecrã
         setLocalMessages((prev) => [...prev, { sender: 'user', text: textToSend }]);
-
         sendMessageMutation.mutate({
             user_id: Number(user?.id),
             trip_id: null,
@@ -100,7 +107,6 @@ export default function AIChatWidget() {
             {/* CABEÇALHO DO CHAT */}
             <div className="ai-chat-header">
                 <div className="ai-chat-header-left">
-                    {/* Botão para abrir/fechar a barra de histórico */}
                     <button 
                         type="button" 
                         className="btn-toggle-sidebar" 
@@ -115,12 +121,11 @@ export default function AIChatWidget() {
                     </div>
                 </div>
 
-                {/* Botão de Nova Conversa */}
                 <button 
                     type="button" 
                     onClick={() => setActiveSessionId('new')}
                     title="Start clean conversation"
-                    >
+                >
                     <FiPlus size={16} /> New Chat
                 </button>
             </div>
@@ -131,7 +136,7 @@ export default function AIChatWidget() {
                 {/* BARRA LATERAL RETRÁTIL DE HISTÓRICO */}
                 <div className={`ai-chat-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
                     <p>Recent Chats</p>
-                    {mockChatSessions.map((session) => (
+                    {MOCK_CHAT_SESSIONS.map((session) => (
                         <button
                             key={session.id}
                             type="button"
@@ -165,19 +170,25 @@ export default function AIChatWidget() {
 
                     {/* FORMULÁRIO DE ENTRADA DE TEXTO */}
                     <form onSubmit={handleSendMessage} className="ai-chat-input-area">
-                        <input 
-                            type="text"
+                        <textarea 
+                            ref={textareaRef}
+                            rows={1}
                             placeholder="Ask about packing, itineraries..."
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            disabled={sendMessageMutation.isPending} 
+                            disabled={sendMessageMutation.isPending}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSendMessage(e);
+                                }
+                            }}
                         />
                         <button type="submit" disabled={sendMessageMutation.isPending || !inputValue.trim()}>
                             <IoSend size={18} />
                         </button>
                     </form>
                 </div>
-
             </div>
         </div>
     );

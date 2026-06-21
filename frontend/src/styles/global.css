@@ -204,6 +204,20 @@ label {
   color: var(--text-main);
 }
 
+.btn-card-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 input {
   height: 56px;
   padding: 0.9rem 1.4rem;

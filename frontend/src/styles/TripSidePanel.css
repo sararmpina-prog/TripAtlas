@@ -19,6 +19,7 @@
 
 /* TEXTOS E CABEÇALHOS */
 .dashboard-eyebrow {
+  display: flex;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -113,24 +114,29 @@
 }
 
 /* BOTÕES E BOTÕES DE AÇÃO DOS FORMULÁRIOS */
-.btn-edit-trip {
+.btn-edit-card {
   display: flex;
   align-items: flex-end;
   font-size: 0.85rem;
   background: none;
-  border: none;
+  border: 1.5px solid var(--color-orange);
+  border-radius: 50%;
+  padding: 0.4rem;
   color: var(--color-orange);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.85rem;
+  transition: all 0.2s ease;
 }
 
-.dashboard-sidepanel button {
-  width: 100%;
+.btn-edit-card:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  transition: all 0.2s ease;
 }
 
 .dashboard-sidepanel-buttons {
    display: flex;
+   flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
 }

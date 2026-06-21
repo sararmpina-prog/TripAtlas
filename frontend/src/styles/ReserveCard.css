@@ -1,0 +1,274 @@
+.reserve-card-wrapper .reserve-card-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: all 0.2s ease-in-out;
+}
+
+.reserve-card-wrapper:hover .reserve-card-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.btn-card-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* CONTAINER DO CARTÃO (Para ativar o hover absoluto) */
+.reserve-card-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* CONTAINER VISUAL PRINCIPAL */
+.reserve-card-body {
+  padding: 1.5rem;
+  background: var(--surface-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+}
+
+.reserve-card-eyebrow {
+  text-transform: uppercase;
+  font-family: "Open Sans", sans-serif;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.reserve-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-heading-dark);
+}
+
+.reserve-card-address {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.reserve-card-address svg {
+  color: var(--color-dark-azure);
+}
+
+.reserve-card-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0.75rem 0;
+  opacity: 0.5;
+}
+
+/* BLOCO METADADOS CRONOLÓGICOS */
+.reserve-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.reserve-card-meta-block.right {
+  text-align: right;
+}
+
+.reserve-card-meta-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.reserve-card-meta-date {
+  margin: 0.2rem 0 0 0;
+}
+
+.reserve-card-meta-time {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.reserve-card-meta-block.right .reserve-card-meta-time {
+  justify-content: flex-end;
+}
+
+/* FORMULÁRIO DE GESTÃO (MANAGE FORM)  */
+
+.reserve-form-container {
+  padding: 1.5rem;
+  background: var(--color-white);
+  border-radius: 16px;
+  border: 2px solid var(--color-orange);
+  margin-bottom: 1rem;
+}
+
+.reserve-form-container h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-heading-dark);
+}
+
+.reserve-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.reserve-form-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.reserve-form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reserve-form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.reserve-form-label input {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  outline: none;
+}
+
+.reserve-form-label input:focus {
+  border-color: var(--color-orange);
+}
+
+.reserve-form-error {
+  color: var(--color-orange);
+  font-size: 0.85rem;
+  margin: 0 0 1rem 0;
+}
+
+.reserve-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn-remove-reserve {
+  padding: 0.5rem 1rem;
+  background: var(--error-color-light);
+  color: var(--error-color-dark);
+  border: 1px solid var(--error-color-dark);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-remove-reserve:hover {
+  background: var(--error-color-lighter);
+}
+
+/* CARROSSEL */
+
+/* Classe que será disparada a cada troca de cartão */
+.carousel-slide-animate {
+  animation: slideInFade 0.6s forwards;
+}
+
+@keyframes slideInFade {
+  0% {
+    opacity: 0;
+    transform: translateX(20px); /* Começa 20px desviado para a direita */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);    /* Desliza até à posição original */
+  }
+}
+
+
+/* CONTAINER PRINCIPAL DO CARROSSEL */
+.carousel-container {
+  position: relative;
+  width: 100%;
+}
+
+/* SETAS LATERAIS FLUTUANTES (UX FIXA) */
+.carousel-arrow-btn {
+  position: absolute;
+  /* Fixa o botão a 7rem do topo do cartão, alinhado com o cabeçalho.
+     Como o topo do cartão nunca muda de sítio, as setas ficam imóveis */
+  top: 7rem; 
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-white);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  z-index: 20;
+  transition: all 0.2s ease;
+}
+
+.carousel-arrow-btn:hover {
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+  transform: scale(1.08); 
+}
+
+/* Mantém o encaixe flutuante nas bordas laterais */
+.carousel-arrow-btn.left {
+  left: -17px;
+}
+
+.carousel-arrow-btn.right {
+  right: -17px;
+}
+
+/* INDICADOR DE PAGINAÇÃO (Mantém-se estável no fundo interno do cartão) */
+.carousel-pagination-badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-page);
+  color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 15;
+}
+

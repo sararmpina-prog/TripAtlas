@@ -86,6 +86,7 @@ display: flex;
   display: flex;
   margin-bottom: 0.75rem;
   width: 100%;
+  font-family: "Open Sans", sans-serif;
 }
 
 .chat-bubble-wrapper.user {
@@ -126,24 +127,13 @@ display: flex;
 /* CORREÇÃO: BARRA INFERIOR DE ENTRADA (INPUT AREA) */
 .ai-chat-input-area {
   display: flex;
+  align-items: flex-end; /* Alinha o botão de enviar na base quando a caixa crescer */
   gap: 0.75rem;
   padding: 1rem;
-  background: var(--surface-card);
+  background-color: var(--surface-card);
   border-top: 1px solid var(--border-light);
-  align-items: center; /* Garante alinhamento vertical */
-}
-
-.ai-chat-input-area input {
-  flex: 1;
-  height: 44px;
-  border-radius: 22px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-page);
-  padding: 0 1.25rem;
-  font-size: 0.9rem;
-  outline: none;
-  color: var(--text-main);
-  transition: border-color 0.2s;
+  resize: none;
+  overflow-y: auto;
 }
 
 .ai-chat-input-area input:focus {
@@ -153,6 +143,19 @@ display: flex;
 .ai-chat-input-area input:disabled {
   background-color: var(--background-disabled);
   cursor: not-allowed;
+}
+
+.ai-chat-input-area textarea {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-main);
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    outline: none;
+    max-height: 150px; /* Limite de crescimento */
 }
 
 /* Botão de Enviar Redondo Laranja */

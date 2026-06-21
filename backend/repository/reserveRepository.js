@@ -128,7 +128,8 @@ export async function listReservesByUserId(userId) {
       ar.check_out_date,
       ar.check_in_time,
       ar.check_out_time,
-      a.name AS accommodation_name
+      a.name AS accommodation_name,
+      a.address AS accommodation_address
     FROM accommodation_reserve ar
     INNER JOIN trips t ON ar.trip_id = t.id
     INNER JOIN accommodations a ON ar.accommodation_id = a.id

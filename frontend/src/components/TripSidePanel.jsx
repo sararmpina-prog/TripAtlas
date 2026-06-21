@@ -122,7 +122,7 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
 
                 <label className="dashboard-trip-picker">
                     <span>End Date *</span>
-                    <input type="date" value={tripEndDate} onChange={(e) => setTripEndDate(e.target.value)} disabled={isPending} />
+                    <input type="date" value={tripEndDate} onChange={(e) => setTripEndDate(e.target.value)} disabled={isPending} min={tripStartDate} />
                 </label>
 
                 <label className="dashboard-trip-picker">
@@ -165,8 +165,8 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
                     <p className="dashboard-eyebrow">My trip dashboard</p>
                     
                     {selectedTrip && (
-                        <button type="button" className="btn-edit-trip" onClick={() => setIsEditing(true)}>
-                            <MdOutlineEdit />
+                        <button type="button" className="btn-edit-card" onClick={() => setIsEditing(true)}>
+                            <MdOutlineEdit size={18}/>
                         </button>
                     )}
                 </div>
