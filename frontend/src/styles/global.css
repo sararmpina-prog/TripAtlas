@@ -204,18 +204,24 @@ label {
   color: var(--text-main);
 }
 
-.btn-card-edit {
+.btn-edit-card {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  background: var(--color-white);
+  align-items: flex-end;
+  font-size: 0.85rem;
+  background: none;
+  border: 1.5px solid var(--color-orange);
+  border-radius: 50%;
+  padding: 0.4rem;
+  color: var(--color-orange);
   cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  font-size: 0.8rem;
   font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-card:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  transition: all 0.2s ease;
 }
 
 input {

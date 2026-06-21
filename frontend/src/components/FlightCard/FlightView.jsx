@@ -1,4 +1,5 @@
 import { FaEdit } from "react-icons/fa";
+import { MdOutlineEdit } from 'react-icons/md';
 import FlightSegmentView from "./FlightSegmentView";
 import '../../styles/FlightCard.css';
 
@@ -15,7 +16,7 @@ export default function FlightView({ outboundSegments = [], returnSegments = [],
                     className="btn-card-action btn-card-edit" 
                     onClick={onEditClick}
                 >
-                    <FaEdit /> Manage
+                    <MdOutlineEdit size={18}/>
                 </button>
             </div>
 

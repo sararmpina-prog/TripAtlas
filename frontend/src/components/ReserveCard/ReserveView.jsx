@@ -1,5 +1,6 @@
 import { formatDate } from '../../utils/dateHelpers';
 import { FaEdit, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import { MdOutlineEdit } from 'react-icons/md';
 import { useState } from 'react';
 import '../../styles/ReserveCard.css';
 
@@ -12,13 +13,12 @@ export default function ReserveView({ reserve, onEditClick }) {
             
             {/* BOTÃO MANAGE NO HOVER */}
             <div className="logistics-card-actions">
-                <button 
-                    type="button" 
-                    className="btn-card-action btn-card-edit" 
-                    onClick={onEditClick}
-    >
-                    <FaEdit /> Manage
-                </button>
+                <button
+                    type="button"
+                    className="btn-edit-card"
+                    onClick={onEditClick}>
+                         <MdOutlineEdit size={18}/>
+                    </button>
             </div>
 
             <div className="reserve-card-body">

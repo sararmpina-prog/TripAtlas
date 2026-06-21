@@ -28,7 +28,7 @@ export default function ReserveForm({ reserve, onSave, onDelete, onCancel, isPen
 
     return (
         <div className="reserve-form-container">
-            <h4 className="reserve-form-title">Manage Accommodation</h4>
+            <h5 className="reserve-form-title">Manage Accommodation</h5>
             
             <div className="reserve-form-group">
                 <label className="reserve-form-label">

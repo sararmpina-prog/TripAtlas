@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getStoredToken } from '../../auth/authStorage';
-import { createFlight, updateFlight, deleteFlight } from '../../api'; // 💡 Certifique-se de que a vossa rota de API está importada aqui
+import { createFlight, updateFlight, deleteFlight } from '../../api'; 
 import FlightView from './FlightView';
-import FlightForm from './FlightForm'; // 🚀 Importação do formulário dinâmico que completámos!
+import FlightForm from './FlightForm'; 
 
 export default function FlightCard({ outboundSegments = [], returnSegments = [], tripId }) {
     const token = getStoredToken();
     const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState(false);
 
-    // ==========================================================================
-    // ✈️ MUTATION: Sincronização dos Voos com a Base de Dados
-    // ==========================================================================
+    // MUTATION: Sincronização dos Voos com a Base de Dados
     const journeyMutation = useMutation({
         // Envia o array de voos soltos (com a propriedade direction) para o vosso backend
-        mutationFn: (flightsPayload) => updateFlight(tripId, flightsPayload, token),
+        mutationFn: (flightsPayload) => updateFlightJourney(tripId, flightsPayload, token),
         onSuccess: () => {
             // Limpa a cache do TanStack Query para redesenhar o Dashboard instantaneamente
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'flights'] });
@@ -26,9 +24,7 @@ export default function FlightCard({ outboundSegments = [], returnSegments = [],
         }
     });
 
-    // ==========================================================================
-    // 🔄 ALTERNÂNCIA DE MODOS (VISUALIZAÇÃO VS. GESTÃO)
-    // ==========================================================================
+    //  ALTERNÂNCIA DE MODOS (VISUALIZAÇÃO VS. GESTÃO)
     if (isEditing) {
         return (
             <FlightForm 

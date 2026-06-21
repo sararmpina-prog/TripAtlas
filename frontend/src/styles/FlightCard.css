@@ -147,3 +147,143 @@
   margin: 0;
 }
 
+/* FLIGHT FORM */
+/* CONTAINER ESTRUTURAL DO FORMULÁRIO */
+.flight-form-container {
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid var(--color-orange);
+  margin-bottom: 1rem;
+}
+
+.flight-form-container h5 {
+  margin: 0 0 1.2rem 0;
+  color: var(--text-heading-dark);
+  font-size: 1.2rem;
+}
+
+/* SELETOR DE DIREÇÃO (OUTBOUND / RETURN) */
+.journey-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.journey-selector .btn-base {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* LISTAGEM DOS BLOCOS */
+.flight-form-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* PLACEHOLDER QUANDO A LISTA ESTÁ VAZIA */
+.flight-form-empty-msg {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px dashed #ddd;
+}
+
+/* CARTÃO INDIVIDUAL DE SEGMENTO DE VOO */
+.flight-form-segment-card {
+  background: #fcfcfc;
+  border: 1px solid var(--border-light);
+  padding: 1.2rem;
+  border-radius: 16px;
+  position: relative;
+}
+
+.flight-form-segment-card .btn-delete-segment {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flight-form-segment-card .segment-card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* LINHAS DE GRID DOS INPUTS */
+.flight-form-grid-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.flight-form-grid-row input {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  outline: none;
+}
+
+.flight-form-grid-row input:focus {
+  border-color: var(--color-orange);
+}
+
+/* INPUTS LONGOS (NÚMERO E COMPANHIA) */
+.flight-form-grid-row input[type="text"] {
+  flex: 1;
+}
+
+/* INPUTS CURTOS DE AEROPORTO (FROM / TO) */
+.flight-form-grid-row input.input-airport {
+  flex: 0.4;
+  text-align: center;
+}
+
+/* INPUTS DE DATA E HORA */
+.flight-form-grid-row input[type="datetime-local"] {
+  flex: 1;
+}
+
+/* BOTÃO TRACEJADO ADICIONAR NOVO SEGMENTO */
+.btn-dashed-add {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px dashed var(--color-orange);
+  background: #fff9f5;
+  color: var(--color-orange);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btn-dashed-add:hover {
+  background: #ffebe0;
+}
+
+/* ACÇÕES GERAIS DO FORMULÁRIO (RODAPÉ) */
+.flight-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-light);
+  padding-top: 1rem;
+  margin-top: 1.5rem;
+}

@@ -124,7 +124,7 @@
   margin-bottom: 1rem;
 }
 
-.reserve-form-container h4 {
+.reserve-form-container h5 {
   margin: 0 0 1rem 0;
   color: var(--text-heading-dark);
 }
@@ -157,14 +157,14 @@
   font-weight: 700;
 }
 
-.reserve-form-label input {
+.reserve-form-container input {
   padding: 0.5rem;
   border-radius: 8px;
   border: 1px solid var(--border-light);
   outline: none;
 }
 
-.reserve-form-label input:focus {
+.reserve-form-container input:focus {
   border-color: var(--color-orange);
 }
 
