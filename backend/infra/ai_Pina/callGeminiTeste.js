@@ -5,6 +5,12 @@ import {setAiSuggestionFunctionDeclaration} from './setSuggestionFunctionDeclara
 import {createAiSuggestion} from './createAiSuggestion.js'
 import { logGeminiDebug } from '../ai/aiDebugLogger.js';
 import {isTransientGeminiError,formatAIError} from '../ai/aiErrorMapper.js'
+import {
+  hydrateHistory,
+  getHistory,
+  getSummary,
+  limitHistoryWithSummary
+} from '../../services/chatService.js';
 
 
 // History general starts off as a empty array
@@ -61,20 +67,40 @@ const config = {
 //Call Api Gemini (multiple function definitions)
 export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = null) {
 
-  history.push({
-      role: "user",
-      parts: [{ text: userPrompt }]
+  const scope = { user_id, trip_id };
+  const state = await hydrateHistory(scope);
+
+  const memoryHistory = getHistory(scope);
+  const summary = getSummary(scope);
+
+  const baseContext = [];
+
+  if (summary) {
+  baseContext.push({
+    role: "user",
+    parts: [{
+      text: `Resumo da conversa anterior:\n${summary}`
+    }]
+  });
+}
+
+
+  baseContext.push(...memoryHistory);
+
+  baseContext.push({
+    role: "user",
+    parts: [{ text: userPrompt }]
   });
 
-  logGeminiDebug(
-  'function-calling',
-  'history-user-push',
-  { history }
-);
+  logGeminiDebug('function-calling', 'initial-context-built', {
+    summary,
+    memorySize: memoryHistory.length,
+    userPrompt
+  });
 
   try {
 
-  let currentResponse = await generateWithFallback(history, config);
+  let currentResponse = await generateWithFallback(baseContext, config);
 
   logGeminiDebug(
   'function-calling',
@@ -89,19 +115,22 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
 
   const parts = currentResponse?.candidates?.[0]?.content?.parts || [];
 
-  logGeminiDebug(
-  'function-calling',
-  'parts-extracted',
-  { parts }
-);
+ logGeminiDebug('function-calling', 'initial-context-built', {
+    summary,
+    memorySize: memoryHistory.length,
+    userPrompt
+  });
 
-  if (parts && parts.length > 0) {
- 
-  history.push({
+   // 1. guardar resposta do modelo na memória
+  const modelMessage = {
+          role: "model",
+          parts
+        };
+
+  memoryHistory.push({
     role: "model",
     parts
   });
-}
 
   logGeminiDebug(
     'function-calling',
@@ -118,20 +147,14 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
   const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall)
 
 
-  logGeminiDebug(
-  'function-calling',
-  'function-calls-detected',
-  {
-    count: functionCalls.length,
-    functionCalls
-  }
-);
+  logGeminiDebug('function-calling', 'function-calls', {
+        step,
+        functionCalls
+      });
+
 
  //Se não existir, sai do loop 
- if (functionCalls.length == 0) {
-
-    break
-    }
+ if (functionCalls.length == 0) { break}
 
     // Mostrar chamadas
    currentResponse.functionCalls.forEach(fn => {
@@ -196,10 +219,31 @@ export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = nul
           }
         }))};
 
-      history.push(toolMessage);
+      memoryHistory.push(toolMessage);
 
-      console.log("Histórico da conversa (resposta Gemini execução funções)", history)
-      console.log("Histórico:", JSON.stringify(history, null, 2))
+
+      await limitHistoryWithSummary(scope);
+
+      logGeminiDebug('function-calling', 'memory-updated', {
+        memorySize: memoryHistory.length,
+        summary: getSummary(scope)
+      });
+
+      // 6. reconstruir contexto atualizado
+      const updatedContext = [];
+
+      const updatedSummary = getSummary(scope);
+
+      if (updatedSummary) {
+        updatedContext.push({
+          role: "user",
+          parts: [{
+            text: `Resumo da conversa anterior:\n${updatedSummary}`
+          }]
+        });
+      }
+
+      updatedContext.push(...getHistory(scope));
       
 
   // Pedir próxima resposta ao Gemini
