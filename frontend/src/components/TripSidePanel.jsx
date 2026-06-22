@@ -4,6 +4,7 @@ import { createTrip, updateTrip } from '../api';
 import { getStoredToken, getStoredUser } from '../auth/authStorage';
 import { formatDate } from '../utils/dateHelpers';
 import { MdOutlineEdit } from 'react-icons/md';
+import { IoIosSearch } from "react-icons/io";
 import '../styles/TripSidePanel.css';
 
 export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
@@ -22,6 +23,13 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
     const [tripStartDate, setTripStartDate] = useState('');
     const [tripEndDate, setTripEndDate] = useState('');
     const [tripDescription, setTripDescription] = useState('');
+    const [search, setSearch] = useState('');
+
+    const filteredTrips = trips.filter((trip) =>
+    `${trip.title} ${trip.destination}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
 
     // Efeito para carregar os dados nos inputs sempre que o utilizador clica em "Editar"
     useEffect(() => {
@@ -194,26 +202,34 @@ export default function TripSidePanel({ selectedTrip, trips, onTripChange }) {
                 Plan a new trip
             </button>
 
-            {/* CONCLUÍDO: Bloco do seletor que faltava fechar no fim do ficheiro */}
-            <label className="dashboard-trip-picker">
-                <span>Select trip</span>
-                {hasTrips ? (
-                    <select
-                        value={String(tripData.id)}
-                        onChange={(event) => onTripChange(event.target.value)}
+            {/* Escolher outras viagens: */}
+           <div className="search-container">
+                <IoIosSearch className="search-icon" />
+
+                <input
+                    type="text"
+                    placeholder="Search trips..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="trip-search"
+                />
+            </div>
+
+            <div className="trip-list">
+                {filteredTrips.map((trip) => (
+                    <button
+                        key={trip.id}
+                        className={
+                            Number(trip.id) === Number(tripData.id)
+                                ? "trip-button active"
+                                : "trip-button"
+                        }
+                        onClick={() => onTripChange(String(trip.id))}
                     >
-                        {trips.map((trip) => (
-                            <option key={trip.id} value={trip.id}>
-                                {trip.title} - {trip.destination}
-                            </option>
-                        ))}
-                    </select>
-                ) : (
-                    <select disabled value="">
-                        <option value="">No trips available</option>
-                    </select>
-                )}
-            </label>
+                        {trip.title} - {trip.destination}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }

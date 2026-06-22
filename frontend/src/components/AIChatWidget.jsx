@@ -59,7 +59,7 @@ export default function AIChatWidget() {
                 {
                     id: 'welcome-global',
                     sender: 'ai',
-                    text: `Hello ${user?.first_name || 'Traveler'}! I'm your AI Travel Assistant. Ask me generic questions, plan itineraries from scratch, or look for inspiration for your next adventure!`
+                    text: `Hello ${user?.first_name || 'Traveler'}! I'm your AI Travel Assistant. Ask me general travel questions, get help planning itineraries from scratch, or find inspiration for your next adventure!`
                 }
             ]);
         }

@@ -7,7 +7,7 @@
   "surname": "Antunes",
   "email": "carlos@email.com",
   "mobile_phone": "+351919999999",
-  "password": "supersecretpassword123"
+  "password": "supersecretpassword123!"
 }
 * **Expected Result**: Code 201 Created. Returns JWT token and user profile data without password_hash.
 

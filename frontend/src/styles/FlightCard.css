@@ -10,9 +10,8 @@
   border: 1px solid var(--border-light);
   border-radius: 20px;
   padding: 1.25rem;
-  box-shadow: var(--shadow-soft);
   display: flex;
-  flex-direction: column; /* 👈 Empilha os voos verticalmente */
+  flex-direction: column; /* Empilha os voos verticalmente */
 }
 
 .segment-direction-badge {

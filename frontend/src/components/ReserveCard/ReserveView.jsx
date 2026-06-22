@@ -1,5 +1,5 @@
 import { formatDate } from '../../utils/dateHelpers';
-import { FaEdit, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { MdOutlineEdit } from 'react-icons/md';
 import { useState } from 'react';
 import '../../styles/ReserveCard.css';

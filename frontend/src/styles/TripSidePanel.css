@@ -1,6 +1,7 @@
 .dashboard-sidepanel {
   width: 320px;
   min-width: 320px;
+  min-height: calc(100vh - 188px);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -119,4 +120,47 @@
    flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
+}
+
+/* SEARCH BAR */
+.trip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--text-main);
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+}
+
+.trip-search {
+    width: 100%;
+     margin: 10px 0;
+    padding: 8px 8px 8px 35px; /* espaço para o ícone */
+}
+
+.trip-button {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid var(--border-light);
+    background: var(--color-white);
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.trip-button.active {
+    background: var(--color-light-azure);
+    border-color: var(--color-medium-azure);
 }

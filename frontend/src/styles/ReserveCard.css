@@ -260,6 +260,7 @@
 .carousel-pagination-badge {
   position: absolute;
   bottom: 1rem;
+  margin-bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--surface-page);
