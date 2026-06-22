@@ -5,11 +5,13 @@ import { useNavigate } from "react-router";
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
 import ReserveCard from '../components/ReserveCard';
-import AIChatCard from '../components/AIChatCard';
+import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel';
 
 import { getFlights, getReserves, getTrips } from '../api';
 import { getStoredToken } from '../auth/authStorage';
+
+import { IoChatbubbleEllipses, IoClose } from "react-icons/io5";
 
 import '../styles/Dashboard.css';
 
@@ -32,63 +34,56 @@ export default function Dashboard() {
     const navigate = useNavigate();
     
     // DECLARAÇÃO DOS ESTADOS
-    const [selectedTripId, setSelectedTripId] = useState('');
-    const [isInitialized, setIsInitialized] = useState(false);
+    const [selectedTripId, setSelectedTripId] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Chamadas da API do TanStack Query
     const tripsQuery = useQuery({ queryKey: ['dashboard', 'trips'], queryFn: () => getTrips(token), enabled: Boolean(token) });
     const flightsQuery = useQuery({ queryKey: ['dashboard', 'flights'], queryFn: () => getFlights(token), enabled: Boolean(token) });
     const reservesQuery = useQuery({ queryKey: ['dashboard', 'reserves'], queryFn: () => getReserves(token), enabled: Boolean(token) });
 
+    // Extração segura de dados
     const trips = tripsQuery.data?.data ?? [];
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
 
     // CÁLCULO DA VIAGEM ATIVA
-    //optimizar desempenho, memoriza calculo entre renderizações so recalcula se dependencias alteradas
     const selectedTrip = useMemo(() => {
-        if (!trips || !trips.length) {
-            return null; 
-        }
-
-        if (isInitialized && selectedTripId === '') {
-            return null;
-        }
-
-        const activeTripId = selectedTripId || String(trips[0].id);
-        return trips.find((trip) => String(trip.id) === String(activeTripId)) || trips[0];
-    }, [selectedTripId, trips, isInitialized]);
-
-// Atualiza o useEffect com a proteção da flag de inicialização
-useEffect(() => {
-    // Só entra aqui se o array de viagens carregar e ainda NÃO tiver sido inicializado
-    if (trips && trips.length > 0 && !isInitialized) {
-        
-        // Encontra a viagem com o updated_at mais recente
-        const mostRecent = [...trips].sort((a, b) => {
-            return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-        })[0];
-        
-        if (mostRecent) {
-            setSelectedTripId(String(mostRecent.id));
-        }
-        
-        // Ativa a flag! A partir de agora, o React nunca mais vai forçar uma viagem sozinho
-        setIsInitialized(true);
+    if (!trips.length || selectedTripId === null) {
+        return null;
     }
-}, [trips, isInitialized]);
 
+    return (
+        trips.find(
+            (trip) => String(trip.id) === String(selectedTripId)
+        ) || null
+    );
+}, [trips, selectedTripId]);
+
+    useEffect(() => {
+        if (!trips.length) return;
+
+        if (selectedTripId === null) {
+            const mostRecent = [...trips].sort(
+                (a, b) =>
+                    new Date(b.updated_at).getTime() -
+                    new Date(a.updated_at).getTime()
+            )[0];
+
+            if (mostRecent) {
+                setSelectedTripId(String(mostRecent.id));
+            }
+        }
+    }, [trips, selectedTripId]);
 
     const selectedTripFlights = useMemo(() => {
         if (!selectedTrip) return [];
-        const allFlights = flights || []; 
-        return allFlights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
+        return flights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
     }, [flights, selectedTrip]);
 
     const selectedTripAccommodationReserves = useMemo(() => {
         if (!selectedTrip) return [];
-        const allReserves = reserves || []; 
-        return allReserves.filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id));
+        return reserves.filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id));
     }, [reserves, selectedTrip]);
 
     return (
@@ -150,11 +145,24 @@ useEffect(() => {
                             )}
                         </DashboardSection>
                     </div>
-
-                    <AIChatCard selectedTrip={selectedTrip} onTripChange={setSelectedTripId} />
-
                 </div>
             </div>
+
+            {/* BOTÃO FLUTUANTE FIXO NO CANTO INFERIOR */}
+            <button 
+                type="button" 
+                className="ai-floating-trigger-btn"
+                onClick={() => setIsChatOpen((prev) => !prev)}
+                style={{ background: isChatOpen ? 'var(--color-medium-azure)' : 'var(--color-orange)' }}
+            >
+                {isChatOpen ? <IoClose /> : <IoChatbubbleEllipses />}
+            </button>
+
+            {isChatOpen && (
+                <div className="ai-chat-floating-panel">
+                    <AIChatWidget />
+                </div>
+            )}
         </section>
     );
 }
