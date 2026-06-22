@@ -5,12 +5,16 @@ import { asyncHandler } from '../middlewares/asyncHandler.js';
 import * as aiService from '../services/aiService.js';
 
 export const postChatMessage = asyncHandler(async (req, res) => {
-  const { tripId } = req.params;
-  const { user_message } = req.body;
+  const { chat_id, user_message } = req.body;
+
+    const trip_id = req.params.tripId 
+    ? Number(req.params.tripId) 
+    : null;
 
   const aiResult = await aiService.handleAssistantMessage({
     user_id: req.user.id,
-    trip_id: tripId ? Number(tripId) : null,
+    trip_id,
+    chat_id,
     user_message,
   });
 

@@ -8,7 +8,7 @@ console.log('API Key in service:', process.env.GEMINI_API_KEY ? 'LOADED' : 'NOT 
 
 
 // Call to API gemini, if returns answer calls "save message" for DB otherwise returns "no message"
-export async function sendPromptService({ user_id, trip_id = null, user_message }) {
+export async function sendPromptService({ user_id, trip_id = null, chat_id, user_message }) {
     if (!user_message || typeof user_message !== 'string') {
         throw new ValidationError('Invalid user message provided.');
     }
@@ -16,6 +16,7 @@ export async function sendPromptService({ user_id, trip_id = null, user_message 
    console.log("estou no send prompt service")   
    console.log("User id é", user_id)
    console.log("trip id é", trip_id)
+   console.log("chat id é", chat_id)
  
     let prompt = user_message
     console.log("prompt", prompt)
@@ -35,7 +36,7 @@ export async function sendPromptService({ user_id, trip_id = null, user_message 
     tripContext = trip;
   }
 
-    const response = await callGeminiWithFunctionDefinition(prompt, trip_id);
+    const response = await callGeminiWithFunctionDefinition(prompt, trip_id, user_id);
 
     if (!response || !response.message) {
       console.log("Resposta inválida do Gemini");
@@ -51,12 +52,14 @@ export async function sendPromptService({ user_id, trip_id = null, user_message 
     user_id,
     trip_id: trip_id ?? null,
     user_message: user_message.trim(),
-    ai_response: response.message
+    ai_response: response.message,
+    chat_id: chat_id
     });
 
    // Devolve a resposta limpa para o Controlador entregar ao Frontend
   return {
-    reply: response.message
+    reply: response.message,
+    chat_id: chat_id
   };
  
 }

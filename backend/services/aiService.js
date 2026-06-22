@@ -75,7 +75,8 @@ export async function handleAssistantMessage({ user_id, trip_id = null, user_mes
     user_id,
     trip_id: trip_id ?? null,
     user_message: user_message.trim(),
-    ai_response
+    ai_response,
+    chat_id
   });
 
   // Devolve a resposta limpa para o Controlador entregar ao Frontend

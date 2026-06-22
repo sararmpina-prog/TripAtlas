@@ -3,22 +3,52 @@
 
 import { asyncHandler } from '../../middlewares/asyncHandler.js'
 import * as aiService from '../ai_Pina/chatServiceTeste.js';
+import * as chatRepository from '../../repository/chatRepository.js';
+import { v4 as uuidv4 } from 'uuid';
 
-export const postChatMessage = asyncHandler(async (req, res) => {
-  console.log("Estou no controller")
-  console.log("REQ USER:", req.user);
-  const { tripId } = req.params;
-  const { user_message } = req.body;
 
-  console.log("tripId", tripId)
-  const aiResult = await aiService.sendPromptService({
+export const getChatHistory = asyncHandler(async (req, res) => {
+  const { chatId } = req.params;
+
+
+  console.log("chatId", chatId)
+
+  const messages = await chatRepository.getMessagesByChatId({
     user_id: req.user.id,
-    trip_id: tripId ? Number(tripId) : null,
-    user_message,
+    chat_id: chatId
   });
 
   res.json({
     success: true,
-    data: aiResult
+    data: messages
   });
+});
+
+
+
+export const postChatMessage = asyncHandler(async (req, res) => {
+  console.log("Estou no controller")
+  console.log("REQ USER:", req.user);
+   const { chat_id, user_message } = req.body;
+
+   const finalChatId = chat_id || uuidv4();
+  
+      const trip_id = req.params.tripId 
+      ? Number(req.params.tripId) 
+      : null;
+  
+    const aiResult = await aiService.sendPromptService({
+      user_id: req.user.id,
+      trip_id,
+      chat_id: finalChatId,
+      user_message,
+    });
+  
+    res.json({
+      success: true,
+      data: {
+      chat_id: finalChatId,
+      ...aiResult
+    }
+    });
 });

@@ -65,7 +65,7 @@ const config = {
 
 
 //Call Api Gemini (multiple function definitions)
-export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = null) {
+export async function callGeminiWithFunctionDefinition(userPrompt, trip_id = null, user_id) {
 
   const scope = { user_id, trip_id };
   const state = await hydrateHistory(scope);
