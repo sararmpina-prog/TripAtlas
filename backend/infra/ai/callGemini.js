@@ -11,18 +11,13 @@ Esta camada não conhece prompts, tools nem comportamento específico do assiste
 
 import 'dotenv/config';
 import { GoogleGenAI } from '@google/genai';
-import {buildTripAssistantSystemPrompt} from './prompts/tripAssistantPrompt.js'
-import {setAiSuggestionFunctionDeclaration} from './setSuggestionFunctionDeclaration.js'
-import {createAiSuggestion} from './createAiSuggestion.js'
+import {config} from './tripBotConfig.js'
+import {createAiSuggestion} from '../../repository/chatRepository.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
-import {isTransientGeminiError,formatAIError} from './aiErrorMapper.js'
-import {
-  summarizeHistory
-} from './summarizeHistory.js';
+import {generateWithFallback} from './modelsFallback.js'
+import {summarizeHistory} from './summarizeHistory.js';
 
 
-// History general starts off as a empty array
-let history = [];
 
 console.log("Chave carregada:", process.env.GEMINI_API_KEY ? "SIM" : "NÃO");
 // Check if API key is available
@@ -31,50 +26,18 @@ if (!process.env.GEMINI_API_KEY) {
   process.exit(1);
 }
 
-
-//Different models available
-const GEMINI_MODELS = [
-  //  "gemini-3.1-pro",
-    "gemini-2.5-pro",
-    "gemini-3-flash",
-    "gemini-2.5-flash",
-    "gemini-3.1-flash-lite",
-    "gemini-2-flash",
-    "gemini-2-flash-lite",
-    "gemini-2.5-flash-lite"
-];
-
-
 // Initialize Gemini AI (same as working code)
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY 
 });
 
 
-//Create config 
-const config = {
-
-  systemInstruction: buildTripAssistantSystemPrompt(),
-
-  tools: [
-      {
-          functionDeclarations: [
-              setAiSuggestionFunctionDeclaration
-          ]
-      }
-  ],
-
-  toolConfig: {
-      functionCallingConfig: {
-          mode: 'AUTO'
-      }
-  }
-}; 
-
-let summary = null;
 
 
-//Call Api Gemini (multiple function definitions)
+// History general starts off as a empty array
+let history = [];
+
+//Call Api Gemini (single function definition)
 export async function callGemini(userPrompt, trip_id = null, user_id) {
 
 
@@ -286,90 +249,4 @@ let currentResponse = await generateWithFallback(history, config);
 
 
 
-
-
-// Go through models: Best - gemini-2.5-flash + gemini-3.1-flash-lite
-
-async function generateWithFallback(contents, config) {
-
-  let lastError = null;
-
-  for (let i = 0; i < GEMINI_MODELS.length; i++) {
-
-    const model = GEMINI_MODELS[i];
-
-    try {
-
-      logGeminiDebug(
-        'gemini-provider',
-        'model-attempt',
-        {
-          model,
-          attempt: i + 1
-        }
-      );
-
-      const response = await ai.models.generateContent({
-        model,
-        contents,
-        config
-      });
-
-      logGeminiDebug(
-        'gemini-provider',
-        'model-success',
-        {
-          model
-        }
-      );
-
-      return response;
-
-    } catch (error) {
-
-      logGeminiDebug(
-        'gemini-provider',
-        'model-failure',
-        {
-          model,
-          transient: isTransientGeminiError(error),
-          formattedMessage: formatAIError(error),
-          originalMessage: error.message
-        }
-      );
-
-      // Modelo inexistente -> tenta o próximo
-      if (
-        error.status === 404 ||
-        formatAIError(error).includes('configured Gemini model')
-      ) {
-
-        logGeminiDebug(
-          'gemini-provider',
-          'fallback-next-model',
-          {
-            failedModel: model
-          }
-        );
-
-        continue;
-      }
-
-      lastError = error;
-    }
-  }
-
-  logGeminiDebug(
-    'gemini-provider',
-    'all-models-failed',
-    {
-      modelsTried: GEMINI_MODELS,
-      finalError: formatAIError(lastError)
-    }
-  );
-
-  throw new Error(
-    formatAIError(lastError)
-  );
-}
 
