@@ -10,7 +10,7 @@ Esta camada não conhece prompts, tools nem comportamento específico do assiste
 */
 
 import 'dotenv/config';
-import { GoogleGenAI } from '@google/genai';
+
 import {config} from './tripBotConfig.js'
 import {createAiSuggestion} from '../../repository/chatRepository.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
@@ -18,18 +18,6 @@ import {generateWithFallback} from './modelsFallback.js'
 import {summarizeHistory} from './summarizeHistory.js';
 
 
-
-console.log("Chave carregada:", process.env.GEMINI_API_KEY ? "SIM" : "NÃO");
-// Check if API key is available
-if (!process.env.GEMINI_API_KEY) {
-  console.error('ERROR: GEMINI_API_KEY is not set in environment variables');
-  process.exit(1);
-}
-
-// Initialize Gemini AI (same as working code)
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY 
-});
 
 
 

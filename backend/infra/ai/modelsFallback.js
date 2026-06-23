@@ -1,4 +1,20 @@
-import {config} from './tripBotConfig.js'
+import { GoogleGenAI } from '@google/genai';
+import { logGeminiDebug } from './aiDebugLogger.js';
+import {isTransientGeminiError, formatAIError} from './aiErrorMapper.js'
+
+console.log("Chave carregada:", process.env.GEMINI_API_KEY ? "SIM" : "NÃO");
+// Check if API key is available
+if (!process.env.GEMINI_API_KEY) {
+  console.error('ERROR: GEMINI_API_KEY is not set in environment variables');
+  process.exit(1);
+}
+
+
+// Initialize Gemini AI (same as working code)
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY 
+});
+
 
 //Different models available
 const GEMINI_MODELS = [
