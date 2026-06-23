@@ -1,4 +1,3 @@
-import {Type } from '@google/genai';
 
 // Define a function that the model can create task 
 export const setAiSuggestionFunctionDeclaration = {

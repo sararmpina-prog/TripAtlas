@@ -1,9 +1,9 @@
 /* Controller responsável por interceptar os pedidos HTTP do Chat da AI 
    e responder com as sugestões geradas pela Gemini. */
 
-import { asyncHandler } from '../../middlewares/asyncHandler.js'
-import * as aiService from '../ai_Pina/chatServiceTeste.js';
-import * as chatRepository from '../../repository/chatRepository.js';
+import { asyncHandler } from '../middlewares/asyncHandler.js'
+import * as aiService from '../services/chatService.js';
+import * as chatRepository from '../repository/chatRepository.js';
 import { v4 as uuidv4 } from 'uuid';
 
 

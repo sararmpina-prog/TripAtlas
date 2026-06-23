@@ -1,81 +1,68 @@
-/* Gestão de contexto conversacional por âmbito de chat.
-   Persistência definitiva na BD + Cache híbrida em RAM + Compressão contextual. */
+import 'dotenv/config';
+import {callGemini} from '../infra/ai/callGemini.js'
+import * as tripRepository from '../repository/tripRepository.js'
+import * as chatRepository from '../repository/chatRepository.js';
 
-import { getChatHistory } from '../repository/chatRepository.js';
-import { summarizeHistory } from './chatSummaryService.js';
 
-const chatStateByScope = new Map();
-const MAX_ACTIVE_HISTORY = 5;
+console.log('API Key in service:', process.env.GEMINI_API_KEY ? 'LOADED' : 'NOT LOADED');
 
-function getChatScopeKey({ user_id, trip_id = null }) {
-  return trip_id === null || trip_id === undefined
-    ? `user:${user_id}:general`
-    : `user:${user_id}:trip:${trip_id}`;
-}
 
-function getChatScopeState(scope) {
-  const scopeKey = getChatScopeKey(scope);
+// Call to API gemini, if returns answer calls "save message" for DB otherwise returns "no message"
+export async function sendPromptService({ user_id, trip_id = null, chat_id, user_message }) {
+    if (!user_message || typeof user_message !== 'string') {
+        throw new ValidationError('Invalid user message provided.');
+    }
+    
+   console.log("estou no send prompt service")   
+   console.log("User id é", user_id)
+   console.log("trip id é", trip_id)
+   console.log("chat id é", chat_id)
+ 
+    let prompt = user_message
+    console.log("prompt", prompt)
 
-  if (!chatStateByScope.has(scopeKey)) {
-    chatStateByScope.set(scopeKey, {
-      history: [],
-      summary: null,
-      hydrated: false,
+    let tripContext; 
+    if (trip_id !== null && trip_id !== undefined) {
+    const trip = await tripRepository.findTripById(trip_id);
+
+    if (!trip) {
+      throw new NotFoundError('Trip not found.');
+    }
+
+    if (Number(trip.user_id) !== Number(user_id)) {
+      throw new ForbiddenError('You do not have access to this trip chat.');
+    }
+
+    tripContext = trip;
+  }
+
+    const response = await callGemini(prompt, trip_id, user_id);
+
+    if (!response || !response.message) {
+      console.log("Resposta inválida do Gemini");
+      return {
+        success: false,
+        message: "Sem resposta do modelo"
+    };
+  }
+
+    console.log('Gemini Response:', response.message);
+
+    await chatRepository.saveChat({
+    user_id,
+    trip_id: trip_id ?? null,
+    user_message: user_message.trim(),
+    ai_response: response.message,
+    chat_id: chat_id
     });
-  }
 
-  return chatStateByScope.get(scopeKey);
+   // Devolve a resposta limpa para o Controlador entregar ao Frontend
+  return {
+    reply: response.message,
+    chat_id: chat_id
+  };
+ 
 }
 
-export async function hydrateHistory(scope) {
-  const state = getChatScopeState(scope);
 
-  if (state.hydrated) {
-    return state;
-  }
 
-  const persistedHistory = await getChatHistory(scope);
-  state.history.length = 0;
-  state.history.push(...persistedHistory);
-  state.summary = null;
-  state.hydrated = true;
-
-  return state;
-}
-
-export function getHistory(scope) {
-  return getChatScopeState(scope).history;
-}
-
-export function getSummary(scope) {
-  return getChatScopeState(scope).summary;
-}
-
-export function clearHistory(scope) {
-  chatStateByScope.set(getChatScopeKey(scope), {
-    history: [],
-    summary: null,
-    hydrated: true,
-  });
-}
-
-export async function limitHistoryWithSummary(scope) {
-  const state = getChatScopeState(scope);
-
-  if (state.history.length <= MAX_ACTIVE_HISTORY) return;
-
-  const oldMessages = state.history.slice(0, -MAX_ACTIVE_HISTORY);
-  const recentMessages = state.history.slice(-MAX_ACTIVE_HISTORY);
-
-  let newSummary = state.summary;
-
-  try {
-    newSummary = await summarizeHistory(oldMessages, state.summary);
-  } catch {
-    newSummary = state.summary;
-  }
-
-  state.summary = newSummary;
-  state.history.length = 0;
-  state.history.push(...recentMessages);
-}

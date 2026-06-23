@@ -9,148 +9,367 @@ Responsabilidades:
 Esta camada não conhece prompts, tools nem comportamento específico do assistente.
 */
 
-import { GoogleGenAI } from '@google/genai';
 import 'dotenv/config';
-import { formatAIError, isTransientGeminiError } from './aiErrorMapper.js';
+import { GoogleGenAI } from '@google/genai';
+import {buildTripAssistantSystemPrompt} from './prompts/tripAssistantPrompt.js'
+import {setAiSuggestionFunctionDeclaration} from './setSuggestionFunctionDeclaration.js'
+import {createAiSuggestion} from './createAiSuggestion.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
-import { validateBaseConfig, validateContents } from './geminiValidator.js';
-import { DEFAULT_GEMINI_MODEL, buildModelCandidates } from './geminiModels.js';
+import {isTransientGeminiError,formatAIError} from './aiErrorMapper.js'
+import {
+  summarizeHistory
+} from '../../services/aiService.js';
 
-// Inicialização correta do cliente oficial da Google
+
+// History general starts off as a empty array
+let history = [];
+
+console.log("Chave carregada:", process.env.GEMINI_API_KEY ? "SIM" : "NÃO");
+// Check if API key is available
+if (!process.env.GEMINI_API_KEY) {
+  console.error('ERROR: GEMINI_API_KEY is not set in environment variables');
+  process.exit(1);
+}
+
+
+//Different models available
+const GEMINI_MODELS = [
+  //  "gemini-3.1-pro",
+    "gemini-2.5-pro",
+    "gemini-3-flash",
+    "gemini-2.5-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-2-flash",
+    "gemini-2-flash-lite",
+    "gemini-2.5-flash-lite"
+];
+
+
+// Initialize Gemini AI (same as working code)
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY 
 });
 
-// Ajusta as configurações para o formato nativo esperado pelo SDK
-function buildFinalConfig(config = {}) {
-  return {
-    temperature: typeof config.temperature === 'number' ? config.temperature : 0.2,
-    ...config,
-  };
-}
 
-// Sintaxe nativa do método do novo SDK @google/genai
-async function generateGeminiResponse(contents, model, config) {
-  return ai.models.generateContent({
-    model,
-    contents,
-    config: buildFinalConfig(config), // O SDK espera o objeto config aqui dentro
-  });
-}
+//Create config 
+const config = {
 
-async function generateGeminiResponseWithRetry(contents, model, config) {
-  const modelCandidates = buildModelCandidates(model);
-  let lastError;
+  systemInstruction: buildTripAssistantSystemPrompt(),
 
-  for (const currentModel of modelCandidates) {
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        logGeminiDebug('ai-call', 'model-attempt', {
-          model: currentModel,
-          attempt: attempt + 1,
-          candidateCount: modelCandidates.length,
-          contentsCount: Array.isArray(contents) ? contents.length : 0,
-        });
-
-        const response = await generateGeminiResponse(contents, currentModel, config);
-
-        logGeminiDebug('ai-call', 'model-success', {
-          model: currentModel,
-          attempt: attempt + 1,
-        });
-
-        return response;
-      } catch (error) {
-        lastError = error;
-        const transient = isTransientGeminiError(error);
-
-        logGeminiDebug('ai-call', 'model-error', {
-          model: currentModel,
-          attempt: attempt + 1,
-          transient,
-          message: error?.message || 'Unknown error',
-        });
-
-        if (!transient) {
-          throw error;
-        }
-
-        if (attempt === 1) {
-          break;
-        }
+  tools: [
+      {
+          functionDeclarations: [
+              setAiSuggestionFunctionDeclaration
+          ]
       }
+  ],
+
+  toolConfig: {
+      functionCallingConfig: {
+          mode: 'AUTO'
+      }
+  }
+}; 
+
+let summary = null;
+
+
+//Call Api Gemini (multiple function definitions)
+export async function callGemini(userPrompt, trip_id = null, user_id) {
+
+
+ history.push({
+      role: "user",
+      parts: [{ text: userPrompt }]
+  });
+
+  logGeminiDebug('function-calling', 'initial-context-built', {
+    history,
+    historySize: history.length,
+    userPrompt
+  });
+
+  try {
+
+
+let currentResponse = await generateWithFallback(history, config);
+
+  logGeminiDebug(
+  'function-calling',
+  'gemini-response',
+  { currentResponse }
+);
+
+  let step = 1;
+  const MAX_STEPS = 5;
+
+  while ( step <= MAX_STEPS) {
+
+  const parts = currentResponse?.candidates?.[0]?.content?.parts || [];
+
+  console.log("parts =", parts)
+
+  if (parts && parts.length > 0) {
+  console.log("parts existe e length maior que zero")  
+  history.push({
+    role: "model",
+    parts
+  });
+}  
+
+
+  logGeminiDebug(
+    'function-calling',
+    'history-after-model-push',
+    {
+      lastModelParts: parts,
+      historyLength: history.length,
+      lastEntry: history[history.length - 1]
+    }
+  );
+
+
+  //Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
+  const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall)
+
+  console.log("functionCalls =", functionCalls);
+
+  logGeminiDebug('function-calling', 'function-calls', {
+        step,
+        functionCalls
+      });
+
+
+ //Se não existir, sai do loop 
+ if (functionCalls.length == 0) { break}
+
+    // Mostrar chamadas
+   currentResponse.functionCalls.forEach(fn => {
+    console.log(`➡️ ${fn.name}`, fn.args);
+  });
+  
+
+/*
+ * ================================
+ * 5. EXECUTAR FUNÇÕES (SIMULAÇÃO)
+ * ================================
+ */
+    const functionResults = await Promise.all(currentResponse.candidates[0].content.parts
+    .filter(p => p.functionCall)
+    .map(async (p) => {
+
+    const fn = p.functionCall;  
+    let result;
+
+    logGeminiDebug(
+  'function-calling',
+  'executing-function',
+  {
+    functionName: fn.name,
+    args: fn.args,
+    trip_id
+  }
+);
+
+    switch (fn.name) {
+      case 'create_trip_journal_entry':
+        result = await createAiSuggestion({...fn.args, trip_id});
+        break;
+
+      default:
+      result = { error: 'Unknown function' };
+    }
+
+    logGeminiDebug(
+  'function-calling',
+  'function-executed',
+  {
+    functionName: fn.name,
+    result
+  }
+);
+
+    return {
+      name: fn.name,
+      response: result ?? {},
+      thought_signature: fn.thought_signature
+    };
+  }));
+
+      // Adicionar function responses ao histórico
+      const toolMessage = {
+        role: "tool",
+        parts: functionResults.map(fr => ({
+          functionResponse: {
+            name: fr.name,
+            response:  fr.response  ?? {}
+          }
+        }))};
+
+      history.push(toolMessage);
+
+      if (history.length > 20) {
+
+        const oldHistory = history.slice(0, -10);
+        const recent = history.slice(-10);
+
+        summary = await summarizeHistory(oldHistory);
+
+        history = [
+          {
+            role: "user",
+            parts: [{
+              text: "Resumo da conversa anterior:\n" + summary
+            }]
+          },
+          ...recent
+        ];
+      }
+
+      
+  // Pedir próxima resposta ao Gemini
+  currentResponse = await generateWithFallback(history, config);
+    step++;
+    console.log("currentResponse", currentResponse) 
+  }
+
+  
+  const finalParts =
+  currentResponse?.candidates?.[0]?.content?.parts || [];
+
+  console.log("final parts", finalParts)
+
+  let finalText =
+  finalParts.find(p => p.text)?.text;
+
+  logGeminiDebug(
+  'function-calling',
+  'final-response',
+  {
+    finalText
+  }
+);
+
+  if (finalText) {
+    finalText = finalText?.trim()
+  }
+
+
+
+  const finalResponse = {
+      success: true,
+      message: finalText
+    
+    };
+
+    return finalResponse
+ 
+      
+} catch (error) {
+
+ logGeminiDebug(
+  'function-calling',
+  'gemini-error',
+  {
+    message: error.message,
+    response: error.response?.data,
+    stack: error.stack
+  }
+);
+
+  throw error
     }
   }
 
-  throw lastError;
-}
 
-// Extração segura utilizando os getters nativos do novo SDK
-function extractResponseText(response) {
-  const text = response?.text;
 
-  if (text && typeof text === 'string') {
-    return text.trim();
-  }
 
-  throw new Error('Empty or invalid response received from AI');
-}
 
-export async function callGemini(prompt, model = DEFAULT_GEMINI_MODEL, config = {}) {
-  try {
-    logGeminiDebug('ai-call', 'call-gemini-start', {
-      model,
-      promptLength: typeof prompt === 'string' ? prompt.length : 0,
-    });
 
-    validateBaseConfig(config);
 
-    if (!prompt || typeof prompt !== 'string') {
-      throw new Error('Invalid prompt for AI call');
+
+// Go through models: Best - gemini-2.5-flash + gemini-3.1-flash-lite
+
+async function generateWithFallback(contents, config) {
+
+  let lastError = null;
+
+  for (let i = 0; i < GEMINI_MODELS.length; i++) {
+
+    const model = GEMINI_MODELS[i];
+
+    try {
+
+      logGeminiDebug(
+        'gemini-provider',
+        'model-attempt',
+        {
+          model,
+          attempt: i + 1
+        }
+      );
+
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+        config
+      });
+
+      logGeminiDebug(
+        'gemini-provider',
+        'model-success',
+        {
+          model
+        }
+      );
+
+      return response;
+
+    } catch (error) {
+
+      logGeminiDebug(
+        'gemini-provider',
+        'model-failure',
+        {
+          model,
+          transient: isTransientGeminiError(error),
+          formattedMessage: formatAIError(error),
+          originalMessage: error.message
+        }
+      );
+
+      // Modelo inexistente -> tenta o próximo
+      if (
+        error.status === 404 ||
+        formatAIError(error).includes('configured Gemini model')
+      ) {
+
+        logGeminiDebug(
+          'gemini-provider',
+          'fallback-next-model',
+          {
+            failedModel: model
+          }
+        );
+
+        continue;
+      }
+
+      lastError = error;
     }
-
-    // Estrutura padrão de contents aceita pela API
-    const response = await generateGeminiResponseWithRetry(
-      [{ role: 'user', parts: [{ text: prompt }] }],
-      model,
-      config
-    );
-
-    return extractResponseText(response);
-  } catch (error) {
-    throw new Error(`Error in AI call: ${formatAIError(error)}`);
   }
+
+  logGeminiDebug(
+    'gemini-provider',
+    'all-models-failed',
+    {
+      modelsTried: GEMINI_MODELS,
+      finalError: formatAIError(lastError)
+    }
+  );
+
+  throw new Error(
+    formatAIError(lastError)
+  );
 }
 
-export async function callGeminiWithContents(contents, model = DEFAULT_GEMINI_MODEL, config = {}) {
-  try {
-    logGeminiDebug('ai-call', 'call-gemini-with-contents-start', {
-      model,
-      contentsCount: Array.isArray(contents) ? contents.length : 0,
-    });
-
-    validateBaseConfig(config);
-    validateContents(contents);
-
-    const response = await generateGeminiResponseWithRetry(contents, model, config);
-    return extractResponseText(response);
-  } catch (error) {
-    throw new Error(`Error in AI call: ${formatAIError(error)}`);
-  }
-}
-
-export async function callGeminiWithResponse(contents, model = DEFAULT_GEMINI_MODEL, config = {}) {
-  try {
-    logGeminiDebug('ai-call', 'call-gemini-with-response-start', {
-      model,
-      contentsCount: Array.isArray(contents) ? contents.length : 0,
-    });
-
-    validateBaseConfig(config);
-    validateContents(contents);
-
-    return await generateGeminiResponseWithRetry(contents, model, config);
-  } catch (error) {
-    throw new Error(`Error in AI call: ${formatAIError(error)}`);
-  }
-}

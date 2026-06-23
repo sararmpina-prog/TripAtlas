@@ -1,6 +1,6 @@
 //Precisamos validar tripId existe antes de inserir BD (isto é repositório)
 
-import { db } from '../../infra/db/db.js'
+import { db } from '../db/db.js'
 
 export async function createAiSuggestion({ trip_id, title, content }) {
   console.log("estou no createAiSuggestion", trip_id)
