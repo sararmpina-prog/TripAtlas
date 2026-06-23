@@ -10,7 +10,6 @@ Esta camada não conhece prompts, tools nem comportamento específico do assiste
 */
 
 import 'dotenv/config';
-
 import {config} from './tripBotConfig.js'
 import {createAiSuggestion} from '../../repository/chatRepository.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
@@ -18,38 +17,36 @@ import {generateWithFallback} from './modelsFallback.js'
 import {summarizeHistory} from './summarizeHistory.js';
 
 
+// const histories = new Map();
 
+// function getHistory(chat_id) {
+//   if (!histories.has(chat_id)) {
+//     histories.set(chat_id, []);
+//   }
+//   return histories.get(chat_id);
+// }
 
-
-
-// History general starts off as a empty array
-let history = [];
+let history = []
 
 //Call Api Gemini (single function definition)
-export async function callGemini(userPrompt, trip_id = null, user_id) {
+export async function callGemini(userPrompt, trip_id = null, chat_id) {
 
+// let history = getHistory(chat_id);
 
  history.push({
       role: "user",
       parts: [{ text: userPrompt }]
   });
 
-  logGeminiDebug('function-calling', 'initial-context-built', {
-    history,
-    historySize: history.length,
-    userPrompt
-  });
+  console.log("Histórico da conversa (primeiro push)", history)
+  console.log("Histórico:", JSON.stringify(history, null, 2))
 
   try {
 
 
 let currentResponse = await generateWithFallback(history, config);
 
-  logGeminiDebug(
-  'function-calling',
-  'gemini-response',
-  { currentResponse }
-);
+console.log(JSON.stringify(currentResponse, null, 2));
 
   let step = 1;
   const MAX_STEPS = 5;
@@ -68,27 +65,18 @@ let currentResponse = await generateWithFallback(history, config);
   });
 }  
 
+ console.log("Histórico da conversa (resposta Gemini)", history)
+  console.log("Histórico:", JSON.stringify(history, null, 2))
 
-  logGeminiDebug(
-    'function-calling',
-    'history-after-model-push',
-    {
-      lastModelParts: parts,
-      historyLength: history.length,
-      lastEntry: history[history.length - 1]
-    }
-  );
+  console.log("parts", parts)
+  console.log(`🔁 STEP ${step}`);
+  console.log("Funções pedidas pelo modelo:");
 
 
   //Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
   const functionCalls = parts.filter(p => p.functionCall).map(p => p.functionCall)
 
   console.log("functionCalls =", functionCalls);
-
-  logGeminiDebug('function-calling', 'function-calls', {
-        step,
-        functionCalls
-      });
 
 
  //Se não existir, sai do loop 
@@ -112,15 +100,7 @@ let currentResponse = await generateWithFallback(history, config);
     const fn = p.functionCall;  
     let result;
 
-    logGeminiDebug(
-  'function-calling',
-  'executing-function',
-  {
-    functionName: fn.name,
-    args: fn.args,
-    trip_id
-  }
-);
+      
 
     switch (fn.name) {
       case 'create_trip_journal_entry':
@@ -131,14 +111,7 @@ let currentResponse = await generateWithFallback(history, config);
       result = { error: 'Unknown function' };
     }
 
-    logGeminiDebug(
-  'function-calling',
-  'function-executed',
-  {
-    functionName: fn.name,
-    result
-  }
-);
+    console.log(`✅ Executada: ${fn.name}`, result);
 
     return {
       name: fn.name,
@@ -158,6 +131,9 @@ let currentResponse = await generateWithFallback(history, config);
         }))};
 
       history.push(toolMessage);
+
+       console.log("Histórico da conversa (resposta Gemini execução funções)", history)
+      console.log("Histórico:", JSON.stringify(history, null, 2))
 
       if (history.length > 20) {
 
@@ -193,13 +169,8 @@ let currentResponse = await generateWithFallback(history, config);
   let finalText =
   finalParts.find(p => p.text)?.text;
 
-  logGeminiDebug(
-  'function-calling',
-  'final-response',
-  {
-    finalText
-  }
-);
+  console.log("finalText", finalText)
+ 
 
   if (finalText) {
     finalText = finalText?.trim()

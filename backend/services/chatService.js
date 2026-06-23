@@ -36,7 +36,7 @@ export async function sendPromptService({ user_id, trip_id = null, chat_id, user
     tripContext = trip;
   }
 
-    const response = await callGemini(prompt, trip_id, user_id);
+    const response = await callGemini(prompt, trip_id, chat_id);
 
     if (!response || !response.message) {
       console.log("Resposta inválida do Gemini");
