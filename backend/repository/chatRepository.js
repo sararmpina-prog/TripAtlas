@@ -118,3 +118,25 @@ export async function getMessagesByChatId({ user_id, chat_id }) {
   }
 ]));
 }
+
+export async function getChatSessions(user_id) {
+  const [rows] = await db.query(`
+    SELECT 
+      c.chat_id,
+      (
+        SELECT user_message
+        FROM chat_history ch2
+        WHERE ch2.chat_id = c.chat_id
+          AND ch2.user_id = ?
+        ORDER BY ch2.created_at ASC
+        LIMIT 1
+      ) AS title,
+      MAX(c.created_at) AS last_message
+    FROM chat_history c
+    WHERE c.user_id = ?
+    GROUP BY c.chat_id
+    ORDER BY last_message DESC
+  `, [user_id, user_id]);
+
+  return rows;
+}

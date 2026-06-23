@@ -8,13 +8,14 @@ import { API_URL, createJsonHeaders, buildApiError } from './client';
 export async function getChatHistory(chatId, token) {
   // Se houver um tripId, adiciona-o como query string (ex: /chat?tripId=5)
   // Caso contrário, a rota chama apenas /chat (o backend saberá que é nulo)
-  const queryString = chatId ? `?chatId=${chatId}` : '';
+  // const queryString = chatId ? `?chatId=${chatId}` : '';
 
-  console.log("queryString é", queryString)
+  // console.log("estou no get history")
+  // console.log("queryString é", queryString)
 
-  console.log(`${API_URL}/ai/chat${queryString}`)
+  // console.log(`${API_URL}/ai/chat/${queryString}`)
 
-  const response = await fetch(`${API_URL}/ai/chat${queryString}`, {
+  const response = await fetch(`${API_URL}/ai/chat/${chatId}`, {
     method: "GET",
     headers: createJsonHeaders(token),
   });
@@ -49,4 +50,19 @@ export async function sendChatMessage(chatPayload, token) {
   }
 
   return data;
+}
+
+export async function getChatSessions(token) {
+  const response = await fetch(`${API_URL}/ai/chats`, {
+    method: "GET",
+    headers: createJsonHeaders(token),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw buildApiError(data, "Unable to load chat sessions.", response.status);
+  }
+
+  return data.data; // array de chats
 }

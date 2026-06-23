@@ -4,13 +4,16 @@ import express from 'express';
 import { postChatMessage } from '../ai_Pina/chatControllerTeste.js';
 import { validateIdParam } from '../../middlewares/validateIdParams.js';
 import { validateBody } from '../../middlewares/validationMiddleware.js';
-import { getChatHistory } from '../ai_Pina/chatControllerTeste.js';
+import { getChatHistory, getChatSessions } from '../ai_Pina/chatControllerTeste.js';
 import { chatMessageSchema } from '../../validators/aiValidator.js';
 
 const router = express.Router();
 
 // GET /api/ai/chat -> chat geral do utilizador autenticado
 router.get('/chat/:chatId', getChatHistory);
+
+// GET /api/ai/chat -> chat geral do utilizador autenticado
+router.get('/chats', getChatSessions);
 
 // POST /api/ai/chat -> chat geral do utilizador autenticado
 router.post('/chat', validateBody(chatMessageSchema), postChatMessage);

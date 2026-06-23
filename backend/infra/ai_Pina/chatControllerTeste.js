@@ -7,6 +7,20 @@ import * as chatRepository from '../../repository/chatRepository.js';
 import { v4 as uuidv4 } from 'uuid';
 
 
+// GET /api/ai/chats
+export const getChatSessions = asyncHandler(async (req, res) => {
+
+  const chats = await chatRepository.getChatSessions(req.user.id);
+
+  res.json({
+    success: true,
+    data: chats
+  });
+});
+
+
+
+
 export const getChatHistory = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
 
