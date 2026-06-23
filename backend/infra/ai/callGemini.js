@@ -18,7 +18,7 @@ import { logGeminiDebug } from './aiDebugLogger.js';
 import {isTransientGeminiError,formatAIError} from './aiErrorMapper.js'
 import {
   summarizeHistory
-} from '../../services/aiService.js';
+} from './summarizeHistory.js';
 
 
 // History general starts off as a empty array

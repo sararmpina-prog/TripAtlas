@@ -52,6 +52,8 @@ export async function sendChatMessage(chatPayload, token) {
   return data;
 }
 
+
+
 export async function getChatSessions(token) {
   const response = await fetch(`${API_URL}/ai/chats`, {
     method: "GET",

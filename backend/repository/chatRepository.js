@@ -35,58 +35,6 @@ export async function saveChat({ user_id, trip_id = null, chat_id, user_message,
   await db.execute(query, values);
 }
 
-// Recupera histórico de chat de um utilizador, com ou sem viagem associada.
-export async function getChatHistory({ user_id, trip_id = null }, limit = 10) {
-  const safeLimit = limitSchema.parse(limit);
-  console.log("user_id", user_id)
-  console.log("trip_id", trip_id)
-  console.log("trip_id", trip_id)
-
-  const hasTripScope = trip_id !== null && trip_id !== undefined;
-  const query = hasTripScope
-    ? `
-        SELECT user_message, ai_response
-        FROM chat_history
-        WHERE user_id = ? AND trip_id = ?
-        ORDER BY id DESC
-        LIMIT ${safeLimit}
-      `
-    : `
-        SELECT user_message, ai_response
-        FROM chat_history
-        WHERE user_id = ? AND trip_id IS NULL
-        ORDER BY id DESC
-        LIMIT ${safeLimit}
-      `;
-
-  const [rows] = await db.execute(
-    query,
-    hasTripScope ? [user_id, trip_id] : [user_id]
-  );
-
-  return rows
-    .reverse() // Inverte para repor a ordem cronológica correta
-    .flatMap((row) => { // flatMap para transformar cada row num array de mensagens, filtrando mensagens vazias ou nulas
-      const messages = [];
-
-      if (typeof row.user_message === 'string' && row.user_message.trim()) {
-        messages.push({
-          role: 'user',
-          parts: [{ text: row.user_message.trim() }],
-        });
-      }
-
-      if (typeof row.ai_response === 'string' && row.ai_response.trim()) {
-        messages.push({
-          role: 'model',
-          parts: [{ text: row.ai_response.trim() }],
-        });
-      }
-
-      return messages;
-    });
-}
-
 export async function getMessagesByChatId({ user_id, chat_id }) {
   console.log("estou no repositório")
   console.log("user_id", user_id)

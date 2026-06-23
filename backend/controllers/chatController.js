@@ -19,8 +19,7 @@ export const getChatSessions = asyncHandler(async (req, res) => {
 });
 
 
-
-
+// GET /api/ai/chatId
 export const getChatHistory = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
 
@@ -39,7 +38,7 @@ export const getChatHistory = asyncHandler(async (req, res) => {
 });
 
 
-
+// POST /api/ai/chat
 export const postChatMessage = asyncHandler(async (req, res) => {
   console.log("Estou no controller")
   console.log("REQ USER:", req.user);
