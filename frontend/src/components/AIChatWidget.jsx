@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ReactMarkdown from "react-markdown";
+import { IoSend } from 'react-icons/io5';
+import { BiMessageSquareAdd } from 'react-icons/bi';
 
 import {
     getChatHistory,
@@ -201,7 +203,8 @@ export default function AIChatWidget() {
                 </div>
 
                 <button onClick={handleNewChat}>
-                    + New Chat
+                     <BiMessageSquareAdd size={18}/>
+                    New Chat
                 </button>
             </div>
 
@@ -282,7 +285,7 @@ export default function AIChatWidget() {
                                 sendMessageMutation.isPending
                             }
                         >
-                            Send
+                            <IoSend size={18}/>
                         </button>
                     </form>
 
