@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ReactMarkdown from "react-markdown";
 
 import {
     getChatHistory,
@@ -241,7 +242,11 @@ export default function AIChatWidget() {
                                 <div
                                     className={`chat-bubble ${msg.sender}-bubble`}
                                 >
-                                    {msg.text}
+                                    {msg.sender === "ai" ? (
+                                        <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                    ) : (
+                                        msg.text
+                                    )}
                                 </div>
                             </div>
                         ))}
