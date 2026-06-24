@@ -25,9 +25,7 @@ function DashboardSection({ title, count, children }) {
                     <p>{count} item{count === 1 ? '' : 's'}</p>
                 </div>
             </div>
-            <div className="dashboard-section-content">
-                {children}
-            </div>
+            <div className="dashboard-section-content">{children}</div>
         </section>
     );
 }
@@ -35,39 +33,33 @@ function DashboardSection({ title, count, children }) {
 export default function Dashboard() {
     const token = getStoredToken();
     const navigate = useNavigate();
-
+    
+    // DECLARAÇÃO DOS ESTADOS
     const [selectedTripId, setSelectedTripId] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-    const tripsQuery = useQuery({
-        queryKey: ['dashboard', 'trips'],
-        queryFn: () => getTrips(token),
-        enabled: Boolean(token)
-    });
+    // Chamadas da API do TanStack Query
+    const tripsQuery = useQuery({ queryKey: ['dashboard', 'trips'], queryFn: () => getTrips(token), enabled: Boolean(token) });
+    const flightsQuery = useQuery({ queryKey: ['dashboard', 'flights'], queryFn: () => getFlights(token), enabled: Boolean(token) });
+    const reservesQuery = useQuery({ queryKey: ['dashboard', 'reserves'], queryFn: () => getReserves(token), enabled: Boolean(token) });
 
-    const flightsQuery = useQuery({
-        queryKey: ['dashboard', 'flights'],
-        queryFn: () => getFlights(token),
-        enabled: Boolean(token)
-    });
-
-    const reservesQuery = useQuery({
-        queryKey: ['dashboard', 'reserves'],
-        queryFn: () => getReserves(token),
-        enabled: Boolean(token)
-    });
-
+    // Extração segura de dados
     const trips = tripsQuery.data?.data ?? [];
     const flights = flightsQuery.data?.data ?? [];
     const reserves = reservesQuery.data?.data ?? [];
 
+    // CÁLCULO DA VIAGEM ATIVA
     const selectedTrip = useMemo(() => {
-        if (!trips.length || selectedTripId === null) return null;
+    if (!trips.length || selectedTripId === null) {
+        return null;
+    }
 
-        return trips.find(
+    return (
+        trips.find(
             (trip) => String(trip.id) === String(selectedTripId)
-        ) || null;
-    }, [trips, selectedTripId]);
+        ) || null
+    );
+}, [trips, selectedTripId]);
 
     useEffect(() => {
         if (!trips.length) return;
@@ -87,117 +79,82 @@ export default function Dashboard() {
 
     const selectedTripFlights = useMemo(() => {
         if (!selectedTrip) return [];
-        return flights.filter(
-            (flight) => Number(flight.trip_id) === Number(selectedTrip.id)
-        );
+        return flights.filter((flight) => Number(flight.trip_id) === Number(selectedTrip.id));
     }, [flights, selectedTrip]);
 
     const selectedTripAccommodationReserves = useMemo(() => {
         if (!selectedTrip) return [];
-        return reserves.filter(
-            (reserve) => Number(reserve.trip_id) === Number(selectedTrip.id)
-        );
+        return reserves.filter((reserve) => Number(reserve.trip_id) === Number(selectedTrip.id));
     }, [reserves, selectedTrip]);
 
     return (
         <section className="dashboard-page">
             <Header />
-
             <div className="dashboard-content">
-                <TripSidePanel
-                    selectedTrip={selectedTrip}
-                    trips={trips}
+                <TripSidePanel 
+                    selectedTrip={selectedTrip} 
+                    trips={trips} 
                     onTripChange={setSelectedTripId}
                 />
 
-                {/* GRID PRINCIPAL */}
                 <div className="dashboard-grid">
-
-                    {/* ESQUERDA */}
                     <div className="dashboard-grid-logistics">
-
-                        {/* FLIGHTS */}
-                        <DashboardSection
-                            title="Flights"
-                            count={selectedTripFlights.length}
-                        >
+                        
+                        {/* SECÇÃO DE VOOS */}
+                        <DashboardSection title="Flights" count={selectedTripFlights.length}>
                             {selectedTripFlights.length > 0 ? (
                                 selectedTripFlights.map((flight) => (
                                     <FlightCard key={flight.id} flight={flight} />
                                 ))
                             ) : (
-                                <button
+                                <button 
                                     type="button"
-                                    className={`dashboard-placeholder-card ${
-                                        selectedTrip ? 'card-clickable' : 'card-disabled'
-                                    }`}
+                                    className={`dashboard-placeholder-card ${selectedTrip ? 'card-clickable' : 'card-disabled'}`}
                                     disabled={!selectedTrip}
-                                    onClick={() =>
-                                        navigate(`/flights/create?tripId=${selectedTrip.id}`)
-                                    }
+                                    onClick={() => navigate(`/flights/create?tripId=${selectedTrip.id}`)}
                                 >
                                     <h5>No flights yet</h5>
                                     <p>
-                                        {selectedTrip
-                                            ? "Click here to add flights to this trip."
+                                        {selectedTrip 
+                                            ? "Click here to add flights to this trip." 
                                             : "Plan a trip first using the sidebar to unlock flight scheduling."}
                                     </p>
                                 </button>
                             )}
                         </DashboardSection>
 
-                        {/* ACCOMMODATIONS */}
-                        <DashboardSection
-                            title="Accommodations"
-                            count={selectedTripAccommodationReserves.length}
-                        >
+                        {/* SECÇÃO DE ALOJAMENTOS */}
+                        <DashboardSection title="Accommodations" count={selectedTripAccommodationReserves.length}>
                             {selectedTripAccommodationReserves.length > 0 ? (
                                 selectedTripAccommodationReserves.map((reserve) => (
                                     <ReserveCard key={reserve.id} reserve={reserve} />
                                 ))
                             ) : (
-                                <button
+                                <button 
                                     type="button"
-                                    className={`dashboard-placeholder-card ${
-                                        selectedTrip ? 'card-clickable' : 'card-disabled'
-                                    }`}
+                                    className={`dashboard-placeholder-card ${selectedTrip ? 'card-clickable' : 'card-disabled'}`}
                                     disabled={!selectedTrip}
-                                    onClick={() =>
-                                        navigate(`/accommodations/create?tripId=${selectedTrip.id}`)
-                                    }
+                                    onClick={() => navigate(`/accommodations/create?tripId=${selectedTrip.id}`)}
                                 >
                                     <h5>No accommodation reserves yet</h5>
                                     <p>
-                                        {selectedTrip
-                                            ? "Click here to attach an accommodation reserve."
+                                        {selectedTrip 
+                                            ? "Click here to attach an accommodation reserve." 
                                             : "Plan a trip first using the sidebar to unlock accommodation logging."}
                                     </p>
                                 </button>
                             )}
                         </DashboardSection>
-
                     </div>
-
-                    {/* DIREITA - JOURNAL */}
-                    <div className="dashboard-grid-journal">
-                        <DashboardSection title="Travel Journal" count={0}>
-                            <TravelJournal />
-                        </DashboardSection>
-                    </div>
-
                 </div>
             </div>
 
-            {/* CHAT BUTTON */}
-            <button
-                type="button"
+            {/* BOTÃO FLUTUANTE FIXO NO CANTO INFERIOR */}
+            <button 
+                type="button" 
                 className="ai-floating-trigger-btn"
                 onClick={() => setIsChatOpen((prev) => !prev)}
-                style={{
-                    background: isChatOpen
-                        ? 'var(--color-medium-azure)'
-                        : 'var(--color-orange)'
-                }}
+                style={{ background: isChatOpen ? 'var(--color-medium-azure)' : 'var(--color-orange)' }}
             >
                 {isChatOpen ? <IoClose /> : <IoChatbubbleEllipses />}
             </button>
@@ -207,6 +164,15 @@ export default function Dashboard() {
                     <AIChatWidget />
                 </div>
             )}
-        </section>
+
+            <div className="dashboard-grid">
+    
+            <div className="dashboard-grid-logistics">
+                {/* Flights + Accommodations */}
+                ...
+            </div>
+
+        </div>
+                </section>
     );
 }

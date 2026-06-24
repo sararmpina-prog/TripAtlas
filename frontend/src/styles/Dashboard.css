@@ -204,3 +204,24 @@
     grid-template-columns: 1fr;
   }
 }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* bloco da esquerda (flights + reserves) */
+.dashboard-grid-logistics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* journal à direita */
+.dashboard-grid-journal {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
