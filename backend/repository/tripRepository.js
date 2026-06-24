@@ -80,3 +80,16 @@ export async function deleteTrip(id) {
 
   return result.affectedRows > 0;
 }
+
+export async function getTripByName(tripName) {
+  const [rows] = await db.execute(`
+    SELECT id, title
+    FROM trips
+    WHERE title = ?
+    LIMIT 1
+  `, [tripName]);
+
+  console.log("rows[0]", rows[0])
+
+  return rows[0];
+}

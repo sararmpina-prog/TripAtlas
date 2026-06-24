@@ -61,9 +61,14 @@ for recommendations or travel advice.
         "content": {
           "type": "string",
           "description": "Conteúdo detalhado da sugestão."
+        },
+        "trip_name": {
+          "type": "string",
+          "description": "Título da viagem."
         }
       },
       "required": [
+       "trip_name",
         "title",
         "content"
       ]
