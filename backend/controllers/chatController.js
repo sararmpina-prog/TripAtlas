@@ -57,6 +57,8 @@ export const postChatMessage = asyncHandler(async (req, res) => {
   req.params?.tripId
     ? Number(req.params.tripId)
     : req.validatedBody.trip_id ?? null;
+
+  console.log("controller do post, trip_id é", trip_id)  
   
     const aiResult = await aiService.sendPromptService({
       user_id: req.user.id,

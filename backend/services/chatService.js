@@ -21,9 +21,9 @@ export async function sendPromptService({ user_id, trip_id = null, chat_id, user
     let prompt = user_message
     console.log("prompt", prompt)
 
-    let tripContext; 
+    let trip; 
     if (trip_id !== null && trip_id !== undefined) {
-    const trip = await tripRepository.findTripById(trip_id);
+      trip = await tripRepository.findTripById(trip_id);
 
     if (!trip) {
       throw new NotFoundError('Trip not found.');
@@ -32,9 +32,9 @@ export async function sendPromptService({ user_id, trip_id = null, chat_id, user
     if (Number(trip.user_id) !== Number(user_id)) {
       throw new ForbiddenError('You do not have access to this trip chat.');
     }
-
-    tripContext = trip;
   }
+
+    console.log("trip", trip)
 
     const response = await callGemini(prompt, trip_id, chat_id, user_id);
 

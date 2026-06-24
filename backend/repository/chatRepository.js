@@ -89,22 +89,24 @@ export async function getChatSessions(user_id) {
   return rows;
 }
 
-export async function createAiSuggestion({ trip_id, title, content }) {
+export async function createAiSuggestion({ trip_id, title, content, trip_name }) {
 
   console.log("estou no createAiSuggestion", trip_id)
   console.log("estou no createAiSuggestion", title)
   console.log("estou no createAiSuggestion", content)
+  console.log("estou no createAiSuggestion", trip_name)
   
   const [result] = await db.execute(
     `
     INSERT INTO ai_suggestions (
       trip_id,
       title,
-      content
+      content,
+      trip_name
     )
-    VALUES (?, ?, ?)
+    VALUES (?, ?, ?, ?)
     `,
-    [trip_id, title, content]
+    [trip_id, title, content, trip_name]
   );
 
   return {
