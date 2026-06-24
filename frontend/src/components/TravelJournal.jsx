@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import "../styles/TravelJournal.css";
 import { getSuggestions } from "../api/journal";
 
-export default function TravelJournal({ tripName, token, suggestions, setSuggestions }) {
+export default function TravelJournal({ tripName, token }) {
  
 
   // const [text, setText] = useState("");
-  // const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

@@ -37,8 +37,6 @@ export default function Dashboard() {
     const token = getStoredToken();
     const navigate = useNavigate();
 
-    const [suggestions, setSuggestions] = useState([]);
-
     const [selectedTripId, setSelectedTripId] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -185,13 +183,11 @@ export default function Dashboard() {
 
                     {/* DIREITA - JOURNAL */}
                     <div className="dashboard-grid-journal">
-                        <DashboardSection title="Travel Journal" count={suggestions.length}>
+                        <DashboardSection title="Travel Journal" count={0}>
                             {selectedTrip && (
                             <TravelJournal
                                 tripName={selectedTrip.title}
                                 token={token}
-                                suggestions={suggestions}
-                                setSuggestions={setSuggestions}
                             />
                             )}
                         </DashboardSection>
