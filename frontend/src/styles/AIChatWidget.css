@@ -192,6 +192,7 @@ display: flex;
 /* SIDEBAR DO HISTÓRICO (Estilo ChatGPT) */
 .ai-chat-sidebar {
   width: 160px;
+  height: 100vh;
   background: #f0f4f8;
   border-right: 1px solid var(--border-light);
   display: flex;
