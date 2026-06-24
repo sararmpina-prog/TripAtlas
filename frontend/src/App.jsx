@@ -11,43 +11,38 @@ import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import RegisterSuccess from "./pages/RegisterSuccess";
 
-
 import ToDoList from "./pages/ToDoList";
 
-
+import { ConfirmProvider } from "./context/ConfirmContext"; // Modal de confirmação global para ações críticas
 
 export default function App() {
   return (
+    <ConfirmProvider> 
+      <Routes>
 
-  
-        <Routes>
+        {/* Páginas públicas */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
 
-          {/* Páginas públicas */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/register" element={<Register />} />
+          <Route path="/ToDoList" element={<ToDoList />} />
+        </Route>
 
+        {/* Área autenticada */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register/success" element={<RegisterSuccess />} />
+        </Route>
 
-            <Route path="/ToDoList" element={<ToDoList />} /> {/* Deve ser removida posteriormente */}
-
-
-          </Route>
-
-          {/* Área autenticada */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/register/success" element={<RegisterSuccess />} />
-          </Route>
-
-        </Routes>
-
+      </Routes>
+    </ConfirmProvider>
   );
 }

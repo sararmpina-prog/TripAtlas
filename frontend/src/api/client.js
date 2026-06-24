@@ -25,8 +25,8 @@ export function buildApiError(data, fallbackMessage, status) {
     status === 401 || 
     backendCode === 'UNAUTHORIZED' || 
     backendCode === 'INVALID_TOKEN' ||
-    (backendMessage && backendMessage.toLowerCase().includes('expired')) || // 🚀 PEGA SE DISSER "EXPIRED"
-    (backendMessage && backendMessage.toLowerCase().includes('token'))      // 🚀 PEGA SE DISSER "TOKEN"
+    (backendMessage && backendMessage.toLowerCase().includes('expired')) || // PEGA SE DISSER "EXPIRED"
+    (backendMessage && backendMessage.toLowerCase().includes('token'))      // PEGA SE DISSER "TOKEN"
   ) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

@@ -11,8 +11,8 @@ export default function ReserveView({ reserve, onEditClick }) {
     return (
         <article className="reserve-card-wrapper">
             
-            {/* BOTÃO MANAGE NO HOVER */}
-            <div className="logistics-card-actions">
+            {/* BOTÃO EDIT */}
+            <div className="reserve-card-actions">
                 <button
                     type="button"
                     className="btn-edit-card"

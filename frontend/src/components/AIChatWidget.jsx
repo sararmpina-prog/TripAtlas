@@ -6,7 +6,7 @@ import { FiPlus } from 'react-icons/fi';
 import { LuPanelLeftOpen, LuPanelLeftClose } from "react-icons/lu";
 
 import { getChatHistory, sendChatMessage } from '../api'; 
-import { getStoredToken, getStoredUser } from '../auth/authStorage';
+import { getStoredToken, getStoredUser } from '../utils/authStorage';
 
 import '../styles/AIChatWidget.css';
 

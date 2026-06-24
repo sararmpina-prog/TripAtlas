@@ -114,3 +114,102 @@ INSERT INTO accommodation_reserve (
 (8, 8, '2027-01-15', '2027-01-22', '15:00:00', '12:00:00'),
 (9, 9, '2027-02-10', '2027-02-20', '14:00:00', '11:00:00'),
 (10, 10, '2027-03-01', '2027-03-08', '16:00:00', '10:00:00');
+
+-- acrescentos:
+
+INSERT INTO trips (
+    user_id,
+    title,
+    description,
+    destination,
+    start_date,
+    end_date
+) VALUES
+(4, 'Portugal Coastal Road Trip', 'Road trip from Porto to Algarve with scenic stops along the Atlantic coast.', 'Portugal', '2027-04-10', '2027-04-18');
+
+INSERT INTO accommodations (
+    name,
+    address,
+    city,
+    country
+) VALUES
+('PortoBay Flores', 'Rua das Flores 27', 'Porto', 'Portugal'),
+('Memmo Alfama Hotel', 'Travessa das Merceeiras 27', 'Lisbon', 'Portugal'),
+('EPIC SANA Algarve Hotel', 'Praia da Falésia', 'Albufeira', 'Portugal');
+
+INSERT INTO accommodation_reserve (
+    accommodation_id,
+    trip_id,
+    check_in_date,
+    check_out_date,
+    check_in_time,
+    check_out_time
+) VALUES
+(12, 11, '2027-04-10', '2027-04-13', '15:00:00', '12:00:00'),
+(13, 11, '2027-04-13', '2027-04-15', '15:00:00', '11:00:00'),
+(14, 11, '2027-04-15', '2027-04-18', '16:00:00', '11:00:00');
+
+INSERT INTO trips (
+    user_id,
+    title,
+    description,
+    destination,
+    start_date,
+    end_date
+) VALUES
+(5, 'Visiting Friends in Berlin', 'Staying with friends while exploring Berlin nightlife and cultural landmarks.', 'Berlin, Germany', '2027-05-12', '2027-05-18');
+
+INSERT INTO flights (
+    trip_id,
+    flight_number,
+    airline,
+    departure_airport,
+    arrival_airport,
+    departure_datetime,
+    arrival_datetime,
+    direction
+) VALUES
+(12, 'TP532', 'TAP Air Portugal', 'LIS', 'BER', '2027-05-12 08:10:00', '2027-05-12 12:20:00', 'outbound'),
+(12, 'TP533', 'TAP Air Portugal', 'BER', 'LIS', '2027-05-18 18:00:00', '2027-05-18 20:30:00', 'return');
+
+INSERT INTO trips (
+    user_id,
+    title,
+    description,
+    destination,
+    start_date,
+    end_date
+) VALUES
+(3, 'Chicago Architecture & Blues Tour', 'Exploring architecture cruises, jazz clubs and iconic Chicago food.', 'Chicago, USA', '2027-06-05', '2027-06-12');
+
+INSERT INTO flights (
+    trip_id,
+    flight_number,
+    airline,
+    departure_airport,
+    arrival_airport,
+    departure_datetime,
+    arrival_datetime,
+    direction
+) VALUES
+(13, 'IB3123', 'Iberia', 'LIS', 'MAD', '2027-06-05 06:35:00', '2027-06-05 08:55:00', 'outbound'),
+(13, 'IB6275', 'Iberia', 'MAD', 'ORD', '2027-06-05 11:15:00', '2027-06-05 13:45:00', 'outbound'),
+(13, 'TP244', 'TAP Air Portugal', 'ORD', 'LIS', '2027-06-12 20:10:00', '2027-06-13 10:00:00', 'return');
+
+INSERT INTO accommodations (
+    name,
+    address,
+    city,
+    country
+) VALUES
+('The Palmer House Hilton', '17 E Monroe St', 'Chicago', 'USA');
+
+INSERT INTO accommodation_reserve (
+    accommodation_id,
+    trip_id,
+    check_in_date,
+    check_out_date,
+    check_in_time,
+    check_out_time
+) VALUES
+(15, 13, '2027-06-05', '2027-06-12', '15:00:00', '11:00:00');

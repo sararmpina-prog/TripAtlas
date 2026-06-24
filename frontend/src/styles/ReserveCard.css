@@ -1,40 +1,15 @@
-.reserve-card-wrapper .reserve-card-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 10;
-  opacity: 0;
-  transform: translateY(-3px);
-  transition: all 0.2s ease-in-out;
-}
-
-.reserve-card-wrapper:hover .reserve-card-actions {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.btn-card-edit {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  background: var(--color-white);
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* CONTAINER DO CARTÃO (Para ativar o hover absoluto) */
 .reserve-card-wrapper {
   position: relative;
   width: 100%;
   margin-bottom: 1rem;
 }
 
-/* CONTAINER VISUAL PRINCIPAL */
+.reserve-card-actions .btn-edit-card {
+  position: absolute;
+  top: -75px;
+  right: 0;
+}
+
 .reserve-card-body {
   padding: 1.5rem;
   background: var(--surface-card);
@@ -79,7 +54,7 @@
   opacity: 0.5;
 }
 
-/* BLOCO METADADOS CRONOLÓGICOS */
+/* Metadados cronológicos */
 .reserve-card-meta {
   display: flex;
   justify-content: space-between;
@@ -124,75 +99,27 @@
   margin-bottom: 1rem;
 }
 
-.reserve-form-container h5 {
-  margin: 0 0 1rem 0;
-  color: var(--text-heading-dark);
-}
-
-.reserve-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.reserve-form-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.reserve-form-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.reserve-form-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.reserve-input-group {
   font-size: 0.8rem;
-  font-weight: 700;
+  color: var(--text-muted);
 }
 
-.reserve-form-container input {
+.reserve-input-group input {
   padding: 0.5rem;
   border-radius: 8px;
   border: 1px solid var(--border-light);
   outline: none;
 }
 
-.reserve-form-container input:focus {
+.reserve-input-group input:focus {
   border-color: var(--color-orange);
 }
 
-.reserve-form-error {
-  color: var(--color-orange);
-  font-size: 0.85rem;
-  margin: 0 0 1rem 0;
-}
 
 .reserve-form-actions {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
-}
-
-.btn-remove-reserve {
-  padding: 0.5rem 1rem;
-  background: var(--error-color-light);
-  color: var(--error-color-dark);
-  border: 1px solid var(--error-color-dark);
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.btn-remove-reserve:hover {
-  background: var(--error-color-lighter);
 }
 
 /* CARROSSEL */
@@ -213,14 +140,13 @@
   }
 }
 
-
 /* CONTAINER PRINCIPAL DO CARROSSEL */
 .carousel-container {
   position: relative;
   width: 100%;
 }
 
-/* SETAS LATERAIS FLUTUANTES (UX FIXA) */
+/* Setas laterais (UX FIXA) */
 .carousel-arrow-btn {
   position: absolute;
   /* Fixa o botão a 7rem do topo do cartão, alinhado com o cabeçalho.

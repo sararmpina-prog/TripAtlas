@@ -1,7 +1,7 @@
 import { FaPlane, FaArrowRight } from "react-icons/fa";
 import { MdFlightTakeoff, MdFlightLand } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
-import { formatTime } from '../../utils/dateHelpers';
+import { formatTime, formatDate } from '../../utils/dateHelpers';
 
 export default function FlightSegmentView({
   direction, // 'Outbound' or 'Return'
@@ -37,8 +37,14 @@ export default function FlightSegmentView({
             <span><MdFlightTakeoff className="flight-icon" /></span>
             <p>Departure</p>
           </div>
-          <p className="p-strong">
-            {isBooked ? formatTime(depTime) : '--:--'}</p>
+          <div>
+            <p className="p-strong">
+              {isBooked ? formatTime(depTime) : '--:--'}
+            </p>
+            <p>
+              {isBooked && <small className="flight-date-label">{formatDate(depTime)}</small>}
+            </p>
+          </div>
         </div>
 
         {/* Ícone Seta */}
@@ -52,9 +58,14 @@ export default function FlightSegmentView({
             <span><MdFlightLand className="flight-icon" /></span>
             <p>Arrival</p>
           </div>
-          <p className="p-strong">
-            {isBooked ? (arrTime ? formatTime(arrTime) : '--:--') : 'Pending'}
-          </p>
+          <div>
+            <p className="p-strong">
+              {isBooked ? (arrTime ? formatTime(arrTime) : '--:--') : 'Pending'}
+            </p>
+            <p>
+              {isBooked && arrTime && <small className="flight-date-label">{formatDate(arrTime)}</small>}
+            </p>
+          </div>
         </div>
 
       </div>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import ReserveCard from './index';
+import ReserveView from './ReserveView';
 
-export default function AccommodationCarousel({ reserves }) {
+export default function ReserveCarousel({ reserves, onEditClick }) { // Recebe a prop de edição
     const [currentIndex, setCurrentIndex] = useState(0);
 
     if (!reserves || reserves.length === 0) return null;
@@ -24,10 +24,9 @@ export default function AccommodationCarousel({ reserves }) {
     return (
         <div className="carousel-container">
             
-            {/* CONTROLOS LATERAIS FIXOS: Só aparecem se houver mais do que 1 alojamento */}
+            {/* CONTROLOS LATERAIS FIXOS */}
             {reserves.length > 1 && (
                 <>
-                    {/* Seta Esquerda (Previous) */}
                     <button 
                         type="button" 
                         className="carousel-arrow-btn left" 
@@ -37,7 +36,6 @@ export default function AccommodationCarousel({ reserves }) {
                         <FaChevronLeft size={14} />
                     </button>
 
-                    {/* Seta Direita (Next) */}
                     <button 
                         type="button" 
                         className="carousel-arrow-btn right" 
@@ -47,7 +45,6 @@ export default function AccommodationCarousel({ reserves }) {
                         <FaChevronRight size={14} />
                     </button>
 
-                    {/* Pequeno indicador "1 of 2" flutuante e centrado no fundo interno */}
                     <div className="carousel-pagination-badge">
                         {currentIndex + 1} / {reserves.length}
                     </div>
@@ -56,7 +53,11 @@ export default function AccommodationCarousel({ reserves }) {
 
             {/* O CARTÃO ANIMADO */}
             <div key={currentIndex} className="carousel-slide-animate">
-                <ReserveCard reserve={currentReserve} />
+                {/* RENDERIZA A VIEW DIRETAMENTE PASSANDO O DISPARADOR DE EDIÇÃO */}
+                <ReserveView 
+                    reserve={currentReserve} 
+                    onEditClick={() => onEditClick(currentReserve)} 
+                />
             </div>
         </div>
     );
