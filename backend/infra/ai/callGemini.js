@@ -17,21 +17,12 @@ import {generateWithFallback} from './modelsFallback.js'
 import {summarizeHistory} from './summarizeHistory.js';
 
 
-// const histories = new Map();
-
-// function getHistory(chat_id) {
-//   if (!histories.has(chat_id)) {
-//     histories.set(chat_id, []);
-//   }
-//   return histories.get(chat_id);
-// }
 
 let history = []
 
 //Call Api Gemini (single function definition)
-export async function callGemini(userPrompt, trip_id = null, chat_id) {
+export async function callGemini(userPrompt, trip_id = null) {
 
-// let history = getHistory(chat_id);
 
  history.push({
       role: "user",
