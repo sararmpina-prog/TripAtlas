@@ -15,19 +15,35 @@ import {createAiSuggestion} from '../../repository/chatRepository.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
 import {generateWithFallback} from './modelsFallback.js'
 import {summarizeHistory} from './summarizeHistory.js';
+import * as chatRepository from '../../repository/chatRepository.js';
 
 
 
-let history = []
 
 //Call Api Gemini (single function definition)
-export async function callGemini(userPrompt, trip_id = null) {
+export async function callGemini(userPrompt, trip_id = null, chat_id, user_id) {
 
+let history = [];
 
- history.push({
-      role: "user",
-      parts: [{ text: userPrompt }]
+history =
+    await chatRepository.getHistoryForGemini({
+      user_id,
+      chat_id
+    });
+
+  history.push({
+    role: "user",
+    parts: [
+      {
+        text: userPrompt
+      }
+    ]
   });
+
+  console.log(
+    "History sent to Gemini:",
+    JSON.stringify(history, null, 2)
+  );
 
   console.log("Histórico da conversa (primeiro push)", history)
   console.log("Histórico:", JSON.stringify(history, null, 2))

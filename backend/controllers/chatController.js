@@ -42,13 +42,21 @@ export const getChatHistory = asyncHandler(async (req, res) => {
 export const postChatMessage = asyncHandler(async (req, res) => {
   console.log("Estou no controller")
   console.log("REQ USER:", req.user);
-   const { chat_id, user_message } = req.body;
+  console.log("RAW BODY:", req.body);
+  console.log("CHAT_ID TYPE:", typeof req.body.chat_id);
 
-   const finalChatId = chat_id || uuidv4();
-  
-      const trip_id = req.params.tripId 
-      ? Number(req.params.tripId) 
-      : null;
+  const { user_message, chat_id } = req.validatedBody;
+
+  console.log("controller do post, chat id é", chat_id)
+
+  const finalChatId = chat_id || uuidv4();
+
+  console.log("controller do post, chat id é", finalChatId)
+
+  const trip_id =
+  req.params?.tripId
+    ? Number(req.params.tripId)
+    : req.validatedBody.trip_id ?? null;
   
     const aiResult = await aiService.sendPromptService({
       user_id: req.user.id,

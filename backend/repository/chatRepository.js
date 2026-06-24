@@ -112,3 +112,48 @@ export async function createAiSuggestion({ trip_id, title, content }) {
     suggestion_id: result.insertId
   };
 }
+
+export async function getHistoryForGemini({user_id, chat_id}) {
+
+  const [rows] = await db.query(
+    `
+    SELECT
+      user_message,
+      ai_response
+    FROM chat_history
+    WHERE user_id = ?
+      AND chat_id = ?
+    ORDER BY created_at ASC
+    `,
+    [user_id, chat_id]
+  );
+
+  const history = [];
+
+  for (const row of rows) {
+
+    if (row.user_message) {
+      history.push({
+        role: "user",
+        parts: [
+          {
+            text: row.user_message
+          }
+        ]
+      });
+    }
+
+    if (row.ai_response) {
+      history.push({
+        role: "model",
+        parts: [
+          {
+            text: row.ai_response
+          }
+        ]
+      });
+    }
+  }
+
+  return history;
+}
