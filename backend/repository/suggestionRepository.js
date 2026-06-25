@@ -18,17 +18,26 @@ export async function listSuggestionsByTripId(tripId, tripName, userId) {
 }
 
 
-// export async function updateTripIdSuggestions(tripId) {
 
-//   const [rows] = await db.execute(`
-//     UPDATE ai_suggestions s
-//     INNER JOIN trips t
-//     ON s.trip_name = t.title
-//     AND s.user_id = t.user_id
-//     SET s.trip_id = t.id
-//     WHERE s.trip_id IS NULL;
-//   `, [tripId]);
+// PROCURA UMA SUGESTÃO PELO ID
+export async function findSuggestionById(id) {
+  const [rows] = await db.execute(`
+    SELECT *
+    FROM ai_suggestions
+    WHERE id = ?
+    LIMIT 1
+  `, [id]);
 
-//   console.log("estou no repositorio de atualização de trip_id nas ai_suggestions", rows)
+  console.log("repositório findSuggestionByid", rows[0])
+  return rows[0] ?? null;
+}
+
+// APAGA UMA SUGESTÃO EXISTENTE
+export async function deleteSuggestion(id) {
   
-// }
+  const [result] = await db.execute(`
+    DELETE FROM ai_suggestions WHERE id = ?
+  `, [id]);
+
+  return result.affectedRows > 0;
+}

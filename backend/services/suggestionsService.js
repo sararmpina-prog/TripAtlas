@@ -18,7 +18,27 @@ Nota importante:
 
 import * as suggestionRepository from '../repository/suggestionRepository.js';
 
+
 // LISTA TODOS AS SUGESTÕES
 export async function listSuggestions(tripId, tripName, userId) {
   return await suggestionRepository.listSuggestionsByTripId(tripId, tripName, userId);
 }
+
+
+// APAGA UMA SUGESTÃO EXISTENTE
+export async function deleteSuggestion(id, currentUserId) {
+  const suggestion = await suggestionRepository.findSuggestionById(id);
+
+  if (!suggestion) {
+    throw new NotFoundError('Suggestion not found.');
+  }
+
+  if (Number(suggestion.user_id) !== Number(currentUserId)) {
+    throw new ForbiddenError('You can only manage suggestions from your own journal.');
+  }
+
+  await suggestionRepository.deleteSuggestion(id);
+
+  return suggestion;
+}
+
