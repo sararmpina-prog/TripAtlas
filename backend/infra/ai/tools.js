@@ -1,3 +1,4 @@
+
 /* Camada de definição de tools (function calling) do TripBot.
 
   Arquitetura:
@@ -23,7 +24,6 @@
   - toda execução é controlada pelo backend
  */
 
-import { Type } from '@google/genai';
 
 // Tools divididas por funcionalidade - facilita organização e manutenção;
 
@@ -32,3 +32,50 @@ import { Type } from '@google/genai';
 O modelo apenas sugere os parâmetros.
 A validação e persistência são responsabilidade do backend.
  */
+
+
+// Define a function that the model can create task 
+export const setAiSuggestionFunctionDeclaration = {
+name: 'create_trip_journal_entry',
+description: `
+Save a travel suggestion into the user's trip journal.
+
+Use this function ONLY when the user explicitly asks
+to save, store, add, create, register or persist
+a suggestion in their trip journal.
+
+Do NOT use this function when the user is only asking
+for recommendations or travel advice.
+`,
+"parameters": {
+      "type": "object",
+      "properties": {
+        "trip_id": {
+          "type": "integer",
+          "description": "ID da viagem."
+        },
+        "title": {
+          "type": "string",
+          "description": "Título da sugestão."
+        },
+        "content": {
+          "type": "string",
+          "description": "Conteúdo detalhado da sugestão."
+        },
+        "trip_name": {
+          "type": "string",
+          "description": "Título da viagem."
+        },
+          "user_id": {
+          "type": "integer",
+          "description": "ID do utilizador."
+        }
+      },
+      "required": [
+        "user_id",
+       "trip_name",
+        "title",
+        "content"
+      ]
+    }
+  }

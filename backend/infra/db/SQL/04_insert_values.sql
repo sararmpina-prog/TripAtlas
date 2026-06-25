@@ -115,7 +115,7 @@ INSERT INTO accommodation_reserve (
 (9, 9, '2027-02-10', '2027-02-20', '14:00:00', '11:00:00'),
 (10, 10, '2027-03-01', '2027-03-08', '16:00:00', '10:00:00');
 
--- acrescentos:
+-- viagens complementares para testes de reservas e voos:
 
 INSERT INTO trips (
     user_id,

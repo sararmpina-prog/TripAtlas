@@ -20,65 +20,142 @@ import { z } from 'zod';
 const limitSchema = z.coerce.number().int().positive().catch(10);
 
 // Persiste uma interação completa no histórico de chat.
-export async function saveChat({ user_id, trip_id = null, user_message, ai_response }) {
+export async function saveChat({ user_id, trip_id = null, chat_id, user_message, ai_response }) {
   console.log("repository trip id", trip_id)
   console.log("repository user_id", user_id)
+  console.log("repository chat_id", chat_id)
   console.log("repository user_message", user_message)
   console.log("repository ai_response", ai_response)
   const query = `
-    INSERT INTO chat_history (user_id, trip_id, user_message, ai_response)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO chat_history (user_id, trip_id, user_message, ai_response, chat_id)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  const values = [user_id, trip_id, user_message, ai_response];
+  const values = [user_id, trip_id, user_message, ai_response, chat_id];
   await db.execute(query, values);
 }
 
-// Recupera histórico de chat de um utilizador, com ou sem viagem associada.
-export async function getChatHistory({ user_id, trip_id = null }, limit = 10) {
-  const safeLimit = limitSchema.parse(limit);
+export async function getMessagesByChatId({ user_id, chat_id }) {
+  console.log("estou no repositório")
+  console.log("user_id", user_id)
+  console.log("chat_id", chat_id)
 
-  const hasTripScope = trip_id !== null && trip_id !== undefined;
-  const query = hasTripScope
-    ? `
-        SELECT user_message, ai_response
-        FROM chat_history
-        WHERE user_id = ? AND trip_id = ?
-        ORDER BY id DESC
-        LIMIT ${safeLimit}
-      `
-    : `
-        SELECT user_message, ai_response
-        FROM chat_history
-        WHERE user_id = ? AND trip_id IS NULL
-        ORDER BY id DESC
-        LIMIT ${safeLimit}
-      `;
 
-  const [rows] = await db.execute(
-    query,
-    hasTripScope ? [user_id, trip_id] : [user_id]
+  const [rows] = await db.query(`
+    SELECT user_message, ai_response, created_at
+    FROM chat_history
+    WHERE user_id = ?
+      AND chat_id = ?
+    ORDER BY created_at ASC
+  `, [user_id, chat_id]);
+
+  console.log("rows", rows)
+
+  // return rows
+
+ return rows.flatMap(row => ([
+  {
+    sender: "user",
+    text: row.user_message,
+    created_at: row.created_at
+  },
+  {
+    sender: "ai",
+    text: row.ai_response,
+    created_at: row.created_at
+  }
+]));
+}
+
+export async function getChatSessions(user_id) {
+  const [rows] = await db.query(`
+    SELECT 
+      c.chat_id,
+      (
+        SELECT user_message
+        FROM chat_history ch2
+        WHERE ch2.chat_id = c.chat_id
+          AND ch2.user_id = ?
+        ORDER BY ch2.created_at ASC
+        LIMIT 1
+      ) AS title,
+      MAX(c.created_at) AS last_message
+    FROM chat_history c
+    WHERE c.user_id = ?
+    GROUP BY c.chat_id
+    ORDER BY last_message DESC
+  `, [user_id, user_id]);
+
+  return rows;
+}
+
+export async function createAiSuggestion({ trip_id, title, content, trip_name }) {
+
+  console.log("estou no createAiSuggestion", trip_id)
+  console.log("estou no createAiSuggestion", title)
+  console.log("estou no createAiSuggestion", content)
+  console.log("estou no createAiSuggestion", trip_name)
+  
+  const [result] = await db.execute(
+    `
+    INSERT INTO ai_suggestions (
+      trip_id,
+      title,
+      content,
+      trip_name
+    )
+    VALUES (?, ?, ?, ?)
+    `,
+    [trip_id, title, content, trip_name]
   );
 
-  return rows
-    .reverse() // Inverte para repor a ordem cronológica correta
-    .flatMap((row) => { // flatMap para transformar cada row num array de mensagens, filtrando mensagens vazias ou nulas
-      const messages = [];
+  return {
+    success: true,
+    suggestion_id: result.insertId
+  };
+}
 
-      if (typeof row.user_message === 'string' && row.user_message.trim()) {
-        messages.push({
-          role: 'user',
-          parts: [{ text: row.user_message.trim() }],
-        });
-      }
+export async function getHistoryForGemini({user_id, chat_id}) {
 
-      if (typeof row.ai_response === 'string' && row.ai_response.trim()) {
-        messages.push({
-          role: 'model',
-          parts: [{ text: row.ai_response.trim() }],
-        });
-      }
+  const [rows] = await db.query(
+    `
+    SELECT
+      user_message,
+      ai_response
+    FROM chat_history
+    WHERE user_id = ?
+      AND chat_id = ?
+    ORDER BY created_at ASC
+    `,
+    [user_id, chat_id]
+  );
 
-      return messages;
-    });
+  const history = [];
+
+  for (const row of rows) {
+
+    if (row.user_message) {
+      history.push({
+        role: "user",
+        parts: [
+          {
+            text: row.user_message
+          }
+        ]
+      });
+    }
+
+    if (row.ai_response) {
+      history.push({
+        role: "model",
+        parts: [
+          {
+            text: row.ai_response
+          }
+        ]
+      });
+    }
+  }
+
+  return history;
 }
