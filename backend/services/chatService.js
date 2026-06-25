@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {callGemini} from '../infra/ai/callGemini.js'
+import { handleTripBotFlow } from '../infra/ai/pipeline/chatOrchestrator.js';
 import * as tripRepository from '../repository/tripRepository.js'
 import * as chatRepository from '../repository/chatRepository.js';
 
@@ -36,7 +36,7 @@ export async function sendPromptService({ user_id, trip_id = null, chat_id, user
 
     console.log("trip", trip)
 
-    const response = await callGemini(prompt, trip_id, chat_id, user_id);
+    const response = await handleTripBotFlow(prompt, trip_id, chat_id, user_id);
 
     if (!response || !response.message) {
       console.log("Resposta inválida do Gemini");

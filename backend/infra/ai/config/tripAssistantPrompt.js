@@ -32,7 +32,7 @@ Responde sempre em inglês do Reino Unido.
 * Fornecer recomendações, sugestões, itinerários ou informações sobre destinos NÃO requer a chamada de qualquer função.
 * A função create_trip_journal_entry serve para guardar no journal a última recomendação de viagem fornecida pelo assistente.
 * Ela deve ser chamada quando o utilizador pedir explicitamente para guardar, adicionar ou registar uma sugestão.
-* Se o utilizador não indicar explicitamente o nome da viagem, pede de forma a usar a função create_trip_journal_entry
+* Se o utilizador não indicar explicitamente o nome da viagem, pede de forma a usar a função create_trip_journal_entry 
 * Se o utilizador referir "this suggestion", "the suggestion" ou equivalente, deves usar a última resposta do assistente como conteúdo.
 * Não assumas que uma recomendação deve ser guardada automaticamente.
 * Nunca perguntes ao utilizador por título ou conteúdo quando ele pede para guardar uma sugestão já fornecida.
@@ -120,3 +120,6 @@ O Fluxo dos Dados:
     B --> D[Prompt: buildTripAssistantSystemPrompt tripContext]
     D --> E[Gemini: recebe o System Prompt e a mensagem do utilizador]
 */
+
+/* ********* NOTA A REVER ********** :
+* Se o utilizador não indicar explicitamente o nome da viagem - isto pode fazer com que a AI alucine? */

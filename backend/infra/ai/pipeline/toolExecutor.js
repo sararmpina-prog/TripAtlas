@@ -1,20 +1,19 @@
-/* 
-Responsável por:
-    - extrair function calls dos parts
-    - logar chamadas pedidas
-    - executar create_trip_journal_entry
-    - montar tool message para voltar ao histórico
-*/
+/* Responsável por:
+ *  - extrair function calls dos parts da resposta Gemini
+ *  - logar as chamadas pedidas pelo modelo
+ *  - executar as ferramentas disponíveis (ex: create_trip_journal_entry)
+ *  - montar a tool message para voltar ao histórico
+ */
 
 import { createAiSuggestion } from '../../../repository/chatRepository.js';
 
+// Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
 export function getFunctionCallsFromParts(parts = []) {
-  // Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
   return parts.filter((p) => p.functionCall).map((p) => p.functionCall);
 }
 
+// Mostrar chamadas pedidas pelo modelo no terminal
 export function logRequestedFunctionCalls(currentResponse, functionCalls) {
-  // Mostrar chamadas
   const callsToLog = currentResponse?.functionCalls || functionCalls;
   callsToLog.forEach((fn) => {
     console.log(`➡️ ${fn.name}`, fn.args);
@@ -23,7 +22,7 @@ export function logRequestedFunctionCalls(currentResponse, functionCalls) {
 
 /*
  * ================================
- * 5. EXECUTAR FUNCOES (SIMULACAO)
+ * EXECUTAR FUNÇÕES (SIMULAÇÃO)
  * ================================
  */
 export async function executeFunctionCalls(parts, { trip_id, user_id }) {
@@ -56,8 +55,8 @@ export async function executeFunctionCalls(parts, { trip_id, user_id }) {
   return functionResults;
 }
 
+// Adicionar function responses ao histórico no formato esperado pelo Gemini
 export function buildToolMessage(functionResults) {
-  // Adicionar function responses ao historico
   return {
     role: 'tool',
     parts: functionResults.map((fr) => ({

@@ -21,7 +21,7 @@ const DEBUG_LOG_JSON = envBoolean.parse(process.env.GEMINI_DEBUG_JSON);
 - evita outputs difíceis de ler no terminal
 */
 
-/* ********** Comentário para apagar ************
+/* ********** Comentário mais extenso: ************
  As respostas do Gemini trazem objetos gigantescos, cheios de metadados internos da Google que não interessam.
  O método sanitizeValue corta strings longas e arrays gigantes automáticos, deixando no terminal apenas o que é estritamente legível para um ser humano.
  */

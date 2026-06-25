@@ -8,7 +8,7 @@ Diferença de responsabilidades:
 - tripBotConfig.js → comportamento do agente
 */
 
-import {buildTripAssistantSystemPrompt} from '../ai/prompts/tripAssistantPrompt.js'
+import {buildTripAssistantSystemPrompt} from './tripAssistantPrompt.js'
 import {setAiSuggestionFunctionDeclaration} from './tools.js'
 
 export const TRIPBOT_TEMPERATURE = 0.4; // Ligeiramente criativo para boas sugestões de viagem
@@ -24,7 +24,7 @@ export function buildTripBotConfig(systemInstruction, config = {}) {
 
 //Create config 
 export const config = {
-
+  temperature: TRIPBOT_TEMPERATURE,
   systemInstruction: buildTripAssistantSystemPrompt(),
 
   tools: [

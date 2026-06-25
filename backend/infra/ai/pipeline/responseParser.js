@@ -1,9 +1,8 @@
-/*
-Responsável por:
-    - extrair texto final
-    - trim
-    - devolver formato { success, message }
-*/
+/* Responsável por:
+ *  - extrair o texto final da resposta Gemini
+ *  - normalizar com trim
+ *  - devolver no formato { success, message } esperado pelo chatService
+ */
 
 export function buildFinalResponseFromGemini(currentResponse) {
   const finalParts = currentResponse?.candidates?.[0]?.content?.parts || [];
@@ -20,6 +19,7 @@ export function buildFinalResponseFromGemini(currentResponse) {
 
   return {
     success: true,
-    message: finalText,
+    // Se não houver texto (porque a IA só chamou uma tool), devolve uma string vazia ou mensagem padrão
+    message: finalText || '', 
   };
 }

@@ -1,8 +1,8 @@
-/*
-Responsável por:
-    - buscar histórico em BD
-    - fazer push da mensagem do user
-*/
+/* Responsável por:
+ *  - buscar o histórico da BD (mensagens anteriores desta sessão)
+ *  - fazer push da mensagem atual do utilizador
+ *  - devolver o array de histórico pronto para ser enviado ao Gemini
+ */
 
 import * as chatRepository from '../../../repository/chatRepository.js';
 
