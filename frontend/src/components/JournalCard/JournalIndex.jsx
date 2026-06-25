@@ -1,63 +1,54 @@
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSuggestions } from '../../api/journal'; 
+import { getSuggestions, deleteSuggestion } from '../../api/journal'; 
 import { getStoredToken } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
+import { useConfirm } from '../../context/ConfirmContext'; // Importado para segurança
 
 import JournalView from './JournalView';
-import JournalForm from './JournalForm'; 
 import DashboardPlaceholderCard from '../DashboardPlaceholderCard';
 
 export default function JournalCard({ selectedTrip, isTripSelected, onTriggerChat }) {
     const token = getStoredToken();
     const queryClient = useQueryClient();
-    const [isManaging, setIsManaging] = useState(false);
-    const [formError, setFormError] = useState('');
+    const confirm = useConfirm();
 
     const tripName = selectedTrip?.destination || selectedTrip?.title || '';
 
-    // SUBSTITUIÇÃO DO EFFECT PELO USEQUERY (Gestão de Caching Inteligente e Controlo de Erros Nativo)
+    // FETCH: Carrega as sugestões com Caching do TanStack Query
     const { data: suggestionsData, isPending: isLoading, error: apiError } = useQuery({
-        queryKey: ['dashboard', 'journal', selectedTrip?.id], // Chave atrelada ao ID da viagem
+        queryKey: ['dashboard', 'journal', selectedTrip?.id],
         queryFn: () => getSuggestions(tripName, token),
-        enabled: !!tripName && !!token, // Só dispara se houver uma viagem ativa
+        enabled: !!tripName && !!token,
     });
 
-    // Garante que lê o formato de dados
     const suggestions = suggestionsData?.data || suggestionsData || [];
 
-    // MUTAÇÃO PRONTA para quando implementarmos os delete manuais
-    const journalMutation = useMutation({
-        mutationFn: async (updatedNotes) => {
-            // Chamada à API para atualizar/gravar as notas
-        },
+    // MUTATION: Apagar uma sugestão específica e atualizar o ecrã instantaneamente
+    const deleteSuggestionMutation = useMutation({
+        mutationFn: (suggestionId) => deleteSuggestion(suggestionId, token),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'journal', selectedTrip?.id] });
-            setIsManaging(false);
         },
         onError: (err) => {
-            // MAPEAMENTO ATIVADO: Passar o array vazio ou os campos aceitáveis (ex: ['text'])
-            const result = mapApiServerError(err, ['text'], 'Failed to update journal.');
-            
-            // Grava a mensagem tratada no estado local para o formulário exibir
-            setFormError(result.formError);
+            const result = mapApiServerError(err, [], 'Failed to delete suggestion.');
+            alert(result.formError);
         }
     });
 
-    if (isManaging) {
-        return (
-            <JournalForm 
-                currentEntries={suggestions}
-                isPending={journalMutation.isPending}
-                apiError={formError}
-                onCancel={() => setIsManaging(false)}
-                onSave={(data) => journalMutation.mutate(data)}
-            />
-        );
+    const handleDeleteTrigger = async (suggestionId, suggestionTitle) => {
+    const confirmed = await confirm(
+        "Remove AI Suggestion?",
+        `Are you sure you want to remove "${suggestionTitle || 'this suggestion'}" from your travel journal? This action is immediate.`
+    );
+    
+    if (confirmed) {
+        deleteSuggestionMutation.mutate(suggestionId);
     }
+};
 
     const hasSuggestions = suggestions.length > 0;
 
+    // Se não há dados, renderiza o placeholder inteligente com o botão de saltar para o chat
     if (!hasSuggestions && !isLoading) {
         return (
             <DashboardPlaceholderCard 
@@ -73,7 +64,12 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
             suggestions={suggestions}
             loading={isLoading}
             error={apiError?.message || null}
-            onEditClick={() => setIsManaging(true)}
+            onDeleteSuggestion={handleDeleteTrigger} // Passa o gatilho seguro
         />
     );
 }
+
+/* ******** Nota ********* :
+A captura de erros (catch (err)), foi acoplada ao validador genérico da API.
+Assim, se a remoção falhar no servidor por falta de ligação, a aplicação limpa as mensagens técnicas e avisa o utilizador de forma amigável."
+*/
