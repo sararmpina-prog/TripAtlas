@@ -1,6 +1,7 @@
 import { MdOutlineEdit } from 'react-icons/md';
 import { IoIosSearch } from "react-icons/io";
 import { formatDate } from '../../utils/dateHelpers';
+import TripIdentityBadge from '../TripIdentityBadge';
 import '../../styles/TripSidePanel.css';
 
 export default function TripSidePanelView({ 
@@ -38,8 +39,16 @@ export default function TripSidePanelView({
                     )}
                 </div>
 
-                <h1>{tripData.title}</h1>
-                
+                <div>
+                    {selectedTrip?.id && (
+                        <div className="trip-badge-wrapper">
+                            <TripIdentityBadge tripId={selectedTrip.id} />
+                        </div>
+                    )}
+
+                    <h1>{tripData.title}</h1>
+                </div>
+
                 <p className="sidepanel-trip-summary">
                     {tripData.start_date || tripData.end_date ? (
                         `${tripData.destination} from ${formatDate(tripData.start_date)} to ${formatDate(tripData.end_date)}`

@@ -7,7 +7,7 @@ import JournalView from './JournalView';
 import JournalForm from './JournalForm'; 
 import DashboardPlaceholderCard from '../DashboardPlaceholderCard';
 
-export default function JournalCard({ tripId, isTripSelected }) {
+export default function JournalCard({ tripId, isTripSelected, onTriggerChat }) {
     const token = getStoredToken();
     const queryClient = useQueryClient();
     const [isManaging, setIsManaging] = useState(false);
@@ -52,7 +52,7 @@ export default function JournalCard({ tripId, isTripSelected }) {
             <DashboardPlaceholderCard 
                 resource="journal"
                 hasTrip={isTripSelected}
-                onClick={() => setIsManaging(true)} // Dispara o modo formulário para escrita manual
+                onClick={onTriggerChat} 
             />
         );
     }

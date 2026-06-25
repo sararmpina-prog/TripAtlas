@@ -81,6 +81,7 @@ export default function Dashboard() {
                         {/* SECÇÃO DE VOOS */}
                         <DashboardSection title="Flights" count={currentFlights.length}>
                             <FlightCard 
+                                key={`flights-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
                                 flights={currentFlights} 
                                 tripId={selectedTrip?.id} 
                                 isTripSelected={!!selectedTrip}
@@ -90,7 +91,8 @@ export default function Dashboard() {
 
                         {/* SECÇÃO DE ALOJAMENTOS */}
                         <DashboardSection title="Accommodations" count={currentReserves.length}>
-                            <ReserveCard 
+                            <ReserveCard
+                                key={`reserves-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
                                 reserves={currentReserves}
                                 tripId={selectedTrip?.id}
                                 selectedTrip={selectedTrip}
@@ -100,8 +102,10 @@ export default function Dashboard() {
                         {/* SECÇÃO DO JOURNAL / SUGESTÕES AI */}
                         <DashboardSection title="Journal" count={0 /* Mudar para o length dos itens */}>
                             <JournalCard 
+                                key={`journal-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
                                 tripId={selectedTrip?.id}
                                 isTripSelected={!!selectedTrip}
+                                onTriggerChat={() => setIsChatOpen(true)} // abre o chat flutuante quando o botão do Journal for clicado
                             />
                         </DashboardSection>
                 </div>

@@ -207,7 +207,6 @@ label {
 .btn-edit-card {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.85rem;
   background: var(--color-white);
   border: 1.5px solid var(--color-orange);
   border-radius: 50%;

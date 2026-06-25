@@ -37,7 +37,7 @@ export default function PlaceholderCard({ resource, hasTrip, onClick }) {
                                 className="btn-base btn-orange" 
                                 onClick={onClick}
                             >
-                                + Write Manual Note
+                                Chat with AI Travel Assistant
                             </button>
                         </div>
                     )}
