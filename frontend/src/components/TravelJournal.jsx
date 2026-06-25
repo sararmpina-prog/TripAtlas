@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/TravelJournal.css";
-import { getSuggestions } from "../api/journal";
+import { getSuggestions, deleteSuggestion } from "../api/journal";
 
 export default function TravelJournal({ tripName, token }) {
  
@@ -9,6 +9,18 @@ export default function TravelJournal({ tripName, token }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  async function handleDelete(suggestionId) {
+    try {
+      await deleteSuggestion(suggestionId, token);
+
+      setSuggestions((prev) =>
+        prev.filter((s) => s.id !== suggestionId)
+      );
+    } catch (err) {
+      setError(err.message || "Failed to delete suggestion");
+    }
+  }
 
   useEffect(() => {
     console.log("suggestions state:", suggestions);
@@ -61,6 +73,15 @@ export default function TravelJournal({ tripName, token }) {
           <div key={s.id} className="suggestion-card">
             <h4>{s.title}</h4>
             <p>{s.content}</p>
+
+          <button
+            onClick={() => handleDelete(s.id)}
+            className="delete-btn"
+          >
+            Delete
+          </button>
+
+
           </div>
         ))}
 
