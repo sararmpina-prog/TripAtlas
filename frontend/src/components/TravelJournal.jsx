@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import "../styles/TravelJournal.css";
 import { getSuggestions, deleteSuggestion } from "../api/journal";
 
-export default function TravelJournal({ tripName, token }) {
+export default function TravelJournal({ tripName, token, suggestions, setSuggestions }) {
  
 
-  // const [text, setText] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  // const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,31 +21,7 @@ export default function TravelJournal({ tripName, token }) {
     }
   }
 
-  useEffect(() => {
-    console.log("suggestions state:", suggestions);
-    if (!tripName || !token) return;
-
-    async function loadSuggestions() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await getSuggestions(tripName, token);
-        console.log("RES:", res);
-        console.log("RES.DATA:", res.data);
-        setSuggestions(res.data || []);
-      } catch (err) {
-        console.error(err);
-        console.error("Suggestions error:", err);
-        setError(err.message || "Failed to load suggestions");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadSuggestions();
-  }, [tripName, token]);
-
+ 
   console.log("tripName é", tripName)
   console.log("render suggestions:", suggestions);
   console.log("render length:", suggestions.length);

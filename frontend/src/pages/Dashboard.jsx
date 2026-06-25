@@ -9,6 +9,7 @@ import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel';
 import TravelJournal from '../components/TravelJournal';
 
+import { getSuggestions } from "../api/journal";
 import { getFlights, getReserves, getTrips } from '../api';
 import { getStoredToken } from '../auth/authStorage';
 
@@ -102,6 +103,45 @@ export default function Dashboard() {
 
     console.log("selectedTrip:", selectedTrip);
 
+    //Sugestões
+    const [suggestions, setSuggestions] = useState([]);
+
+//      useEffect(() => {
+//     console.log("suggestions state:", suggestions);
+//     if (!tripName || !token) return;
+
+//     async function loadSuggestions() {
+//       setLoading(true);
+//       setError(null);
+
+//       try {
+//         const res = await getSuggestions(tripName, token);
+//         console.log("RES:", res);
+//         console.log("RES.DATA:", res.data);
+//         setSuggestions(res.data || []);
+//       } catch (err) {
+//         console.error(err);
+//         console.error("Suggestions error:", err);
+//         setError(err.message || "Failed to load suggestions");
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+
+//     loadSuggestions();
+//   }, [tripName, token]);
+
+    useEffect(() => {
+        async function load() {
+            if (!selectedTrip) return;
+
+            const res = await getSuggestions(selectedTrip.title, token);
+            setSuggestions(res.data || []);
+        }
+
+        load();
+        }, [selectedTrip]);
+
     return (
         <section className="dashboard-page">
             <Header />
@@ -183,11 +223,13 @@ export default function Dashboard() {
 
                     {/* DIREITA - JOURNAL */}
                     <div className="dashboard-grid-journal">
-                        <DashboardSection title="Travel Journal" count={0}>
+                        <DashboardSection title="Travel Journal" count={suggestions.length}>
                             {selectedTrip && (
                             <TravelJournal
                                 tripName={selectedTrip.title}
                                 token={token}
+                                suggestions={suggestions}
+                                setSuggestions={setSuggestions}
                             />
                             )}
                         </DashboardSection>
