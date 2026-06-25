@@ -111,7 +111,7 @@ console.log(JSON.stringify(currentResponse, null, 2));
 
     switch (fn.name) {
       case 'create_trip_journal_entry':
-        result = await createAiSuggestion({...fn.args, trip_id});
+        result = await createAiSuggestion({...fn.args, trip_id, user_id});
         break;
 
       default:

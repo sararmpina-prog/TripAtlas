@@ -65,9 +65,14 @@ for recommendations or travel advice.
         "trip_name": {
           "type": "string",
           "description": "Título da viagem."
+        },
+          "user_id": {
+          "type": "integer",
+          "description": "ID do utilizador."
         }
       },
       "required": [
+        "user_id",
        "trip_name",
         "title",
         "content"

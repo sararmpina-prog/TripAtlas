@@ -83,7 +83,7 @@ export async function deleteTrip(id) {
 
 export async function getTripByName(tripName) {
   const [rows] = await db.execute(`
-    SELECT id, title
+    SELECT id, title, user_id
     FROM trips
     WHERE title = ?
     LIMIT 1
