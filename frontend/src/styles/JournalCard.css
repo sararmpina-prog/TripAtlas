@@ -4,6 +4,23 @@
   padding: 0.5rem 0;
 }
 
+.journal-suggestion-item {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.journal-suggestion-item h4 {
+  color: var(--text-heading-dark);
+  font-size: 1rem;
+  margin: 0 0 0.3rem 0;
+}
+
+.journal-suggestion-item p {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
 .btn-delete-segment {
   position: static;
   margin-left: 0.5rem;

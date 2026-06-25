@@ -4,8 +4,13 @@ import { ValidationError } from '../utils/appErrors.js';
 export const validateBody = (schema) => (req, res, next) => {
   try {
     console.log("req.body é middleware", req.body);
+    
     // Altera o req.body para os dados limpos/normalizados pelo Zod
-    req.body = schema.parse(req.body || {});
+    // req.body = schema.parse(req.body || {});
+
+    req.validatedBody = schema.parse(req.body || {});
+
+    console.log("req.body após reatribuição", req.validatedBody);
     next();
   } catch (error) {
     if (error instanceof ZodError) {

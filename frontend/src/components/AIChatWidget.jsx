@@ -1,12 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ReactMarkdown from "react-markdown";
 
 import { IoSend } from 'react-icons/io5';
 import { FiPlus } from 'react-icons/fi';
 import { LuPanelLeftOpen, LuPanelLeftClose } from "react-icons/lu";
 
-import { getChatHistory, sendChatMessage } from '../api'; 
-import { getStoredToken, getStoredUser } from '../utils/authStorage';
+import {
+    getChatHistory,
+    getChatSessions,
+    sendChatMessage
+} from '../api';
+
+import {
+    getStoredToken,
+    getStoredUser
+} from '../utils/authStorage';
 
 import '../styles/AIChatWidget.css';
 
@@ -29,47 +38,55 @@ const MOCK_CHAT_SESSIONS = [
 export default function AIChatWidget() {
     const token = getStoredToken();
     const user = getStoredUser();
+
     const queryClient = useQueryClient();
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
 
-    // ESTADOS DE CONTROLO DE INTERFACE
     const [inputValue, setInputValue] = useState('');
     const [localMessages, setLocalMessages] = useState([]);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
-    const [activeSessionId, setActiveSessionId] = useState('session-1'); 
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-    const currentTripId = null;
+    const [activeChatId, setActiveChatId] = useState(null);
 
-    // CONSULTA REAL
-    const { data: serverHistory, isLoading: isLoadingHistory } = useQuery({
-        queryKey: ['chat', 'global'],
-        queryFn: () => getChatHistory(currentTripId, token),
-        enabled: Boolean(token),
+    /* CHAT SESSIONS */
+
+    const { data: chatSessions = [] } = useQuery({
+        queryKey: ['chatSessions'],
+        queryFn: () => getChatSessions(token),
+        enabled: Boolean(token)
     });
 
-    // SINCRONIZAÇÃO INTELIGENTE: Carrega as mensagens da conversa selecionada na barra lateral
-    useEffect(() => {
-        const currentSession = MOCK_CHAT_SESSIONS.find(s => s.id === activeSessionId);
-        
-        if (currentSession) {
-            setLocalMessages(currentSession.messages);
-        } else {
-            setLocalMessages([
-                {
-                    id: 'welcome-global',
-                    sender: 'ai',
-                    text: `Hello ${user?.first_name || 'Traveler'}! I'm your AI Travel Assistant. Ask me general travel questions, get help planning itineraries from scratch, or find inspiration for your next adventure!`
-                }
-            ]);
-        }
-    }, [activeSessionId, user?.first_name]);
+    /* 
+    CHAT HISTORY */
 
+    const { data: serverHistory} = useQuery({
+        queryKey: ['chat', activeChatId],
+        queryFn: () => getChatHistory(activeChatId, token),
+        enabled: Boolean(token && activeChatId),
+
+    });
+
+    console.log("serverHistory =", serverHistory);
+
+    /* LOAD HISTORY INTO UI */
+
+       useEffect(() => {
+            if (!serverHistory) return;
+
+            setLocalMessages(serverHistory.data ?? serverHistory);
+        }, [serverHistory]);
+
+
+    /* AUTO SCROLL */
     // Scroll automático para a última mensagem
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({
+            behavior: 'smooth'
+        });
     }, [localMessages]);
 
+    /* AUTO RESIZE TEXTAREA */
     // Auto-ajuste de altura do textarea conforme o user vai escrevendo
     useEffect(() => {
         if (textareaRef.current) {
@@ -80,41 +97,100 @@ export default function AIChatWidget() {
 
     // MUTATION REAL PARA ENVIAR MENSAGENS
     const sendMessageMutation = useMutation({
-        mutationFn: (chatPayload) => sendChatMessage(chatPayload, token),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['chat', 'global'] });
+        mutationFn: (payload) => sendChatMessage(payload, token),
+
+        onSuccess: (response) => {
+            console.log('POST response:', response);
+
+            const backendChatId = response?.data?.chat_id;
+
+            if (!activeChatId && backendChatId) {
+                setActiveChatId(backendChatId);
+            }
+
+            setLocalMessages((prev) => [
+                ...prev,
+                {
+                    sender: 'ai',
+                    text: response?.data?.reply || ''
+                }
+            ]);
+
+            queryClient.invalidateQueries({
+                queryKey: ['chatSessions']
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ['chat', backendChatId || activeChatId]
+            });
+        },
+
+        onError: (error) => {
+            console.error(error);
         }
     });
 
+    /* HANDLE SEND */
+
     const handleSendMessage = (e) => {
         e.preventDefault();
-        if (!inputValue.trim() || sendMessageMutation.isPending) return;
+
+        if (!inputValue.trim()) return;
+
+        if (sendMessageMutation.isPending) return;
+
         const textToSend = inputValue.trim();
+
         setInputValue('');
         
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
-        setLocalMessages((prev) => [...prev, { sender: 'user', text: textToSend }]);
+        setLocalMessages((prev) => [
+            ...prev,
+            {
+                sender: 'user',
+                text: textToSend
+            }
+        ]);
+
         sendMessageMutation.mutate({
-            user_id: Number(user?.id),
-            trip_id: null,
-            user_message: textToSend
+            user_message: textToSend,
+            chat_id: activeChatId,
+            trip_id: null
         });
     };
 
+    /* NEW CHAT */
+
+    const handleNewChat = () => {
+        setActiveChatId(null);
+        setLocalMessages([]);
+    };
+
+    /* OPEN EXISTING CHAT */
+
+    const handleOpenChat = (chatId) => {
+        console.log('Opening chat:', chatId);
+
+        setActiveChatId(chatId);
+    };
+
+    /* UI */
+
     return (
         <div className="ai-chat-container">
-            {/* CABEÇALHO DO CHAT */}
+
             <div className="ai-chat-header">
+
                 <div className="ai-chat-header-left">
                     <button 
                         type="button" 
                         className="btn-toggle-sidebar" 
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        title={isSidebarOpen ? "Hide history" : "Show history"}
                     >
-                        {isSidebarOpen ? <LuPanelLeftClose size={20} /> : <LuPanelLeftOpen size={20} />}
+                        {isSidebarOpen ? 'Hide' : 'Show'}
                     </button>
+
                     <div>
                         <h2>TripAtlas Chat</h2>
                         <p>AI Travel Assistant</p>
@@ -123,41 +199,59 @@ export default function AIChatWidget() {
 
                 <button 
                     type="button" 
-                    onClick={() => setActiveSessionId('new')}
+                    onClick={handleNewChat}
                     title="Start clean conversation"
                 >
-                    <FiPlus size={16} /> New Chat
+                     <FiPlus size={16} /> New Chat
                 </button>
             </div>
-            
-            {/* CORPO DO CHAT DIVIDIDO EM DOIS */}
+
             <div className="ai-chat-body">
-                
-                {/* BARRA LATERAL RETRÁTIL DE HISTÓRICO */}
-                <div className={`ai-chat-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
+
+                <div
+                    className={`ai-chat-sidebar ${
+                        isSidebarOpen ? 'open' : 'closed'
+                    }`}
+                >
                     <p>Recent Chats</p>
-                    {MOCK_CHAT_SESSIONS.map((session) => (
+
+                    {chatSessions.map((chat) => (
                         <button
-                            key={session.id}
-                            type="button"
-                            className={`ai-chat-history-item ${activeSessionId === session.id ? 'active' : ''}`}
-                            onClick={() => setActiveSessionId(session.id)}
+                            key={chat.chat_id}
+                            onClick={() => handleOpenChat(chat.chat_id)}
+                            className={
+                                activeChatId === chat.chat_id
+                                    ? 'active-chat'
+                                    : ''
+                            }
                         >
-                            {session.title}
+                            {chat.title ||
+                                `New Chat`}
                         </button>
                     ))}
                 </div>
 
-                {/* ÁREA DE CONVERSA PRINCIPAL */}
                 <div className="ai-chat-main">
+
                     <div className="ai-chat-messages">
+
                         {localMessages.map((msg, index) => (
-                            <div key={index} className={`chat-bubble-wrapper ${msg.sender}`}>
-                                <div className={`chat-bubble ${msg.sender}-bubble`}>
-                                    {msg.text}
+                            <div
+                                key={index}
+                                className={`chat-bubble-wrapper ${msg.sender}`}
+                            >
+                                <div
+                                    className={`chat-bubble ${msg.sender}-bubble`}
+                                >
+                                    {msg.sender === "ai" ? (
+                                        <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                    ) : (
+                                        msg.text
+                                    )}
                                 </div>
                             </div>
                         ))}
+
                         {sendMessageMutation.isPending && (
                             <div className="chat-bubble-wrapper ai">
                                 <div className="chat-bubble ai-bubble typing">
@@ -165,10 +259,16 @@ export default function AIChatWidget() {
                                 </div>
                             </div>
                         )}
+
                         <div ref={messagesEndRef} />
                     </div>
 
                     {/* FORMULÁRIO DE ENTRADA DE TEXTO */}
+                    {/* Textarea permite:
+                        - várias linhas
+                        - Shift + Enter cria nova linha
+                        - Enter envia a mensagem
+                    É mais parecido com a interação dos chats do que com um formulário tradicional */}
                     <form onSubmit={handleSendMessage} className="ai-chat-input-area">
                         <textarea 
                             ref={textareaRef}
@@ -184,10 +284,18 @@ export default function AIChatWidget() {
                                 }
                             }}
                         />
-                        <button type="submit" disabled={sendMessageMutation.isPending || !inputValue.trim()}>
-                            <IoSend size={18} />
+
+                        <button
+                            type="submit"
+                            disabled={
+                                !inputValue.trim() ||
+                                sendMessageMutation.isPending
+                            }
+                        >
+                            <IoSend size={18}/>
                         </button>
                     </form>
+
                 </div>
             </div>
         </div>

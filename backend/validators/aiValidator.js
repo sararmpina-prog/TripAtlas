@@ -10,4 +10,8 @@ export const chatMessageSchema = z.object({
     .min(1, { message: "The field user_message cannot be empty." })
     // Limite de 2000 caracteres evita que abusem do vosso chat enviando textos gigantescos
     .max(2000, { message: "The field user_message cannot exceed 2000 characters." }),
+
+  chat_id: z.string().uuid().optional().nullable(),
+
+  trip_id: z.number().optional().nullable(),
 });

@@ -23,18 +23,21 @@ function DashboardSection({ title, count, children }) {
                     <p>{count} item{count === 1 ? '' : 's'}</p>
                 </div>
             </div>
-            <div className="dashboard-section-content">{children}</div>
+            <div className="dashboard-section-content">
+                {children}
+            </div>
         </section>
     );
 }
 
 export default function Dashboard() {
     const token = getStoredToken();
+    const navigate = useNavigate(); // Mantido o navigate que a main usava
     
     const [selectedTripId, setSelectedTripId] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-    // Chamadas da API
+    // Chamadas da API otimizadas do TanStack Query 
     const { data: tripsData } = useQuery({ queryKey: ['dashboard', 'trips'], queryFn: () => getTrips(token), enabled: !!token });
     const { data: flightsData } = useQuery({ queryKey: ['dashboard', 'flights'], queryFn: () => getFlights(token), enabled: !!token });
     const { data: reservesData } = useQuery({ queryKey: ['dashboard', 'reserves'], queryFn: () => getReserves(token), enabled: !!token });
@@ -43,6 +46,7 @@ export default function Dashboard() {
     const flights = useMemo(() => flightsData?.data ?? [], [flightsData?.data]);
     const reserves = useMemo(() => reservesData?.data ?? [], [reservesData?.data]);
 
+    // Cálculo rápido e seguro da viagem ativa
     const activeTripId = useMemo(() => {
         if (selectedTripId !== null) return String(selectedTripId);
         if (!trips.length) return null;
@@ -58,7 +62,7 @@ export default function Dashboard() {
         return trips.find(trip => String(trip.id) === String(activeTripId)) || null;
     }, [trips, activeTripId]);
 
-    // Filtros diretos por Trip ID
+    // Filtros diretos por Trip ID para se passar aos componentes elásticos
     const currentFlights = useMemo(() => {
         return selectedTrip ? flights.filter(f => Number(f.trip_id) === Number(selectedTrip.id)) : [];
     }, [flights, selectedTrip]);
@@ -70,10 +74,11 @@ export default function Dashboard() {
     return (
         <section className="dashboard-page">
             <Header />
+
             <div className="dashboard-content">
-                <TripSidePanel 
-                    selectedTrip={selectedTrip} 
-                    trips={trips} 
+                <TripSidePanel
+                    selectedTrip={selectedTrip}
+                    trips={trips}
                     onTripChange={setSelectedTripId}
                 />
 
@@ -102,22 +107,26 @@ export default function Dashboard() {
                         {/* SECÇÃO DO JOURNAL / SUGESTÕES AI */}
                         <DashboardSection title="Journal" count={0 /* Mudar para o length dos itens */}>
                             <JournalCard 
-                                key={`journal-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
-                                tripId={selectedTrip?.id}
+                                key={`journal-${selectedTrip?.id || 'none'}`} // Força reset ao mudar de viagem
+                                selectedTrip={selectedTrip} // Passa o objeto completo para ler o destino
                                 isTripSelected={!!selectedTrip}
-                                onTriggerChat={() => setIsChatOpen(true)} // abre o chat flutuante quando o botão do Journal for clicado
+                                onTriggerChat={() => setIsChatOpen(true)} // Atalho para abrir o chat flutuante
                             />
                         </DashboardSection>
                 </div>
 
             </div>
 
-            {/* CHAT FLUTUANTE */}
-            <button 
-                type="button" 
+            {/* CHAT BUTTON */}
+            <button
+                type="button"
                 className="ai-floating-trigger-btn"
-                onClick={() => setIsChatOpen(prev => !prev)}
-                style={{ background: isChatOpen ? 'var(--color-medium-azure)' : 'var(--color-orange)' }}
+                onClick={() => setIsChatOpen((prev) => !prev)}
+                style={{
+                    background: isChatOpen
+                        ? 'var(--color-medium-azure)'
+                        : 'var(--color-orange)'
+                }}
             >
                 {isChatOpen ? <IoClose /> : <IoChatbubbleEllipses />}
             </button>

@@ -2,7 +2,7 @@ import { MdOutlineEdit } from 'react-icons/md';
 import DashboardCard from '../DashboardCard';
 import '../../styles/JournalCard.css';
 
-export default function JournalView({ onEditClick }) {
+export default function JournalView({ suggestions = [], loading, error, onEditClick }) {
     return (
         <DashboardCard
             actions={
@@ -12,8 +12,17 @@ export default function JournalView({ onEditClick }) {
             }
         >
             <div className="journal-view-container">
-                {/* O conteúdo das sugestões da AI lidas em modo Read-Only entra aqui */}
-                <p>AI Suggestions for this trip will be displayed here.</p>
+                {/* 1. Estados visuais */}
+                {loading && <p className="p-muted">Loading AI insights...</p>}
+                {error && <p className="auth-form-error">{error}</p>}
+
+                {/* 2. Listagem real das sugestões mapeadas */}
+                {!loading && !error && suggestions.map((s) => (
+                    <div key={s.id || s.title} className="journal-suggestion-item">
+                        <h4>{s.title}</h4>
+                        <p>{s.content}</p>
+                    </div>
+                ))}
             </div>
         </DashboardCard>
     );
