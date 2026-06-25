@@ -89,12 +89,13 @@ export async function getChatSessions(user_id) {
   return rows;
 }
 
-export async function createAiSuggestion({ trip_id, title, content, trip_name }) {
+export async function createAiSuggestion({ trip_id, title, content, trip_name, user_id }) {
 
   console.log("estou no createAiSuggestion", trip_id)
   console.log("estou no createAiSuggestion", title)
   console.log("estou no createAiSuggestion", content)
   console.log("estou no createAiSuggestion", trip_name)
+  console.log("estou no createAiSuggestion", user_id)
   
   const [result] = await db.execute(
     `
@@ -102,11 +103,12 @@ export async function createAiSuggestion({ trip_id, title, content, trip_name })
       trip_id,
       title,
       content,
-      trip_name
+      trip_name,
+      user_id
     )
-    VALUES (?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?)
     `,
-    [trip_id, title, content, trip_name]
+    [trip_id, title, content, trip_name, user_id]
   );
 
   return {

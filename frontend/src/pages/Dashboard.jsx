@@ -8,6 +8,7 @@ import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel/TripIndex';
 import JournalCard from '../components/JournalCard/JournalIndex';
 
+import { getSuggestions } from "../api/journal";
 import { getFlights, getReserves, getTrips } from '../api';
 import { getStoredToken } from '../utils/authStorage';
 

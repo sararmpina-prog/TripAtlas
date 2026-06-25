@@ -7,6 +7,8 @@ git checkout Leonor
 git merge main
 
 # resolver conflitos
+
+git status
 git add .
 git commit
 
