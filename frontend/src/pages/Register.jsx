@@ -4,13 +4,13 @@ import { useMutation } from '@tanstack/react-query';
 import ImageLayout from '../components/ImageLayout';
 import PasswordField from '../components/PasswordField';
 import { registerUser } from '../api';
-import { saveAuthSession } from '../utils/authStorage';
+import { saveAuthSession } from '../auth/authStorage';
 import {
   getRegisterErrorState,
   hasValidationErrors,
   normalizeRegisterPayload,
   validateRegisterForm,
-} from '../validators/authValidator';
+} from '../auth/authValidation';
 import '../styles/Register.css';
 
 export default function Register() {

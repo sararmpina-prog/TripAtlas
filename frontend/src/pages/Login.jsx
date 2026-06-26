@@ -5,13 +5,13 @@ import ImageLayout from "../components/ImageLayout";
 import InfoCard from "../components/InfoCard";
 import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
-import { saveAuthSession } from "../utils/authStorage";
+import { saveAuthSession } from "../auth/authStorage";
 import {
   getLoginErrorState,
   hasValidationErrors,
   normalizeLoginPayload,
   validateLoginForm,
-} from "../validators/authValidator";
+} from "../auth/authValidation";
 import "../styles/Login.css";
 
 function Login() {

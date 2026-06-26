@@ -1,21 +1,22 @@
-.dashboard-page {
-  min-height: 100vh;
-  background: var(--surface-page);
-}
-
 .dashboard-content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  min-height: calc(100vh - 88px);
   padding: 2rem;
+  background: var(--surface-page);
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
 }
 
-.dashboard-logistics {
+/* GRELHA PRINCIPAL: Duas Colunas (Logística vs Journal) */
+.dashboard-grid {
   flex: 1;
-  max-width: 700px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.dashboard-grid-logistics {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -76,6 +77,31 @@
   color: var(--text-main);
 }
 
+/* Cartão tracejado interativo em formato <button> */
+.dashboard-placeholder-card {
+  width: 100%;
+  text-align: left;
+  background: var(--surface-card);
+  border: 2px dashed var(--border-main);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-clickable {
+  cursor: pointer;
+  border-color: var(--color-orange);
+}
+
+.card-clickable:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
 .card-disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -123,7 +149,7 @@
 }
 
 /* Efeito de foco ao passar o rato em cada botão individualmente */
-.btn-card-action:hover {
+.btn-card-edit:hover {
   background: var(--surface-page);
   border-color: var(--color-orange);
   transform: scale(1.1);
@@ -163,11 +189,8 @@
   position: fixed;
   bottom: 6rem;
   right: 2rem;
-  width: 35dvw; /* Usa a largura dinâmica do ecrã */
-  min-width: 360px; /* Garante que em telemóveis o chat não fica super apertado */
-  max-width: 600px; /* Impede que em monitores gigantes o chat fique absurdamente largo */
+  width: 450px;
   height: 550px;
-  max-height: 80dvh; /* Impede que o chat saia do ecrã em telemóveis pequenos na vertical */
   z-index: 998;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   border-radius: 24px;
@@ -177,8 +200,28 @@
 /* *** RESPONSIVIDADE *** */
 
 @media (max-width: 1150px) {
-  .dashboard-logistics {
-    flex-direction: column;
-    max-width: 100%;
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* bloco da esquerda (flights + reserves) */
+.dashboard-grid-logistics {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* journal à direita */
+.dashboard-grid-journal {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
 }
