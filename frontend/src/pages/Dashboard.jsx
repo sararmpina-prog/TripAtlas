@@ -9,7 +9,7 @@ import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel/TripIndex';
 import JournalCard from '../components/JournalCard/JournalIndex';
 
-import { getFlights, getReserves, getTrips } from '../api'; 
+import { getFlights, getReserves, getTrips, getSuggestions } from '../api'; 
 import { getStoredToken } from '../utils/authStorage';
 
 import { IoChatbubbleEllipses, IoClose } from "react-icons/io5";
