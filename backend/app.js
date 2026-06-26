@@ -22,7 +22,7 @@ import aiRoutes from './routes/aiRoutes.js';
 import suggestionsRoutes from './routes/suggestionsRoutes.js'
 
 // Middlewares
-import auth from './middlewares/authMiddeware.js';
+import auth from './middlewares/authMiddleware.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { hasDatabaseConfig } from './infra/db/db.js';
 

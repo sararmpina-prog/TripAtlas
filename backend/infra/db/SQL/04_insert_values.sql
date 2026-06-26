@@ -213,3 +213,36 @@ INSERT INTO accommodation_reserve (
     check_out_time
 ) VALUES
 (15, 13, '2027-06-05', '2027-06-12', '15:00:00', '11:00:00');
+
+-- ai suggestions:
+INSERT INTO ai_suggestions (
+    trip_id,
+    title,
+    content
+) VALUES
+
+-- Portugal Coastal Road Trip
+(
+    11,
+    'Sunset stop at Cabo da Roca',
+    'On the drive between Lisbon and the Algarve, consider stopping at Cabo da Roca, the westernmost point of continental Europe. The cliffs offer spectacular Atlantic Ocean views, especially around sunset. Bring a light jacket as the wind can be strong even during warmer months.'
+),
+
+(
+    11,
+    'Explore the historic centre of Aveiro',
+    'Before heading south, spend a few hours in Aveiro. Take a ride on a traditional moliceiro boat through the canals, walk around the Art Nouveau district and try the local ovos moles. It is an excellent stop to break up the drive between Porto and Lisbon.'
+),
+
+-- Chicago Architecture & Blues Tour
+(
+    13,
+    'Chicago River Architecture Cruise',
+    'Book an architecture cruise along the Chicago River during your first days in the city. Local guides explain the history behind iconic skyscrapers such as the Wrigley Building, Marina City and Willis Tower. The tour is considered one of the best introductions to Chicago.'
+),
+
+(
+    13,
+    'Live blues night at Kingston Mines',
+    'Reserve an evening for live blues music at Kingston Mines in Lincoln Park. The venue regularly hosts local and touring musicians and offers an authentic Chicago blues experience. Arrive early to secure a good seat and enjoy dinner before the performances begin.'
+);

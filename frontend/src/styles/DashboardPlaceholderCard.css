@@ -17,24 +17,6 @@
   font-size: 0.95rem;
 }
 
-.journal-clickable {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.journal-clickable button {
-  margin: 0.5rem 0 0 0;
-  padding: 10px 25px;
-  font-size: 0.85rem;
-}
-
-.journal-clickable button:hover {
-  background: var(--surface-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
-}
-
 .card-clickable {
   cursor: pointer;
   border-color: var(--color-light-azure);

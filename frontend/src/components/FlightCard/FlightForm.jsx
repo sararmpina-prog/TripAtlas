@@ -80,7 +80,7 @@ export default function FlightForm({
     const handleRemoveSegment = async (index, type) => {
         const confirmed = await confirm(
             "Delete Flight Segment?",
-            "Are you sure you want to remove this segment? Changes are applied only after saving."
+            "Do you want to remove this segment? Changes are applied only after saving."
         );
         
         if (!confirmed) return;

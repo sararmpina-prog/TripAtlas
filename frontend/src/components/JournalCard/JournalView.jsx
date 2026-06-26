@@ -1,4 +1,4 @@
-import { FaTrash } from 'react-icons/fa';
+import { FaRegTrashAlt } from "react-icons/fa";
 import DashboardCard from '../DashboardCard';
 import '../../styles/JournalCard.css';
 
@@ -10,7 +10,7 @@ export default function JournalView({
 }) {
     return (
         <DashboardCard actions={null}>
-            <div className="journal-view-container" style={{ padding: '0.5rem 0' }}>
+            <div className="journal-view-container">
                 
                 {/* Estados visuais integrados da API */}
                 {loading && <p className="p-muted">Loading AI travel insights...</p>}
@@ -21,21 +21,12 @@ export default function JournalView({
                     <div 
                         key={s.id || s.title} 
                         className="journal-suggestion-item" 
-                        style={{ 
-                            display: 'flex', 
-                            justifyContent: 'space-between', 
-                            alignItems: 'flex-start',
-                            gap: '1rem',
-                            marginBottom: '1.2rem',
-                            borderBottom: '1px solid var(--border-light)',
-                            paddingBottom: '0.8rem'
-                        }}
                     >
                         <div style={{ flex: 1 }}>
-                            <h4 style={{ color: 'var(--text-heading-dark)', fontSize: '0.98rem', margin: '0 0 0.3rem 0', fontWeight: '700' }}>
+                            <h4>
                                 {s.title}
                             </h4>
-                            <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-main)', lineHeight: '1.4' }}>
+                            <p>
                                 {s.content}
                             </p>
                         </div>
@@ -43,12 +34,11 @@ export default function JournalView({
                         {/* Botão de apagar elástico alinhado à direita */}
                         <button 
                             type="button" 
-                            className="btn-delete-segment" 
+                            className="btn-delete-icon" 
                             onClick={() => onDeleteSuggestion(s.id, s.title)}
                             title="Delete AI suggestion"
-                            style={{ position: 'static', padding: '6px' }}
                         >
-                            <FaTrash size={12} style={{ color: 'var(--error-color-dark)' }} />
+                            <FaRegTrashAlt size={14} />
                         </button>
                     </div>
                 ))}

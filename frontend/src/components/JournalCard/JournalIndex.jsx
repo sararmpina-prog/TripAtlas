@@ -38,7 +38,7 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     const handleDeleteTrigger = async (suggestionId, suggestionTitle) => {
     const confirmed = await confirm(
         "Remove AI Suggestion?",
-        `Are you sure you want to remove "${suggestionTitle || 'this suggestion'}" from your travel journal? This action is immediate.`
+        `Do you want to remove "${suggestionTitle || 'this suggestion'}" from your travel journal? This action can't be undone.`
     );
     
     if (confirmed) {

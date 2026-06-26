@@ -81,15 +81,21 @@ export async function deleteTrip(id) {
   return result.affectedRows > 0;
 }
 
+// Função actualizada para buscar uma viagem pelo NOME ou DESTINO ou ID, para ser mais user-friendly.
 export async function getTripByName(tripName) {
+  // Converte para número se for uma string numérica (ex: "32" vira 32), caso contrário fica NaN
+  const tripIdAsNumber = Number(tripName) || -1; 
+
   const [rows] = await db.execute(`
     SELECT id, title, user_id
     FROM trips
-    WHERE title = ?
+    WHERE title = ? 
+       OR destination = ? 
+       OR id = ? 
     LIMIT 1
-  `, [tripName]);
+  `, [tripName, tripName, tripIdAsNumber]); // Passa o ID como terceiro argumento
 
-  console.log("rows[0]", rows[0])
-
+  console.log("rows[0] encontrada no repositório:", rows[0]);
   return rows[0];
 }
+

@@ -150,6 +150,15 @@
     border: 1.5px solid var(--color-orange);
 }
 
+/* Scrollbar fina e moderna para não estragar o design */
+.chat-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
 
 /* FORM */
 .sidepanel-form-flow {
@@ -167,7 +176,8 @@
   color: var(--text-heading-dark);
 }
 
-.sidepanel-trip-picker span {
+.sidepanel-trip-picker span,
+.sidepanel-trip-selector p {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;

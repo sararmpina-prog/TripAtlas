@@ -87,6 +87,7 @@ const tableStatements = [
       id INT PRIMARY KEY AUTO_INCREMENT,
       user_id INT NOT NULL,
       trip_id INT NULL,
+      chat_id VARCHAR(36) NOT NULL,
       user_message TEXT,
       ai_response MEDIUMTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -241,6 +242,14 @@ const columnStatements = [
     statement: `
       ALTER TABLE flights
       ADD COLUMN direction ENUM('outbound', 'return') NOT NULL DEFAULT 'outbound' AFTER arrival_datetime
+    `,
+  },
+  {
+    tableName: 'chat_history',
+    columnName: 'chat_id',
+    statement: `
+      ALTER TABLE chat_history 
+      ADD COLUMN chat_id VARCHAR(36) NOT NULL AFTER trip_id
     `,
   },
 ];

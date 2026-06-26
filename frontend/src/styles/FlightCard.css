@@ -196,19 +196,6 @@
   position: relative;
 }
 
-.btn-delete-segment {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  color: #ff4d4d;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .segment-card-badge {
   font-size: 0.75rem;
   font-weight: 700;

@@ -57,7 +57,7 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
     const handleDeleteTrigger = async (reserveId, accommodationName) => {
         const confirmed = await confirm(
             'Delete Accommodation?',
-            `Are you sure you want to delete ${accommodationName || 'this accommodation'}? Changes are final.`
+            `Do you want to delete ${accommodationName || 'this accommodation'}? This action can't be undone.`
         );
         if (confirmed) {
             deleteMutation.mutate(reserveId);

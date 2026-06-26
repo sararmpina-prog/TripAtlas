@@ -6,24 +6,27 @@
 
 .journal-suggestion-item {
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  justify-content: 'space-between';
+  align-items: 'flex-start';
+  gap: '1rem';
+  border-bottom: '1px solid var(--border-light)';
+  padding-bottom: '0.8rem'
 }
 
 .journal-suggestion-item h4 {
   color: var(--text-heading-dark);
   font-size: 1rem;
+  font-weight: 700;
   margin: 0 0 0.3rem 0;
+  text-shadow: none;
 }
 
 .journal-suggestion-item p {
   color: var(--text-main);
   font-size: 0.9rem;
+  line-height: '1.4';
   margin: 0;
-}
-
-.btn-delete-segment {
-  position: static;
-  margin-left: 0.5rem;
 }
 
 .flight-form-row {
@@ -35,4 +38,16 @@
 .btn-dashed-add {
   display: flex;
   margin-top: 0.5rem;
+}
+
+.journal-clickable {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.journal-clickable button {
+  margin: 0.5rem 0 0 0;
+  padding: 10px 25px;
+  font-size: 0.85rem;
 }

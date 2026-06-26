@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard/FlightIndex';
@@ -8,8 +9,7 @@ import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel/TripIndex';
 import JournalCard from '../components/JournalCard/JournalIndex';
 
-import { getSuggestions } from "../api/journal";
-import { getFlights, getReserves, getTrips } from '../api';
+import { getFlights, getReserves, getTrips } from '../api'; 
 import { getStoredToken } from '../utils/authStorage';
 
 import { IoChatbubbleEllipses, IoClose } from "react-icons/io5";
@@ -33,7 +33,7 @@ function DashboardSection({ title, count, children }) {
 
 export default function Dashboard() {
     const token = getStoredToken();
-    const navigate = useNavigate(); // Mantido o navigate que a main usava
+    const navigate = useNavigate(); 
     
     const [selectedTripId, setSelectedTripId] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -83,11 +83,12 @@ export default function Dashboard() {
                     onTripChange={setSelectedTripId}
                 />
 
+                {/* LAYOUT VERTICAL CENTRALIZADO */}
                 <div className="dashboard-logistics">
                         {/* SECÇÃO DE VOOS */}
                         <DashboardSection title="Flights" count={currentFlights.length}>
                             <FlightCard 
-                                key={`flights-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
+                                key={`flights-${selectedTrip?.id || 'none'}`} 
                                 flights={currentFlights} 
                                 tripId={selectedTrip?.id} 
                                 isTripSelected={!!selectedTrip}
@@ -98,7 +99,7 @@ export default function Dashboard() {
                         {/* SECÇÃO DE ALOJAMENTOS */}
                         <DashboardSection title="Accommodations" count={currentReserves.length}>
                             <ReserveCard
-                                key={`reserves-${selectedTrip?.id || 'none'}`} // Força a re-renderização quando a trip muda
+                                key={`reserves-${selectedTrip?.id || 'none'}`} 
                                 reserves={currentReserves}
                                 tripId={selectedTrip?.id}
                                 selectedTrip={selectedTrip}
@@ -106,19 +107,19 @@ export default function Dashboard() {
                         </DashboardSection>
 
                         {/* SECÇÃO DO JOURNAL / SUGESTÕES AI */}
-                        <DashboardSection title="Journal" count={0 /* Mudar para o length dos itens */}>
+                        <DashboardSection title="AI Travel Journal" count={0}>
                             <JournalCard 
-                                key={`journal-${selectedTrip?.id || 'none'}`} // Força reset ao mudar de viagem
-                                selectedTrip={selectedTrip} // Passa o objeto completo para ler o destino
+                                key={`journal-${selectedTrip?.id || 'none'}`} 
+                                selectedTrip={selectedTrip} 
                                 isTripSelected={!!selectedTrip}
-                                onTriggerChat={() => setIsChatOpen(true)} // Atalho para abrir o chat flutuante
+                                onTriggerChat={() => setIsChatOpen(true)} 
                             />
                         </DashboardSection>
                 </div>
 
             </div>
 
-            {/* CHAT BUTTON */}
+            {/* CHAT BUTTON (Corrigido o tamanho dos ícones) */}
             <button
                 type="button"
                 className="ai-floating-trigger-btn"
@@ -129,7 +130,7 @@ export default function Dashboard() {
                         : 'var(--color-orange)'
                 }}
             >
-                {isChatOpen ? <IoClose /> : <IoChatbubbleEllipses />}
+                {isChatOpen ? <IoClose size={24} /> : <IoChatbubbleEllipses size={24} />}
             </button>
 
             {isChatOpen && (

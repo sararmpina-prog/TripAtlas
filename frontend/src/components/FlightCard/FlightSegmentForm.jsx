@@ -15,7 +15,7 @@ function FlightSegmentForm({
 }) {
     return (
         <div className="flight-form-segment-card">
-            <button type="button" className="btn-delete-segment" onClick={onRemove} title="Remove segment">
+            <button type="button" className="btn-delete-icon" onClick={onRemove} title="Remove segment">
                 <FaRegTrashAlt size={14} />
             </button>
 

@@ -223,6 +223,19 @@ label {
   transition: all 0.1s ease-in-out;
 }
 
+.btn-delete-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 input {
   height: 56px;
   padding: 0.9rem 1.4rem;

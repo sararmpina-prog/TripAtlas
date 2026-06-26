@@ -1,6 +1,6 @@
 /* CONTAINER PRINCIPAL */
 .ai-chat-container {
-display: flex;
+  display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
@@ -124,8 +124,9 @@ display: flex;
   font-style: italic;
 }
 
-/* CORREÇÃO: BARRA INFERIOR DE ENTRADA (INPUT AREA) */
+/* BARRA INFERIOR DE ENTRADA (INPUT AREA) */
 .ai-chat-input-area {
+  position: relative;
   display: flex;
   align-items: flex-end; /* Alinha o botão de enviar na base quando a caixa crescer */
   gap: 0.75rem;
@@ -221,6 +222,26 @@ display: flex;
   border-right: none;
 }
 
+/* Container da lista com scroll preventivo caso os títulos sejam compridos */
+.chat-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px; /* Controla o tamanho vertical máximo da lista */
+  overflow-y: auto;  /* Ativa o scroll suave se necessário */
+  padding-right: 4px;
+}
+
+/* Scrollbar fina e moderna para não estragar o design */
+.chat-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
 /* ITENS DO HISTÓRICO (Botões das conversas antigas) */
 .ai-chat-history-item {
   width: 100%;
@@ -260,4 +281,28 @@ display: flex;
 
 .btn-toggle-sidebar:hover {
   color: var(--color-orange);
+}
+
+.chat-bubble-wrapper .system-error {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.auth-form-error .api-error-banner {
+  font-size: 0.82rem;
+  padding: 6px 15px;
+  border-radius: 6px;
+  width: 90%;
+  text-align: center;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: -18px; /* Coloca o contador por baixo do textarea */
+  left: 10px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }

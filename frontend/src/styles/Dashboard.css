@@ -165,7 +165,7 @@
   right: 2rem;
   width: 35dvw; /* Usa a largura dinâmica do ecrã */
   min-width: 360px; /* Garante que em telemóveis o chat não fica super apertado */
-  max-width: 450px; /* Impede que em monitores gigantes o chat fique absurdamente largo */
+  max-width: 40dvw; /* Impede que em monitores gigantes o chat fique absurdamente largo */
   height: 550px;
   max-height: 80dvh; /* Impede que o chat saia do ecrã em telemóveis pequenos na vertical */
   z-index: 998;

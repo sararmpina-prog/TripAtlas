@@ -26,7 +26,7 @@ export default function PlaceholderCard({ resource, hasTrip, onClick }) {
                     <h5>No travel journal entries yet</h5>
                     <p>
                         {hasTrip 
-                            ? "Start your journal by typing your notes manually or use the AI Travel Assistant in the bottom corner to generate suggestions." 
+                            ? "Open the AI Travel Assistant below to start generating suggestions for your travel journal." 
                             : "Plan a trip first using the sidebar to unlock your travel journal."}
                     </p>
                     

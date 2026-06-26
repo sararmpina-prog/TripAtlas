@@ -10,14 +10,14 @@ export async function listSuggestionsByTripId(tripId, tripName, userId) {
     SELECT id, title, content
     FROM ai_suggestions
     WHERE trip_id = ?
-    OR (trip_id IS NULL AND trip_name = ? AND user_id = ?)
-  `, [tripId, tripName, userId]);
+  `, [tripId]); // Passa apenas o tripId no array de argumentos
 
-  console.log("estou no ult repositorio", rows)
+  console.log("estou no ult repositorio com dados reais:", rows);
   return rows;
 }
-
-
+/* ******
+  Otimização de Query: Filtragem simplificada para usar exclusivamente a chave estrangeira (trip_id) para prevenir erros de coluna inexistente (ER_BAD_FIELD_ERROR) e garantir a normalização relacional.
+*/
 
 // PROCURA UMA SUGESTÃO PELO ID
 export async function findSuggestionById(id) {

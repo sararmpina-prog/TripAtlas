@@ -6,6 +6,7 @@ import { IoSend } from 'react-icons/io5';
 import { FiPlus } from 'react-icons/fi';
 import { LuPanelLeftOpen, LuPanelLeftClose } from "react-icons/lu";
 
+import { mapApiServerError } from '../validators/apiValidator';
 import {
     getChatHistory,
     getChatSessions,
@@ -18,22 +19,6 @@ import {
 } from '../utils/authStorage';
 
 import '../styles/AIChatWidget.css';
-
-// ******* MOCKDATA TEMPORÁRIO - SUBSTITUIR PELA API REAL DE HISTÓRICO DE CONVERSAS *********
-const MOCK_CHAT_SESSIONS = [
-    { id: 'session-1', title: '💡 Packing list Easter', messages: [
-        { sender: 'user', text: 'What should I pack for a 5-day Easter break?' },
-        { sender: 'ai', text: 'For a 5-day Easter break, I recommend layers, comfortable walking shoes, a light raincoat, and a small first-aid kit.' }
-    ]},
-    { id: 'session-2', title: '🍕 Rome restaurants', messages: [
-        { sender: 'user', text: 'Give me hidden gem restaurants in Rome' },
-        { sender: 'ai', text: 'In Rome, avoid tourist traps and try "Trattoria Da Enzo al 29" in Trastevere for amazing carbonara.' }
-    ]},
-    { id: 'session-3', title: '🗺️ Weekend in Paris', messages: [
-        { sender: 'user', text: 'Plan a 2-day itinerary for Paris' },
-        { sender: 'ai', text: 'Day 1: Louvre and Eiffel Tower. Day 2: Montmartre, Notre Dame, and a cruise along the Seine.' }
-    ]}
-];
 
 export default function AIChatWidget() {
     const token = getStoredToken();
@@ -48,6 +33,9 @@ export default function AIChatWidget() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const [activeChatId, setActiveChatId] = useState(null);
+    const [chatError, setChatError] = useState(''); // Banner de erro global do chat
+
+    const MAX_PROMPT_CHARS = 2000; // Define o limite máximo de caracteres
 
     /* CHAT SESSIONS */
 
@@ -75,6 +63,7 @@ export default function AIChatWidget() {
             if (!serverHistory) return;
 
             setLocalMessages(serverHistory.data ?? serverHistory);
+            setChatError(''); // Limpa erros antigos ao carregar um histórico
         }, [serverHistory]);
 
 
@@ -95,13 +84,14 @@ export default function AIChatWidget() {
         }
     }, [inputValue]);
 
-    // MUTATION REAL PARA ENVIAR MENSAGENS
+    // MUTATION REAL PARA ENVIAR MENSAGENS COM TRATAMENTO DE ERROS GLOBAL
     const sendMessageMutation = useMutation({
         mutationFn: (payload) => sendChatMessage(payload, token),
 
         onSuccess: (response) => {
             console.log('POST response:', response);
 
+            setChatError(''); // Sucesso limpa erros residuais
             const backendChatId = response?.data?.chat_id;
 
             if (!activeChatId && backendChatId) {
@@ -127,7 +117,16 @@ export default function AIChatWidget() {
 
         onError: (error) => {
             console.error(error);
+            // Passar o array 'prompt'
+            const result = mapApiServerError(error, ['prompt', 'user_message'], 'Unable to deliver message to AI.');
+            
+            // Grava a frase no ecrã para avisar o utilizador
+            setChatError(result.fieldErrors.prompt || result.fieldErrors.user_message || result.formError);
+            
+            // Remove a última bolha do utilizador se o envio falhou para não enganar na UI
+            setLocalMessages((prev) => prev.slice(0, -1));
         }
+    
     });
 
     /* HANDLE SEND */
@@ -142,7 +141,8 @@ export default function AIChatWidget() {
         const textToSend = inputValue.trim();
 
         setInputValue('');
-        
+        setChatError(''); // Reset o banner de erro na nova tentativa
+
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
         setLocalMessages((prev) => [
@@ -165,6 +165,7 @@ export default function AIChatWidget() {
     const handleNewChat = () => {
         setActiveChatId(null);
         setLocalMessages([]);
+        setChatError('');
     };
 
     /* OPEN EXISTING CHAT */
@@ -187,10 +188,11 @@ export default function AIChatWidget() {
                         type="button" 
                         className="btn-toggle-sidebar" 
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        title={isSidebarOpen ? "Hide history" : "Show history"}
                     >
-                        {isSidebarOpen ? 'Hide' : 'Show'}
+                        {isSidebarOpen ? <LuPanelLeftClose size={20} /> : <LuPanelLeftOpen size={20} />}
                     </button>
-
+                    
                     <div>
                         <h2>TripAtlas Chat</h2>
                         <p>AI Travel Assistant</p>
@@ -213,24 +215,25 @@ export default function AIChatWidget() {
                         isSidebarOpen ? 'open' : 'closed'
                     }`}
                 >
-                    <p>Recent Chats</p>
-
-                    {chatSessions.map((chat) => (
-                        <button
-                            key={chat.chat_id}
-                            onClick={() => handleOpenChat(chat.chat_id)}
-                            className={
-                                activeChatId === chat.chat_id
-                                    ? 'active-chat'
-                                    : ''
-                            }
-                        >
-                            {chat.title ||
-                                `New Chat`}
-                        </button>
-                    ))}
+                    <div className="chat-history-list">
+                        {/* O .slice(0, 5) garante que só aparecem as 5 conversas mais recentes */}
+                        {chatSessions.slice(0, 5).map((chat) => (
+                            <button
+                                key={chat.chat_id}
+                                type="button"
+                                /*  Lógica idêntica à do TripSidePanel para destacar o botão ativo */
+                                className={
+                                    String(chat.chat_id) === String(activeChatId)
+                                        ? 'ai-chat-history-item active'
+                                        : 'ai-chat-history-item'
+                                }
+                                onClick={() => handleOpenChat(chat.chat_id)}
+                            >
+                                {chat.title || `New Chat`}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-
                 <div className="ai-chat-main">
 
                     <div className="ai-chat-messages">
@@ -260,6 +263,15 @@ export default function AIChatWidget() {
                             </div>
                         )}
 
+                        {/* EXIBIÇÃO VISUAL DO BANNER DE ERRO DA API */}
+                        {chatError && (
+                            <div className="chat-bubble-wrapper system-error">
+                                <div className="auth-form-error api-error-banner">
+                                    {chatError}
+                                </div>
+                            </div>
+                        )}
+
                         <div ref={messagesEndRef} />
                     </div>
 
@@ -276,6 +288,7 @@ export default function AIChatWidget() {
                             placeholder="Ask about packing, itineraries..."
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
+                            maxLength={MAX_PROMPT_CHARS}
                             disabled={sendMessageMutation.isPending}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -284,6 +297,10 @@ export default function AIChatWidget() {
                                 }
                             }}
                         />
+                        {/* Contador visual de caracteres opcional (Fica muito profissional) */}
+                        <span className="char-counter">
+                            {inputValue.length} / {MAX_PROMPT_CHARS}
+                        </span>
 
                         <button
                             type="submit"

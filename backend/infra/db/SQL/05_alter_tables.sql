@@ -15,3 +15,7 @@ UNIQUE (
   check_out_date
 );
 
+ALTER TABLE chat_history
+ADD COLUMN chat_id VARCHAR(36) NOT NULL
+AFTER trip_id;
+
