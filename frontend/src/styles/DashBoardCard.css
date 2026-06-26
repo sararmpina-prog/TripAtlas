@@ -1,0 +1,23 @@
+.card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.card-actions {
+  position: absolute;
+  top: -75px;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card-body {
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column; /* Empilha os voos verticalmente */
+  position: relative;
+}

@@ -1,0 +1,74 @@
+.image-layout {
+  min-height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+}
+
+/* Imagem de Fundo da Landing Page (Praia) */
+.bg-landing {
+  background-image: url('../assets/landing-img-coastal-desktop.jpg');
+}
+
+/* Imagem de Fundo do Registo (Grécia/Casas Brancas) */
+.bg-register {
+  background-image: url('../assets/register-img-greece-desktop.jpg'); 
+}
+
+.bg-register-success {
+  background-image: url('../assets/registerSuccess-img-greece-desktop.jpg'); 
+}
+
+/* Imagem de Fundo do Login (Montanhas) */
+.bg-login {
+  background-image: url('../assets/login-img-mountains-desktop.jpg');
+}
+
+.image-overlay {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 40px 40px;
+  box-sizing: border-box;
+}
+
+.image-overlay.active-overlay {
+  background-color: var(--surface-overlay);
+}
+
+.image-header {
+  width: 100%;
+}
+
+.image-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .bg-landing {
+    background-image: url('../assets/landing-img-coastal-mobile.jpg');
+  }
+
+  .bg-register {
+    background-image: url('../assets/register-img-greece-mobile.jpg');
+  }
+
+  .bg-register-success {
+    background-image: url('../assets/registerSuccess-img-greece-mobile.jpg');
+  }
+
+  .bg-login {
+    background-image: url('../assets/login-img-mountains-mobile.jpg');
+  }
+
+  .image-overlay {
+    padding: 20px 18px 28px;
+  }
+}

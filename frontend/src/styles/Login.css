@@ -1,0 +1,45 @@
+.auth-split {
+  width: min(1180px, 100%);
+  min-height: calc(100vh - 150px);
+  display: grid;
+  align-items: center;
+  gap: 3rem;
+}
+
+.auth-split-login {
+  grid-template-columns: minmax(250px, 0.85fr) minmax(480px, 1.15fr);
+}
+
+.auth-side-panel {
+  display: flex;
+  flex-direction: column;
+  max-width: 320px;
+  align-items: flex-start;
+  padding-left: 1.25rem;
+}
+
+.login-card {
+  width: min(100%, 560px);
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: var(--color-light-azure);
+}
+
+@media (max-width: 900px) {
+  .auth-split,
+  .auth-split-login {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    min-height: auto;
+  }
+
+  .auth-side-panel {
+    max-width: 100%;
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .auth-side-panel h2 {
+    line-height: 1.05;
+  }
+}

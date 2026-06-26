@@ -1,0 +1,8 @@
+
+.success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 1.6rem;
+  margin-top: 0.4rem;
+}

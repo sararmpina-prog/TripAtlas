@@ -1,0 +1,40 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* <- falta isto */
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--color-dark-azure);
+  box-shadow: var(--shadow-soft);
+}
+
+.app-header .logo-container {
+  position: static;
+}
+
+.app-header .logo-img {
+  height: 45px;
+  width: auto;
+  display: flex;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.user-info span {
+  color: var(--color-white);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.user-info .btn-base {
+    margin: 0;
+    padding: 0.3rem 1rem;
+    color: var(--text-main);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    box-shadow: none;
+}

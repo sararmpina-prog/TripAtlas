@@ -1,0 +1,184 @@
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--surface-page);
+}
+
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-logistics {
+  flex: 1;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* *** SECÇÕES DE LOGÍSTICA (Flights & Accommodations) *** */
+   
+.dashboard-section {
+  padding: 1.75rem;
+  border-radius: 24px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-light);
+}
+
+.dashboard-section-header {
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--surface-page);
+  padding-bottom: 0.75rem;
+}
+
+.dashboard-section-header h2 {
+  font-family: "Syne", sans-serif;
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--text-heading-dark);
+  text-shadow: none;
+}
+
+.dashboard-section-header p {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.dashboard-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* *** CARTÕES DE INFORMAÇÃO E PLACEHOLDERS INTERATIVOS *** */
+
+.dashboard-info-card-eyebrow {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.dashboard-info-card-meta {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-main);
+}
+
+.card-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Container que junta o cartão e os botões */
+.logistics-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* O SEGREDO DO HOVER: Caixa que segura os botões no canto superior direito */
+.logistics-card-hover-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+  opacity: 0; /* Invisível por definição */
+  transform: translateY(-5px); /* Ligeiramente subido para efeito de entrada */
+  transition: all 0.25s ease-in-out;
+}
+
+/* Quando o utilizador passa o rato no wrapper, a caixa de botões aparece */
+.logistics-card-wrapper:hover .logistics-card-hover-actions {
+  opacity: 1;
+  transform: translateY(0); /* Desce suavemente para a posição correta */
+}
+
+/* Estilização dos botões */
+.btn-card-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
+}
+
+/* Efeito de foco ao passar o rato em cada botão individualmente */
+.btn-card-action:hover {
+  background: var(--surface-page);
+  border-color: var(--color-orange);
+  transform: scale(1.1);
+}
+
+.btn-card-delete:hover {
+  background: var(--color-error-light);
+  border-color: var(--color-error);
+  color: var(--color-error);
+  transform: scale(1.1);
+}
+
+.ai-floating-trigger-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: var(--color-white);
+  border: none;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.2s ease-in-out;
+}
+
+.ai-floating-trigger-btn:active {
+  transform: scale(0.95);
+}
+
+.ai-chat-floating-panel {
+  position: fixed;
+  bottom: 6rem;
+  right: 2rem;
+  width: 35dvw; /* Usa a largura dinâmica do ecrã */
+  min-width: 360px; /* Garante que em telemóveis o chat não fica super apertado */
+  max-width: 600px; /* Impede que em monitores gigantes o chat fique absurdamente largo */
+  height: 550px;
+  max-height: 80dvh; /* Impede que o chat saia do ecrã em telemóveis pequenos na vertical */
+  z-index: 998;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+/* *** RESPONSIVIDADE *** */
+
+@media (max-width: 1150px) {
+  .dashboard-logistics {
+    flex-direction: column;
+    max-width: 100%;
+  }
+}
