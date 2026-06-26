@@ -1,0 +1,44 @@
+.dashboard-placeholder-card {
+  width: 100%;
+  text-align: left;
+  background: var(--surface-card);
+  border: 2px dashed var(--border-main);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.dashboard-placeholder-card p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.card-clickable {
+  cursor: pointer;
+  border-color: var(--color-light-azure);
+}
+
+.card-clickable:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Remove a formatação padrão do botão HTML e herda a largura elástica */
+.dashboard-placeholder-btn {
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Aplica o efeito visual desativado apenas se o botão estiver bloqueado nativamente */
+.dashboard-placeholder-btn:disabled {
+  cursor: not-allowed;
+}

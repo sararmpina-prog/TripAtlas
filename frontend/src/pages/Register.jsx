@@ -4,13 +4,21 @@ import { useMutation } from '@tanstack/react-query';
 import ImageLayout from '../components/ImageLayout';
 import PasswordField from '../components/PasswordField';
 import { registerUser } from '../api';
+<<<<<<< HEAD
 import { saveAuthSession } from '../auth/authStorage';
+=======
+import { saveAuthSession } from '../utils/authStorage';
+>>>>>>> frontend-limpo
 import {
   getRegisterErrorState,
   hasValidationErrors,
   normalizeRegisterPayload,
   validateRegisterForm,
+<<<<<<< HEAD
 } from '../auth/authValidation';
+=======
+} from '../validators/authValidator';
+>>>>>>> frontend-limpo
 import '../styles/Register.css';
 
 export default function Register() {

@@ -17,9 +17,16 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> frontend-limpo
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+<<<<<<< HEAD
 *.sw?
+=======
+*.sw?
+>>>>>>> frontend-limpo

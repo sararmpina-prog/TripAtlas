@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* O contentor exterior que junta os dois segmentos */
 .flight-card-container {
   background: var(--surface-card);
@@ -10,10 +11,50 @@
 }
 
 /* O segmento individual de voo (Ida ou Volta) */
+=======
+/* FLIGHT VIEW */
+
+.segment-direction-badge {
+  font-family: "Open Sans", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-orange);
+  margin-bottom: 0.5rem;
+}
+
+/* Linha separadora discreta entre voos */
+.flight-segment-divider {
+  height: 1px;
+  background: var(--border-light);
+  opacity: 0.5;
+  margin: 1rem 0;
+}
+
+/* Linha separadora discreta entre a Ida e a Volta */
+.flight-direction-divider {
+  height: 2px;
+  background: var(--border-light);
+  opacity: 0.7;
+  margin: 1rem 0;
+}
+
+
+/* Efeito visual cinzento e suave para o voo não agendado */
+.flight-segment-pending {
+  opacity: 0.5;
+  filter: grayscale(30%);
+}
+
+/* FLIGHT SEGMENT VIEW */
+
+>>>>>>> frontend-limpo
 .flight-segment {
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   min-height: 90px;
   width: 100%;
 }
@@ -29,6 +70,9 @@
   background: var(--border-light);
   margin: 1rem 0;
   border: none;
+=======
+  padding: 0.75rem 0;
+>>>>>>> frontend-limpo
 }
 
 .flight-info {
@@ -37,6 +81,7 @@
   gap: 0.15rem;
 }
 
+<<<<<<< HEAD
 /* Pequena etiqueta para dizer "Outbound" ou "Return" */
 .segment-type-badge {
   font-size: 0.7rem;
@@ -47,6 +92,8 @@
   margin-bottom: 0.2rem;
 }
 
+=======
+>>>>>>> frontend-limpo
 .flight-info h5 {
   margin: 0;
   font-family: "Open Sans", sans-serif;
@@ -62,6 +109,7 @@
   color: var(--text-main);
 }
 
+<<<<<<< HEAD
 .flight-divider {
   width: 1px;
   align-self: stretch;
@@ -74,6 +122,20 @@
   );
   opacity: 0.2;
   margin: 0 1rem;
+=======
+/* Avião a apontar para a direita no fluxo de tempo */
+.plane-icon-timeline {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.8rem;
+  color: var(--color-medium-azure);
+}
+
+/* No regresso, o avião aponta para a esquerda (Inverte o fluxo) */
+.plane-return {
+  transform: rotate(-180deg);
+  color: var(--text-muted);
+>>>>>>> frontend-limpo
 }
 
 .flight-timeline {
@@ -87,19 +149,59 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+<<<<<<< HEAD
   gap: 0.2rem;
   min-width: 70px;
 }
 
 .time-block span {
+=======
+  justify-content: center;
+  min-width: 70px;
+}
+
+.time-block-departure,
+.time-block-arrival {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.time-block-departure span,
+.time-block-arrival span {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.time-block-departure p,
+.time-block-arrival p {
+>>>>>>> frontend-limpo
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+<<<<<<< HEAD
 }
 
 .timeline-icon-area {
+=======
+  text-align: center;
+}
+
+.time-block .flight-date-label {
+  font-family: "Open Sans", sans-serif;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--text-main);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap; /* Evita que o texto quebre em duas linhas */
+}
+
+.timeline-icon-arrow {
+>>>>>>> frontend-limpo
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,6 +209,7 @@
   color: var(--color-medium-azure);
 }
 
+<<<<<<< HEAD
 /* Avião a apontar para a direita no fluxo de tempo */
 .plane-icon-timeline {
   display: flex;
@@ -126,3 +229,166 @@
   color: var(--text-main);
   margin: 0;
 }
+=======
+.time-block .flight-icon {
+  font-size: 1.2rem;
+}
+
+/* FLIGHT FORM */
+.flight-form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid var(--color-orange);
+  margin-bottom: 1rem;
+}
+
+.flight-form-title {
+  margin: 0 0 1.2rem 0;
+  color: var(--text-heading-dark);
+  font-size: 1.2rem;
+}
+
+/* Selector de direção (outbound / return) */
+.journey-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.journey-selector .btn-base {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.flight-form-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Placeholder quando a lista está vazia */
+.flight-form-empty-msg {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px dashed #ddd;
+}
+
+/* Cartão individual de segmento de voo */
+.flight-form-segment-card {
+  background: #fcfcfc;
+  border: 1px solid var(--border-light);
+  padding: 1.2rem;
+  border-radius: 16px;
+  position: relative;
+}
+
+.segment-card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Linhas de grid dos inputs */
+.flight-form-row {
+  display: flex;
+  gap: 1.2rem;
+  width: 100%;
+  flex-wrap: wrap; /* Evita que saia do card */
+  margin-top: 0.8rem;
+  align-items: flex-start;
+}
+
+.flight-input-group {
+  display: flex;
+  flex: 1;
+  min-width: 140px;
+}
+
+.flight-input-group input {
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  outline: none;
+  flex: 1;
+  min-width: 120px; /* Impede que fiquem microscópicos */
+  max-width: 220px; 
+  height: 46px;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+}
+
+.flight-input-group input:focus {
+  border-color: var(--color-orange);
+}
+
+/* Variante mais estreita exclusiva para os códigos IATA (From/To) */
+.flight-input-group.small-input {
+  flex: 0 1 100px;
+  max-width: 90px;
+}
+
+/* Formatação do texto do erro abaixo do input */
+.flight-input-group .auth-form-error {
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  color: var(--error-color-dark);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Botão tracejado adicionar novo segmento */
+.btn-dashed-add {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px dashed var(--color-orange);
+  background: #fff9f5;
+  color: var(--color-orange);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btn-dashed-add:hover {
+  background: #ffebe0;
+}
+
+/* Acções gerais do formulário (rodapé) */
+.flight-form-actions-wrapper {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.flight-form-actions-wrapper .auth-form-error {
+  padding: 0.85rem;
+  color: var(--error-color-light);
+  border-radius: 30px;
+  text-align: center;
+  width: 100%;
+  margin: 1.5rem 0 1rem 0;
+}
+
+.flight-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-light);
+  padding-top: 1rem;
+  margin-top: 1.5rem;
+}
+
+>>>>>>> frontend-limpo

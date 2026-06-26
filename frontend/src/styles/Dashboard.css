@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .dashboard-content {
   min-height: calc(100vh - 88px);
   padding: 2rem;
@@ -17,6 +18,26 @@
 }
 
 .dashboard-grid-logistics {
+=======
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--surface-page);
+}
+
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboard-logistics {
+  flex: 1;
+  max-width: 700px;
+>>>>>>> frontend-limpo
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -77,6 +98,7 @@
   color: var(--text-main);
 }
 
+<<<<<<< HEAD
 /* Cartão tracejado interativo em formato <button> */
 .dashboard-placeholder-card {
   width: 100%;
@@ -102,6 +124,8 @@
   box-shadow: var(--shadow-soft);
 }
 
+=======
+>>>>>>> frontend-limpo
 .card-disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -149,7 +173,11 @@
 }
 
 /* Efeito de foco ao passar o rato em cada botão individualmente */
+<<<<<<< HEAD
 .btn-card-edit:hover {
+=======
+.btn-card-action:hover {
+>>>>>>> frontend-limpo
   background: var(--surface-page);
   border-color: var(--color-orange);
   transform: scale(1.1);
@@ -189,8 +217,16 @@
   position: fixed;
   bottom: 6rem;
   right: 2rem;
+<<<<<<< HEAD
   width: 450px;
   height: 550px;
+=======
+  width: 35dvw; /* Usa a largura dinâmica do ecrã */
+  min-width: 360px; /* Garante que em telemóveis o chat não fica super apertado */
+  max-width: 600px; /* Impede que em monitores gigantes o chat fique absurdamente largo */
+  height: 550px;
+  max-height: 80dvh; /* Impede que o chat saia do ecrã em telemóveis pequenos na vertical */
+>>>>>>> frontend-limpo
   z-index: 998;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   border-radius: 24px;
@@ -200,6 +236,7 @@
 /* *** RESPONSIVIDADE *** */
 
 @media (max-width: 1150px) {
+<<<<<<< HEAD
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
@@ -225,3 +262,10 @@
   top: 1rem;
   align-self: start;
 }
+=======
+  .dashboard-logistics {
+    flex-direction: column;
+    max-width: 100%;
+  }
+}
+>>>>>>> frontend-limpo

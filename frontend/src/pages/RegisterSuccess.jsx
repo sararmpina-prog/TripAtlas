@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import InfoCard from "../components/InfoCard";
 import ImageLayout from "../components/ImageLayout";
+<<<<<<< HEAD
 import { getStoredToken, getStoredUser } from '../auth/authStorage';
+=======
+import { getStoredToken, getStoredUser } from '../utils/authStorage';
+>>>>>>> frontend-limpo
 
 function RegisterSuccess() {
 

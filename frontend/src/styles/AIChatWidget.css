@@ -1,6 +1,10 @@
 /* CONTAINER PRINCIPAL */
 .ai-chat-container {
+<<<<<<< HEAD
 display: flex;
+=======
+  display: flex;
+>>>>>>> frontend-limpo
   flex-direction: column;
   height: 100%;
   width: 100%;
@@ -86,6 +90,10 @@ display: flex;
   display: flex;
   margin-bottom: 0.75rem;
   width: 100%;
+<<<<<<< HEAD
+=======
+  font-family: "Open Sans", sans-serif;
+>>>>>>> frontend-limpo
 }
 
 .chat-bubble-wrapper.user {
@@ -123,6 +131,7 @@ display: flex;
   font-style: italic;
 }
 
+<<<<<<< HEAD
 /* CORREÇÃO: BARRA INFERIOR DE ENTRADA (INPUT AREA) */
 .ai-chat-input-area {
   display: flex;
@@ -144,6 +153,19 @@ display: flex;
   outline: none;
   color: var(--text-main);
   transition: border-color 0.2s;
+=======
+/* BARRA INFERIOR DE ENTRADA (INPUT AREA) */
+.ai-chat-input-area {
+  position: relative;
+  display: flex;
+  align-items: flex-end; /* Alinha o botão de enviar na base quando a caixa crescer */
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--surface-card);
+  border-top: 1px solid var(--border-light);
+  resize: none;
+  overflow-y: auto;
+>>>>>>> frontend-limpo
 }
 
 .ai-chat-input-area input:focus {
@@ -155,6 +177,22 @@ display: flex;
   cursor: not-allowed;
 }
 
+<<<<<<< HEAD
+=======
+.ai-chat-input-area textarea {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    color: var(--text-main);
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    outline: none;
+    max-height: 150px; /* Limite de crescimento */
+}
+
+>>>>>>> frontend-limpo
 /* Botão de Enviar Redondo Laranja */
 .ai-chat-input-area button {
   width: 44px;
@@ -218,6 +256,29 @@ display: flex;
   border-right: none;
 }
 
+<<<<<<< HEAD
+=======
+/* Container da lista com scroll preventivo caso os títulos sejam compridos */
+.chat-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px; /* Controla o tamanho vertical máximo da lista */
+  overflow-y: auto;  /* Ativa o scroll suave se necessário */
+  padding-right: 4px;
+}
+
+/* Scrollbar fina e moderna para não estragar o design */
+.chat-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+>>>>>>> frontend-limpo
 /* ITENS DO HISTÓRICO (Botões das conversas antigas) */
 .ai-chat-history-item {
   width: 100%;
@@ -259,9 +320,34 @@ display: flex;
   color: var(--color-orange);
 }
 
+<<<<<<< HEAD
 .ai-chat-sidebar button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 220px;
+=======
+.chat-bubble-wrapper .system-error {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.auth-form-error .api-error-banner {
+  font-size: 0.82rem;
+  padding: 6px 15px;
+  border-radius: 6px;
+  width: 90%;
+  text-align: center;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: -18px; /* Coloca o contador por baixo do textarea */
+  left: 10px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+>>>>>>> frontend-limpo
 }
