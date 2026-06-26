@@ -1,5 +1,6 @@
 import { clearAuthSession, getStoredUser } from "../utils/authStorage";
 import Logo from "./Logo";
+import { FaUser } from "react-icons/fa";
 import "../styles/Header.css";
 
 function Header() {
@@ -20,8 +21,8 @@ function Header() {
           Hello {user?.first_name}
         </span>
 
-        <button onClick={logout} className="btn-base btn-white">
-          Logout
+        <button onClick={logout} className="btn-base btn-user">
+          <FaUser size={20} />
         </button>
       </div>
     </header>

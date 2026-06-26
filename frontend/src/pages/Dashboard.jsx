@@ -9,16 +9,23 @@ import AIChatWidget from '../components/AIChatWidget';
 import TripSidePanel from '../components/TripSidePanel/TripIndex';
 import JournalCard from '../components/JournalCard/JournalIndex';
 
+import { ImAirplane } from "react-icons/im";
+import { FaHome } from "react-icons/fa";
+import { FaBook } from "react-icons/fa";
+
 import { getFlights, getReserves, getTrips, getSuggestions } from '../api'; 
 import { getStoredToken } from '../utils/authStorage';
 
 import { IoChatbubbleEllipses, IoClose } from "react-icons/io5";
 import '../styles/Dashboard.css';
 
-function DashboardSection({ title, count, children }) {
+function DashboardSection({ title, count, icon, children }) {
     return (
         <section className="dashboard-section">
             <div className="dashboard-section-header">
+                
+                    {icon && <div className="section-icon-container">{icon}</div>}
+
                 <div>
                     <h2>{title}</h2>
                     <p>{count} item{count === 1 ? '' : 's'}</p>
@@ -86,7 +93,7 @@ export default function Dashboard() {
                 {/* LAYOUT VERTICAL CENTRALIZADO */}
                 <div className="dashboard-logistics">
                         {/* SECÇÃO DE VOOS */}
-                        <DashboardSection title="Flights" count={currentFlights.length}>
+                        <DashboardSection title="Flights" count={currentFlights.length} icon={<ImAirplane size={30} />}>
                             <FlightCard 
                                 key={`flights-${selectedTrip?.id || 'none'}`} 
                                 flights={currentFlights} 
@@ -97,7 +104,7 @@ export default function Dashboard() {
                         </DashboardSection>
 
                         {/* SECÇÃO DE ALOJAMENTOS */}
-                        <DashboardSection title="Accommodations" count={currentReserves.length}>
+                        <DashboardSection title="Accommodations" count={currentReserves.length} icon={<FaHome size={30} />}>
                             <ReserveCard
                                 key={`reserves-${selectedTrip?.id || 'none'}`} 
                                 reserves={currentReserves}
@@ -107,7 +114,7 @@ export default function Dashboard() {
                         </DashboardSection>
 
                         {/* SECÇÃO DO JOURNAL / SUGESTÕES AI */}
-                        <DashboardSection title="AI Travel Journal" count={0}>
+                        <DashboardSection title="AI Travel Journal" count={0} icon={<FaBook size={30} />}>
                             <JournalCard 
                                 key={`journal-${selectedTrip?.id || 'none'}`} 
                                 selectedTrip={selectedTrip} 
