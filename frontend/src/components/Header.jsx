@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { clearAuthSession, getStoredUser } from "../auth/authStorage";
-=======
 import { clearAuthSession, getStoredUser } from "../utils/authStorage";
->>>>>>> frontend-limpo
 import Logo from "./Logo";
 import "../styles/Header.css";
 

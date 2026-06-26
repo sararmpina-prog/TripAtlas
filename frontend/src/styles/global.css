@@ -204,8 +204,6 @@ label {
   color: var(--text-main);
 }
 
-<<<<<<< HEAD
-=======
 .btn-edit-card {
   display: flex;
   justify-content: flex-end;
@@ -238,7 +236,6 @@ label {
   justify-content: center;
 }
 
->>>>>>> frontend-limpo
 input {
   height: 56px;
   padding: 0.9rem 1.4rem;

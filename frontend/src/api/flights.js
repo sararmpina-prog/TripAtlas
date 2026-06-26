@@ -1,21 +1,12 @@
-<<<<<<< HEAD
-import { fetchProtectedResource } from './client';
-
-=======
 import { API_URL, createJsonHeaders, buildApiError, fetchProtectedResource } from './client';
 
 // Procura todos os voos associados ao utilizador.
->>>>>>> frontend-limpo
 export function getFlights(token) {
   return fetchProtectedResource('/flights', token, 'Unable to load flights.');
 }
 
-<<<<<<< HEAD
-export async function createFlights(flightData, token) {
-=======
 // Cria um novo registo de voo (Ida ou Ida/Volta unificados) na Base de Dados.
 export async function createFlight(flightData, token) {
->>>>>>> frontend-limpo
   const response = await fetch(`${API_URL}/flights`, {
     method: "POST",
     headers: createJsonHeaders(token),
@@ -27,16 +18,10 @@ export async function createFlight(flightData, token) {
   return data;
 }
 
-<<<<<<< HEAD
-export async function updateFlight(flightId, flightData, token) {
-  const response = await fetch(`${API_URL}/flights/${flightId}`, {
-    method: "PATCH", // Rota PATCH integrada para o Zod updateFlightSchema
-=======
 // Atualiza os dados de um voo existente (PATCH)
 export async function updateFlight(flightId, flightData, token) {
   const response = await fetch(`${API_URL}/flights/${flightId}`, {
     method: "PATCH", // Rota PATCH integrada para o updateFlightSchema do Zod
->>>>>>> frontend-limpo
     headers: createJsonHeaders(token),
     body: JSON.stringify(flightData),
   });
@@ -45,8 +30,6 @@ export async function updateFlight(flightId, flightData, token) {
   if (!response.ok) throw buildApiError(data, "Failed to update flight.", response.status);
   return data;
 }
-<<<<<<< HEAD
-=======
 
 // Apaga um voo existente (DELETE)
 export async function deleteFlight(flightId, token) {
@@ -59,4 +42,3 @@ export async function deleteFlight(flightId, token) {
   if (!response.ok) throw buildApiError(data, "Failed to delete flight.", response.status);
   return data;
 }
->>>>>>> frontend-limpo

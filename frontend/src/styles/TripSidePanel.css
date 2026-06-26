@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-.dashboard-sidepanel {
-  width: 320px;
-  min-width: 320px;
-=======
 /* VIEW */
 .dashboard-sidepanel {
   width: 380px;
   min-width: 320px;
   min-height: calc(100vh - 188px);
->>>>>>> frontend-limpo
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -21,14 +15,6 @@
   top: 2rem;
 }
 
-<<<<<<< HEAD
-.dashboard-sidepanel div {
-  position: relative;
-}
-
-/* TEXTOS E CABEÇALHOS */
-.dashboard-eyebrow {
-=======
 .dashboard-sidepanel-header {
   display: flex;
   justify-content: space-between;
@@ -37,7 +23,6 @@
 
 .sidepanel-eyebrow {
   display: flex;
->>>>>>> frontend-limpo
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -46,31 +31,15 @@
   color: var(--color-orange);
 }
 
-<<<<<<< HEAD
-.dashboard-sidepanel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dashboard-sidepanel h1 {
-  font-family: "Open Sans", sans-serif;
-  margin: 2rem 0;
-=======
 .dashboard-sidepanel h1 {
   font-family: "Open Sans", sans-serif;
   margin: 0.5rem 0 2rem 0;
->>>>>>> frontend-limpo
   font-size: 2.2rem; 
   text-shadow: none;
   color: var(--text-main);
   line-height: 1.2;
 }
 
-<<<<<<< HEAD
-.dashboard-trip_summary {
-  font-size: 0.95rem;
-=======
 .trip-badge-wrapper {
   display: flex;
   margin-top: 2.5rem;
@@ -118,30 +87,12 @@
 
 .sidepanel-trip-summary {
   font-size: 1.1rem;
->>>>>>> frontend-limpo
   font-weight: 600;
   color: var(--text-main);
   margin: 0;
   line-height: 1.4;
 }
 
-<<<<<<< HEAD
-.dashboard-trip_description {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0;
-  line-height: 1.5;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(82, 121, 151, 0.15);
-}
-
-.dashboard-trip-picker-error {
-    color: var(--error-color-dark);
-}
-
-/* INPUTS, TEXTAREAS E SELETORES */
-.dashboard-trip-picker {
-=======
 .sidepanel-trip-description {
   color: var(--text-muted);
   font-size: 1rem;
@@ -218,7 +169,6 @@
 }
 
 .sidepanel-trip-picker {
->>>>>>> frontend-limpo
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -226,41 +176,17 @@
   color: var(--text-heading-dark);
 }
 
-<<<<<<< HEAD
-.dashboard-trip-picker span {
-=======
 .sidepanel-trip-picker span,
 .sidepanel-trip-selector p {
->>>>>>> frontend-limpo
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700;
-<<<<<<< HEAD
-}
-
-.dashboard-trip-picker select {
-  border: 2px solid var(--border-light);
-  border-radius: 14px;
-  padding: 0.75rem 1rem;
-  background: var(--surface-card);
-  color: var(--text-main);
-  font-size: 0.9rem;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-.dashboard-trip-picker input,
-.dashboard-trip-picker textarea {
-=======
   color: var(--text-main);
 }
 
 .sidepanel-trip-picker input,
 .sidepanel-trip-picker textarea {
->>>>>>> frontend-limpo
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid var(--border-light);
@@ -271,56 +197,27 @@
   outline: none;
 }
 
-<<<<<<< HEAD
-.dashboard-trip-picker input:disabled,
-.dashboard-trip-picker textarea:disabled {
-=======
 .sidepanel-trip-picker input:disabled,
 .sidepanel-trip-picker textarea:disabled {
->>>>>>> frontend-limpo
   background-color: var(--background-disabled);
   color: var(--text-disabled);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-<<<<<<< HEAD
-/* BOTÕES E BOTÕES DE AÇÃO DOS FORMULÁRIOS */
-.btn-edit-trip {
-  display: flex;
-  align-items: flex-end;
-  font-size: 0.85rem;
-  background: none;
-  border: none;
-  color: var(--color-orange);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.dashboard-sidepanel button {
-  width: 100%;
-=======
 .sidepanel-trip-picker-error {
     color: var(--error-color-dark);
     font-size: 0.9rem;
     text-align: center;
     margin-top: 0.5rem;
     font-weight: 600;
->>>>>>> frontend-limpo
 }
 
 .dashboard-sidepanel-buttons {
    display: flex;
-<<<<<<< HEAD
-   gap: 0.5rem;
-   margin-top: 1rem;
-}
-=======
    flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
 }
 
 
->>>>>>> frontend-limpo

@@ -1,10 +1,6 @@
 /* CONTAINER PRINCIPAL */
 .ai-chat-container {
-<<<<<<< HEAD
-display: flex;
-=======
   display: flex;
->>>>>>> frontend-limpo
   flex-direction: column;
   height: 100%;
   width: 100%;
@@ -90,10 +86,7 @@ display: flex;
   display: flex;
   margin-bottom: 0.75rem;
   width: 100%;
-<<<<<<< HEAD
-=======
   font-family: "Open Sans", sans-serif;
->>>>>>> frontend-limpo
 }
 
 .chat-bubble-wrapper.user {
@@ -131,29 +124,6 @@ display: flex;
   font-style: italic;
 }
 
-<<<<<<< HEAD
-/* CORREÇÃO: BARRA INFERIOR DE ENTRADA (INPUT AREA) */
-.ai-chat-input-area {
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--surface-card);
-  border-top: 1px solid var(--border-light);
-  align-items: center; /* Garante alinhamento vertical */
-}
-
-.ai-chat-input-area input {
-  flex: 1;
-  height: 44px;
-  border-radius: 22px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-page);
-  padding: 0 1.25rem;
-  font-size: 0.9rem;
-  outline: none;
-  color: var(--text-main);
-  transition: border-color 0.2s;
-=======
 /* BARRA INFERIOR DE ENTRADA (INPUT AREA) */
 .ai-chat-input-area {
   position: relative;
@@ -165,7 +135,6 @@ display: flex;
   border-top: 1px solid var(--border-light);
   resize: none;
   overflow-y: auto;
->>>>>>> frontend-limpo
 }
 
 .ai-chat-input-area input:focus {
@@ -177,8 +146,6 @@ display: flex;
   cursor: not-allowed;
 }
 
-<<<<<<< HEAD
-=======
 .ai-chat-input-area textarea {
     flex: 1;
     padding: 10px 14px;
@@ -192,7 +159,6 @@ display: flex;
     max-height: 150px; /* Limite de crescimento */
 }
 
->>>>>>> frontend-limpo
 /* Botão de Enviar Redondo Laranja */
 .ai-chat-input-area button {
   width: 44px;
@@ -256,8 +222,6 @@ display: flex;
   border-right: none;
 }
 
-<<<<<<< HEAD
-=======
 /* Container da lista com scroll preventivo caso os títulos sejam compridos */
 .chat-history-list {
   display: flex;
@@ -278,7 +242,6 @@ display: flex;
   border-radius: 4px;
 }
 
->>>>>>> frontend-limpo
 /* ITENS DO HISTÓRICO (Botões das conversas antigas) */
 .ai-chat-history-item {
   width: 100%;
@@ -320,13 +283,6 @@ display: flex;
   color: var(--color-orange);
 }
 
-<<<<<<< HEAD
-.ai-chat-sidebar button {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 220px;
-=======
 .chat-bubble-wrapper .system-error {
   width: 100%;
   display: flex;
@@ -349,5 +305,4 @@ display: flex;
   font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 500;
->>>>>>> frontend-limpo
 }

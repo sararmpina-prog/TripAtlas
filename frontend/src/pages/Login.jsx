@@ -5,21 +5,13 @@ import ImageLayout from "../components/ImageLayout";
 import InfoCard from "../components/InfoCard";
 import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
-<<<<<<< HEAD
-import { saveAuthSession } from "../auth/authStorage";
-=======
 import { saveAuthSession } from "../utils/authStorage";
->>>>>>> frontend-limpo
 import {
   getLoginErrorState,
   hasValidationErrors,
   normalizeLoginPayload,
   validateLoginForm,
-<<<<<<< HEAD
-} from "../auth/authValidation";
-=======
 } from "../validators/authValidator";
->>>>>>> frontend-limpo
 import "../styles/Login.css";
 
 function Login() {
