@@ -30,11 +30,18 @@
   font-weight: 600;
 }
 
-.user-info .btn-base {
-    margin: 0;
-    padding: 0.3rem 1rem;
-    color: var(--text-main);
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    box-shadow: none;
+
+.btn-user {
+  background: var(--color-white);
+  color: var(--color-dark-azure);
+  border: none;
+  padding: 0.6rem 0.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: none;
 }

@@ -5,3 +5,4 @@ export * from './api/trips';
 export * from './api/flights';
 export * from './api/reserves';
 export * from './api/chat';
+export * from './api/journal';
