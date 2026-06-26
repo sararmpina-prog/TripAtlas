@@ -22,6 +22,10 @@
   text-shadow: none;
 }
 
+.journal-suggestion-item div {
+  flex: 1;
+}
+
 .journal-suggestion-item p {
   color: var(--text-main);
   font-size: 0.9rem;

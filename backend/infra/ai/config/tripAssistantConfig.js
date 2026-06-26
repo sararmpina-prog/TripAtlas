@@ -13,20 +13,31 @@ import {setAiSuggestionFunctionDeclaration} from './tools.js'
 
 export const TRIPBOT_TEMPERATURE = 0.4; // Ligeiramente criativo para boas sugestões de viagem
 
-export function buildTripBotConfig(systemInstruction, config = {}) {
+// Esta função junta as ferramentas e o System Prompt com o userId real
+export function buildTripBotConfig(userId = null, tripContext = {}, customConfig = {}) {
   return {
     temperature: TRIPBOT_TEMPERATURE,
-    systemInstruction, // Injeta as regras estruturadas e o contexto da BD
-    ...config, // Permite passar configurações adicionais e o suporte para sobrescrever parâmetros
+    systemInstruction: buildTripAssistantSystemPrompt(tripContext, userId), 
+    tools: [
+        {
+            functionDeclarations: [
+                setAiSuggestionFunctionDeclaration
+            ]
+        }
+    ],
+    toolConfig: {
+        functionCallingConfig: {
+            mode: 'AUTO'
+        }
+    },
+    ...customConfig, 
   };
 }
 
-
-//Create config 
+// OBJETO ESTÁTICO
 export const config = {
   temperature: TRIPBOT_TEMPERATURE,
-  systemInstruction: buildTripAssistantSystemPrompt(),
-
+  
   tools: [
       {
           functionDeclarations: [
@@ -34,10 +45,9 @@ export const config = {
           ]
       }
   ],
-
   toolConfig: {
       functionCallingConfig: {
           mode: 'AUTO'
       }
   }
-}; 
+};

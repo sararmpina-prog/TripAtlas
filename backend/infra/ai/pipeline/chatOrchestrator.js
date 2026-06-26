@@ -10,7 +10,7 @@
  */
 
 import 'dotenv/config';
-import { config } from '../config/tripAssistantConfig.js';
+import { buildTripBotConfig } from '../config/tripAssistantConfig.js';
 import { logGeminiDebug } from '../provider/aiDebugLogger.js';
 import { callGemini } from '../provider/callGemini.js'; // A callGemini faz a validação do histórico e da config, e depois chama o generateWithFallback 
 
@@ -28,9 +28,20 @@ import { buildFinalResponseFromGemini } from './responseParser.js';
 export async function handleTripBotFlow(userPrompt, trip_id = null, chat_id, user_id) {
   let history = await buildHistoryWithUserPrompt(userPrompt, chat_id, user_id);
 
-  try {
 
-    let currentResponse = await callGemini(history, config);
+  try {
+    // Criação da configuração dinâmica em tempo real:
+    let tripContext = {};
+    if (trip_id) {
+      tripContext = await tripRepository.findTripById(trip_id) || {};
+    }
+
+    // Passamos o "user_id" (que vem do argumento da função) como o primeiro parâmetro,
+    // e o objeto "tripContext" como o segundo parâmetro!
+    const dynamicConfig = buildTripBotConfig(user_id, tripContext);
+
+    // Primeira chamada protegida com o dynamicConfig
+    let currentResponse = await callGemini(history, dynamicConfig);
 
     console.log(JSON.stringify(currentResponse, null, 2));
 
@@ -74,8 +85,9 @@ export async function handleTripBotFlow(userPrompt, trip_id = null, chat_id, use
        * 5. EXECUTAR FUNÇÕES (SIMULAÇÃO)
        * ================================
        */
+      // Executa as chamadas de funções (Tradução de nome para ID ativada)
       const functionResults = await executeFunctionCalls(parts, { trip_id, user_id });
-
+      
       // Adicionar function responses ao histórico
       const toolMessage = buildToolMessage(functionResults);
 
@@ -87,7 +99,7 @@ export async function handleTripBotFlow(userPrompt, trip_id = null, chat_id, use
       history = await compactHistoryIfNeeded(history);
 
       // Pedir próxima resposta ao Gemini
-      currentResponse = await callGemini(history, config);
+      currentResponse = await callGemini(history, dynamicConfig);
       step++;
       console.log("currentResponse", currentResponse)
     }

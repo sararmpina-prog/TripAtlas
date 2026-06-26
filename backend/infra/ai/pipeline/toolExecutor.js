@@ -34,9 +34,28 @@ export async function executeFunctionCalls(parts, { trip_id, user_id }) {
       let result;
 
       switch (fn.name) {
-        case 'create_trip_journal_entry':
-          result = await createAiSuggestion({ ...fn.args, trip_id, user_id });
+        case 'create_trip_journal_entry': {
+          // SE O CONTEXTO FOR NULO, BUSCAMOS O ID PELO NOME QUE A GEMINI ENVIOU
+          let finalTripId = trip_id;
+          
+          if (!finalTripId && fn.args.trip_name) {
+            const tripRow = await tripRepository.getTripByName(fn.args.trip_name);
+            finalTripId = tripRow?.id || null;
+          }
+
+          if (!finalTripId) {
+            result = { error: `Trip context not found for name: ${fn.args.trip_name || 'unknown'}` };
+            break;
+          }
+
+          // CHAMADA LIMPA: Passamos os argumentos reais para as colunas estruturais (id, title, content)
+          result = await createAiSuggestion(
+            finalTripId, 
+            fn.args.title || 'AI Suggestion', 
+            fn.args.content || fn.args.text_content || ''
+          );
           break;
+        }
 
         default:
           result = { error: 'Unknown function' };
