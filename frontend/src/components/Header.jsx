@@ -1,4 +1,4 @@
-import { clearAuthSession, getStoredUser } from "../auth/authStorage";
+import { clearAuthSession, getStoredUser } from "../utils/authStorage";
 import Logo from "./Logo";
 import "../styles/Header.css";
 

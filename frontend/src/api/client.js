@@ -21,12 +21,17 @@ export function buildApiError(data, fallbackMessage, status) {
   }
 
   // Interceção de Sessão Expirada (HTTP 401)
-  if (status === 401 || backendCode === 'UNAUTHORIZED' || backendCode === 'INVALID_TOKEN') {
-    // Limpa o localStorage de forma limpa para não deixar lixo na memória
-    localStorage.removeItem('token'); // Substitua pela sua função de limpeza se usar outra chave
+  if (
+    status === 401 || 
+    backendCode === 'UNAUTHORIZED' || 
+    backendCode === 'INVALID_TOKEN' ||
+    (backendMessage && backendMessage.toLowerCase().includes('expired')) || // PEGA SE DISSER "EXPIRED"
+    (backendMessage && backendMessage.toLowerCase().includes('token'))      // PEGA SE DISSER "TOKEN"
+  ) {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    // Força o navegador a ir para a página de login imediatamente;
+    // Força o reencaminhamento seguro na hora
     // Como não estamos dentro de um componente React para usar o useNavigate(), usamos o objeto nativo do browser window.location para um redirecionamento seguro.
     window.location.href = '/login';
     
@@ -48,12 +53,10 @@ export function buildApiError(data, fallbackMessage, status) {
 
 // FUNÇÂO PARA GET DE RECURSOS PROTEGIDOS DA API (COM TRATAMENTO DE ERROS PADRÃO)
 export async function fetchProtectedResource(path, token, fallbackMessage) {
-  
   const response = await fetch(`${API_URL}${path}`, {
     headers: createJsonHeaders(token),
   });
 
-  console.log("RAW RESPONSE:", response);
   const data = await response.json();
 
   if (!response.ok) {

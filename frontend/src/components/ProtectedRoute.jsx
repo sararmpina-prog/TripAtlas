@@ -1,5 +1,5 @@
 import { Navigate } from "react-router";
-import { getStoredToken } from "../auth/authStorage";
+import { getStoredToken } from "../utils/authStorage";
 
 function ProtectedRoute({ children }) {
   const token = getStoredToken();

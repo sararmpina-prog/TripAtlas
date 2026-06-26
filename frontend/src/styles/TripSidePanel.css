@@ -1,6 +1,8 @@
+/* VIEW */
 .dashboard-sidepanel {
-  width: 320px;
+  width: 380px;
   min-width: 320px;
+  min-height: calc(100vh - 188px);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -13,12 +15,14 @@
   top: 2rem;
 }
 
-.dashboard-sidepanel div {
-  position: relative;
+.dashboard-sidepanel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* TEXTOS E CABEÇALHOS */
-.dashboard-eyebrow {
+.sidepanel-eyebrow {
+  display: flex;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -27,44 +31,144 @@
   color: var(--color-orange);
 }
 
-.dashboard-sidepanel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .dashboard-sidepanel h1 {
   font-family: "Open Sans", sans-serif;
-  margin: 2rem 0;
+  margin: 0.5rem 0 2rem 0;
   font-size: 2.2rem; 
   text-shadow: none;
   color: var(--text-main);
   line-height: 1.2;
 }
 
-.dashboard-trip_summary {
-  font-size: 0.95rem;
+.trip-badge-wrapper {
+  display: flex;
+  margin-top: 2.5rem;
+}
+
+/* Botão do ID discreto e arredondado */
+.trip-id-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-light-azure);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none; /* Remove a sombra pesada global */
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.trip-id-button:hover {
+  background: var(--color-medium-azure);
+  color: var(--color-white);
+  transform: scale(1.02);
+}
+
+/* Estado visual quando o ID já foi copiado com sucesso */
+.trip-id-button.is-copied {
+  background: #d1fae5;
+  color: #065f46; 
+  border-color: #a7f3d0;
+}
+
+.trip-id-helper {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+
+.sidepanel-trip-summary {
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-main);
   margin: 0;
   line-height: 1.4;
 }
 
-.dashboard-trip_description {
+.sidepanel-trip-description {
   color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0;
+  font-size: 1rem;
+  margin-top: 10px;
   line-height: 1.5;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(82, 121, 151, 0.15);
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
 }
 
-.dashboard-trip-picker-error {
-    color: var(--error-color-dark);
+.search-container {
+    position: relative;
 }
 
-/* INPUTS, TEXTAREAS E SELETORES */
-.dashboard-trip-picker {
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+}
+
+.trip-search {
+    height: 40px;
+    width: 100%;
+    border-color: var(--color-medium-azure);
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px 8px 8px 35px; /* espaço para o ícone */
+    box-shadow: none;
+}
+
+.trip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--text-main);
+    max-height: 250px;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+}
+
+.trip-button {
+    padding: 10px;
+    margin: 5px 0;
+    text-align: left;
+    border: 1px solid var(--border-light);
+    background: var(--color-white);
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.trip-button.active {
+    border: 1.5px solid var(--color-orange);
+}
+
+/* Scrollbar fina e moderna para não estragar o design */
+.chat-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+/* FORM */
+.sidepanel-form-flow {
+   display: flex;
+   flex-direction: column;
+   gap: 1rem;
+   width: 100%;
+}
+
+.sidepanel-trip-picker {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -72,28 +176,17 @@
   color: var(--text-heading-dark);
 }
 
-.dashboard-trip-picker span {
+.sidepanel-trip-picker span,
+.sidepanel-trip-selector p {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700;
-}
-
-.dashboard-trip-picker select {
-  border: 2px solid var(--border-light);
-  border-radius: 14px;
-  padding: 0.75rem 1rem;
-  background: var(--surface-card);
   color: var(--text-main);
-  font-size: 0.9rem;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-  width: 100%;
 }
 
-.dashboard-trip-picker input,
-.dashboard-trip-picker textarea {
+.sidepanel-trip-picker input,
+.sidepanel-trip-picker textarea {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid var(--border-light);
@@ -104,33 +197,27 @@
   outline: none;
 }
 
-.dashboard-trip-picker input:disabled,
-.dashboard-trip-picker textarea:disabled {
+.sidepanel-trip-picker input:disabled,
+.sidepanel-trip-picker textarea:disabled {
   background-color: var(--background-disabled);
   color: var(--text-disabled);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-/* BOTÕES E BOTÕES DE AÇÃO DOS FORMULÁRIOS */
-.btn-edit-trip {
-  display: flex;
-  align-items: flex-end;
-  font-size: 0.85rem;
-  background: none;
-  border: none;
-  color: var(--color-orange);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.dashboard-sidepanel button {
-  width: 100%;
+.sidepanel-trip-picker-error {
+    color: var(--error-color-dark);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-weight: 600;
 }
 
 .dashboard-sidepanel-buttons {
    display: flex;
+   flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
 }
+
+

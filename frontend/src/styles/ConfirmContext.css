@@ -1,0 +1,33 @@
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--surface-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.confirm-modal-content {
+  width: 90%;
+  max-width: 400px;
+}
+
+.confirm-modal-title {
+  color: var(--text-heading-dark);
+  margin-top: 0;
+}
+
+.confirm-modal-message {
+  color: var(--text-main);
+  margin-bottom: 1.5rem;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

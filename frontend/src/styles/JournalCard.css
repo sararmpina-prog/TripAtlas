@@ -1,0 +1,57 @@
+.journal-view-container {
+  position: relative; /* OBRIGATÓRIO para o botão alinhar à direita */
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.journal-suggestion-item {
+  display: flex;
+  margin-bottom: 1.2rem;
+  justify-content: 'space-between';
+  align-items: 'flex-start';
+  gap: '1rem';
+  border-bottom: '1px solid var(--border-light)';
+  padding-bottom: '0.8rem'
+}
+
+.journal-suggestion-item h4 {
+  color: var(--text-heading-dark);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.3rem 0;
+  text-shadow: none;
+}
+
+.journal-suggestion-item div {
+  flex: 1;
+}
+
+.journal-suggestion-item p {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  line-height: '1.4';
+  margin: 0;
+}
+
+.flight-form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.btn-dashed-add {
+  display: flex;
+  margin-top: 0.5rem;
+}
+
+.journal-clickable {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.journal-clickable button {
+  margin: 0.5rem 0 0 0;
+  padding: 10px 25px;
+  font-size: 0.85rem;
+}
