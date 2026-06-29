@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { validateBody } from '../middlewares/validationMiddleware.js';
-import { chatMessageSchema } from '../validators/aiValidator.js';
+import { chatMessageSchema } from '../validators/chatValidator.js';
 import { getChatHistory, getChatSessions, postChatMessage } from '../controllers/chatController.js';
 
 const router = express.Router();

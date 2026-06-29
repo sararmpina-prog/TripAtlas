@@ -11,6 +11,7 @@ import {
   normalizeRegisterPayload,
   validateRegisterForm,
 } from '../validators/authValidator';
+import { preloadBackgroundImage } from '../utils/preload';
 import '../styles/Register.css';
 
 export default function Register() {
@@ -22,6 +23,7 @@ export default function Register() {
     mobile_phone: '',
     password: '',
   });
+
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState('');
 
@@ -82,7 +84,15 @@ export default function Register() {
           <div className="left-content-wrapper">
             <h2>Get Started!</h2>
             <h4>Already have<br />an account?</h4>
-            <Link to="/login" className="btn-base btn-light">Login</Link>
+            {/* Otimização: Preload da imagem de login ao aproximar o rato */}
+            <Link 
+              to="/login" 
+              className="btn-base btn-light"
+              onMouseEnter={() => preloadBackgroundImage('login-img-mountains')}
+              onTouchStart={() => preloadBackgroundImage('login-img-mountains')}
+            >
+              Login
+            </Link>
           </div>
         </div>
 
@@ -93,6 +103,7 @@ export default function Register() {
             <p className="subtitle subtitle-light">Start your adventure today</p>
 
             <form className="auth-form register-form" onSubmit={handleSubmit} noValidate>
+              
               <div className="auth-form-row">
                 <div className="auth-form-field">
                   <input
@@ -106,11 +117,7 @@ export default function Register() {
                     aria-invalid={Boolean(fieldErrors.first_name)}
                     className={fieldErrors.first_name ? 'auth-input-error' : undefined}
                   />
-                  {fieldErrors.first_name && (
-                    <p className="auth-form-error">
-                      {fieldErrors.first_name}
-                    </p>
-                  )}
+                  {fieldErrors.first_name && <p className="auth-form-error">{fieldErrors.first_name}</p>}
                 </div>
 
                 <div className="auth-form-field">
@@ -125,11 +132,7 @@ export default function Register() {
                     aria-invalid={Boolean(fieldErrors.surname)}
                     className={fieldErrors.surname ? 'auth-input-error' : undefined}
                   />
-                  {fieldErrors.surname && (
-                    <p className="auth-form-error">
-                      {fieldErrors.surname}
-                    </p>
-                  )}
+                  {fieldErrors.surname && <p className="auth-form-error">{fieldErrors.surname}</p>}
                 </div>
               </div>
 
@@ -145,11 +148,7 @@ export default function Register() {
                   aria-invalid={Boolean(fieldErrors.email)}
                   className={fieldErrors.email ? 'auth-input-error' : undefined}
                 />
-                {fieldErrors.email && (
-                  <p className="auth-form-error">
-                    {fieldErrors.email}
-                  </p>
-                )}
+                {fieldErrors.email && <p className="auth-form-error">{fieldErrors.email}</p>}
               </div>
 
               <div className="auth-form-field">
@@ -163,11 +162,7 @@ export default function Register() {
                   aria-invalid={Boolean(fieldErrors.mobile_phone)}
                   className={fieldErrors.mobile_phone ? 'auth-input-error' : undefined}
                 />
-                {fieldErrors.mobile_phone && (
-                  <p className="auth-form-error">
-                    {fieldErrors.mobile_phone}
-                  </p>
-                )}
+                {fieldErrors.mobile_phone && <p className="auth-form-error">{fieldErrors.mobile_phone}</p>}
               </div>
 
               <div className="auth-form-field">
@@ -182,31 +177,26 @@ export default function Register() {
                   aria-invalid={Boolean(fieldErrors.password)}
                   inputClassName={fieldErrors.password ? 'auth-input-error' : undefined}
                 />
-                {fieldErrors.password && (
-                  <p className="auth-form-error">
-                    {fieldErrors.password}
-                  </p>
-                )}
+                {fieldErrors.password && <p className="auth-form-error">{fieldErrors.password}</p>}
               </div>
 
-              {formError && (
-                <p className="auth-form-error">
-                  {formError}
-                </p>
-              )}
+              {formError && <p className="auth-form-error">{formError}</p>}
 
               <div className="auth-form-actions">
+                {/* Otimização: Preload da imagem de sucesso assim que o utilizador vai clicar no botão */}
                 <button
                   type="submit"
                   disabled={isPending}
                   className="btn-base btn-orange"
+                  onMouseEnter={() => preloadBackgroundImage('registerSuccess-img-greece')}
+                  onTouchStart={() => preloadBackgroundImage('registerSuccess-img-greece')}
                 >
                   {isPending ? 'Creating account...' : 'Register'}
                 </button>
               </div>
             </form>
+          </div>
         </div>
-      </div>
       </div>
     </ImageLayout>
   );

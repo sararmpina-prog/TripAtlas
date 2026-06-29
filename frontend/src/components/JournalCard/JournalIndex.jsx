@@ -12,13 +12,13 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     const queryClient = useQueryClient();
     const confirm = useConfirm();
 
-    const tripName = selectedTrip?.destination || selectedTrip?.title || '';
+    const tripReference = selectedTrip?.destination || selectedTrip?.title || '';
 
     // FETCH: Carrega as sugestões com Caching do TanStack Query
     const { data: suggestionsData, isPending: isLoading, error: apiError } = useQuery({
         queryKey: ['dashboard', 'journal', selectedTrip?.id],
-        queryFn: () => getSuggestions(tripName, token),
-        enabled: !!tripName && !!token,
+        queryFn: () => getSuggestions(tripReference, token),
+        enabled: !!tripReference && !!token,
     });
 
     const suggestions = suggestionsData?.data || suggestionsData || [];

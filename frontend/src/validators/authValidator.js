@@ -10,7 +10,7 @@ function joinReadableList(items) {
   return `${items.slice(0, -1).join(', ')}, and ${items.at(-1)}`;
 }
 
-// Customização estendida da rota de Auth para apanhar mensagens específicas do teu backend de Auth
+// Customização estendida da rota de Auth para apanhar mensagens específicas do backend de Auth
 function mapAuthServerError(error, allowedFields, fallbackMessage) {
   const message = normalizeMessage(error?.message) || fallbackMessage;
   
@@ -125,4 +125,101 @@ export function getRegisterErrorState(error) {
 
 export function getLoginErrorState(error) {
   return mapAuthServerError(error, ['email', 'password'], 'Login failed.');
+}
+
+//  EDICAO DE PERFIL (PROFILE EDIT VALIDATIONS)
+// Validação local dos campos do formulário de perfil antes do envio
+export function validateProfileForm(formData) {
+  const errors = {};
+  
+  validateNameField(formData.first_name, 'first_name', 'First name', errors);
+  validateNameField(formData.surname, 'surname', 'Surname', errors);
+
+  if (!emailPattern.test(formData.email?.trim() ?? '')) {
+    errors.email = 'Please enter a valid email address.';
+  }
+
+  if (formData.mobile_phone?.trim()) {
+    const mobilePhone = formData.mobile_phone.trim();
+    const digitsOnly = mobilePhone.replace(/\D/g, '');
+    if (!phonePattern.test(mobilePhone) || digitsOnly.length < 9 || mobilePhone.length > 20) {
+      errors.mobile_phone = 'Please enter a valid phone number.';
+    }
+  }
+
+  return errors;
+}
+
+// Limpa e normaliza os dados de perfil antes de enviar o payload via PATCH
+export function normalizeProfilePayload(formData) {
+  return {
+    first_name: formData.first_name.trim(),
+    surname: formData.surname.trim(),
+    email: formData.email.trim().toLowerCase(),
+    // Sincronizado com o Zod: envia null se estiver vazio para limpar na BD
+    mobile_phone: formData.mobile_phone?.trim() || null, 
+  };
+}
+
+// Mapeia erros do servidor específicos para o perfil (como email/phone duplicados)
+export function getProfileErrorState(error) {
+  const allowedFields = ['first_name', 'surname', 'email', 'mobile_phone'];
+  
+  // Reutiliza o mapAuthServerError genérico
+  const state = mapAuthServerError(error, allowedFields, 'Failed to update profile.');
+  
+  // Sincronizado com o userService.js: prende o erro diretamente no campo de email
+  if (state.formError === 'This email address is already in use by another user.') {
+    return {
+      fieldErrors: { email: state.formError },
+      formError: ''
+    };
+  }
+
+  return state;
+}
+
+
+// ALTERAÇÃO DE PASSWORD (PASSWORD UPDATE VALIDATIONS)
+// Valida localmente os campos do formulário de password antes de enviar ao backend
+export function validateChangePasswordForm(formData) {
+  const errors = {};
+
+  // Validação básica do campo atual
+  if (!(formData.current_password ?? '').trim()) {
+    errors.current_password = 'Current password is required.';
+  }
+
+  // Validação da novo password
+  const passwordError = getPasswordValidationMessage(formData.new_password);
+  if (passwordError) {
+    errors.new_password = passwordError;
+  }
+
+  // 3. Regra extra sincronizada com o refine do Zod no backend
+  if (formData.current_password && formData.current_password === formData.new_password) {
+    errors.new_password = 'The new password cannot be the same as the current password.';
+  }
+
+  return errors;
+}
+
+/**
+ * Mapeia erros do servidor específicos para a rota de password
+ */
+export function getChangePasswordErrorState(error) {
+  const allowedFields = ['current_password', 'new_password'];
+  
+  // Executa o mapeador genérico estrutural
+  const state = mapAuthServerError(error, allowedFields, 'Failed to update password.');
+
+  // Sincronizado com o tuserService.js: se a senha atual falhar, prende o erro no input certo
+  if (state.formError === 'Incorrect current password.') {
+    return {
+      fieldErrors: { current_password: state.formError },
+      formError: ''
+    };
+  }
+
+  return state;
 }

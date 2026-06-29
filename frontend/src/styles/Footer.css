@@ -1,0 +1,85 @@
+/* FOOTER PÚBLICO (Tema Escuro/Azul para combinar com as imagens) */
+
+.public-footer {
+  background-color: var(--color-white);
+  color: var(--color-dark-azure);
+  padding: 24px 20px 12px;
+  border-top: 1px solid var(--border-light);
+  font-size: 0.9rem;
+}
+
+.public-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.public-footer-info h4 {
+  margin: 0 0 8px 0;
+  font-family: "Syne", sans-serif;
+  color: var(--color-orange);
+}
+
+.public-footer-info p {
+  margin: 0;
+  max-width: 400px;
+  color: var(--text-muted);
+}
+
+.public-footer-elements {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.footer-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.public-footer-copyright {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: var(--border-light);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* FOOTER PRIVADO (Minimalista e Discreto) */
+.private-footer {
+  width: 100%;
+  text-align: center;
+  padding: 16px 20px;
+  margin-top: auto; /* Força o footer a colar no fundo caso haja pouco conteúdo */
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-top: 1px solid var(--border-light);
+  background-color: transparent;
+  z-index: 1;
+}
+
+.private-footer p {
+  margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .public-footer-content {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .public-footer-contact {
+    align-items: center;
+  }
+}

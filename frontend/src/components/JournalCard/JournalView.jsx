@@ -16,7 +16,7 @@ export default function JournalView({
                 {loading && <p className="p-muted">Loading AI travel insights...</p>}
                 {error && <p className="auth-form-error">{error}</p>}
 
-                {/* Listagem real das sugestões mapeadas com ação de delete */}
+                {/* Listagem das sugestões mapeadas com ação de delete */}
                 {!loading && !error && suggestions.map((s) => (
                     <div 
                         key={s.id || s.title} 

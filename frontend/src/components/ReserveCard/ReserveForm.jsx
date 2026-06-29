@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { IoClose } from "react-icons/io5";
-import { FaTrash, FaPlus } from 'react-icons/fa';
+import { FaRegTrashAlt } from "react-icons/fa";
 import DashboardCard from '../DashboardCard';
 
 export default function ReserveForm({ 
-    reserve, // Se for nulo, o formulário assume automaticamente modo de criação (+ Add New)
+    reserve, 
     selectedTrip, 
     onSave, 
     onCancel, 
@@ -16,9 +16,8 @@ export default function ReserveForm({
     const tripMinDate = selectedTrip?.start_date ? selectedTrip.start_date.split('T')[0] : "";
     const tripMaxDate = selectedTrip?.end_date ? selectedTrip.end_date.split('T')[0] : "";
 
-    // Estados locais expandidos com base nas tuas tabelas relacionais do SQL
     const [name, setName] = useState(reserve?.accommodation_name || reserve?.name || '');
-    const [address, setAddress] = useState(reserve?.address || '');
+    const [address, setAddress] = useState(reserve?.address || reserve?.accommodation_address || '');
     const [city, setCity] = useState(reserve?.city || '');
     const [country, setCountry] = useState(reserve?.country || '');
     
@@ -62,7 +61,6 @@ export default function ReserveForm({
         }
 
         setLocalErrors({});
-        // Envia o payload completo (Mistura dados do hotel + dados da reserva) para a tua API resolver as duas tabelas
         onSave({
             name: name.trim(),
             address: address.trim(),
@@ -78,15 +76,29 @@ export default function ReserveForm({
     return (
         <DashboardCard
             actions={
-                <button type="button" className="btn-edit-card" onClick={onCancel} disabled={isPending}>
+                <button type="button" className="btn-edit-card" onClick={onCancel} disabled={isPending} title="Close form">
                     <IoClose size={18}/>
                 </button>
             }
         >
             <form onSubmit={handleSubmit} noValidate className="reserve-form-container">
-                <h5>{reserve ? 'Manage Accommodation Reserve' : 'Add New Accommodation Reserve'}</h5>
+                
+                {reserve && (
+                    <button 
+                        type="button" 
+                        className="btn-delete-icon" 
+                        onClick={onDelete} 
+                        disabled={isPending}
+                        title="Delete this entire accommodation reservation"
+                    >
+                        <FaRegTrashAlt size={14} />
+                    </button>
+                )}
 
-                {/* Linha 1: Dados do Hotel (Tabela accommodations) */}
+                <h5 className="reserve-form-title">
+                    {reserve ? 'Manage Accommodation Reserve' : 'Add New Accommodation Reserve'}
+                </h5>
+
                 <div className="reserve-form-row">
                     <div className="reserve-input-group">
                         <input 
@@ -112,7 +124,6 @@ export default function ReserveForm({
                     </div>
                 </div>
 
-                {/* Linha 2: Localização Geográfica */}
                 <div className="reserve-form-row">
                     <div className="reserve-input-group">
                         <input 
@@ -134,68 +145,64 @@ export default function ReserveForm({
                     </div>
                 </div>
 
-                {/* Linha 3: Logística de Check-in (Tabela accommodation_reserve) */}
                 <div className="reserve-form-row">
-                    <div className="reserve-input-group">
-                        <label>Check-in Date *</label>
-                        <input 
-                            type="date"
-                            className={localErrors.check_in_date ? 'auth-input-error' : ''}
-                            value={checkIn}
-                            min={tripMinDate}
-                            max={tripMaxDate}
-                            onChange={(e) => handleInputChange('check_in_date', e.target.value, setCheckIn)}
-                            disabled={isPending}
-                        />
-                        {localErrors.check_in_date && <p className="auth-form-error">{localErrors.check_in_date}</p>}
+                    <div className="reserve-form-column">
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-in Date *</label>
+                            <input 
+                                type="date"
+                                className={localErrors.check_in_date ? 'auth-input-error' : ''}
+                                value={checkIn}
+                                min={tripMinDate}
+                                max={tripMaxDate}
+                                onChange={(e) => handleInputChange('check_in_date', e.target.value, setCheckIn)}
+                                disabled={isPending}
+                            />
+                            {localErrors.check_in_date && <p className="auth-form-error">{localErrors.check_in_date}</p>}
+                        </div>
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-in Time</label>
+                            <input 
+                                type="time"
+                                value={checkInTime}
+                                onChange={(e) => handleInputChange('check_in_time', e.target.value, setCheckInTime)}
+                                disabled={isPending}
+                            />
+                        </div>
                     </div>
-                    <div className="reserve-input-group">
-                        <label>Check-in Time</label>
-                        <input 
-                            type="time"
-                            value={checkInTime}
-                            onChange={(e) => handleInputChange('check_in_time', e.target.value, setCheckInTime)}
-                            disabled={isPending}
-                        />
-                    </div>
-                </div>
-
-                {/* Linha 4: Logística de Check-out */}
-                <div className="reserve-form-row">
-                    <div className="reserve-input-group">
-                        <label>Check-out Date *</label>
-                        <input 
-                            type="date"
-                            className={localErrors.check_out_date ? 'auth-input-error' : ''}
-                            value={checkOut}
-                            min={checkIn || tripMinDate}
-                            max={tripMaxDate}
-                            onChange={(e) => handleInputChange('check_out_date', e.target.value, setCheckOut)}
-                            disabled={isPending}
-                        />
-                        {localErrors.check_out_date && <p className="auth-form-error">{localErrors.check_out_date}</p>}
-                    </div>
-                    <div className="reserve-input-group">
-                        <label>Check-out Time</label>
-                        <input 
-                            type="time"
-                            value={checkOutTime}
-                            onChange={(e) => handleInputChange('check_out_time', e.target.value, setCheckOutTime)}
-                            disabled={isPending}
-                        />
-                    </div>
-                </div>
-
-                {/* Rodapé com os mesmos botões consistentes do FlightForm */}
-                <div className="reserve-form-actions-wrapper">
-                    {apiError && <div className="auth-form-error api-error-banner">{apiError}</div>}
                     
-                    <div className="reserve-form-actions">
-                        <button type="button" className="btn-base" onClick={onDelete} disabled={isPending}>
-                            <FaTrash size={12} /> Delete Reserve
-                        </button>
+                    <div className="reserve-form-column">
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-out Date *</label>
+                            <input 
+                                type="date"
+                                className={localErrors.check_out_date ? 'auth-input-error' : ''}
+                                value={checkOut}
+                                min={checkIn || tripMinDate}
+                                max={tripMaxDate}
+                                onChange={(e) => handleInputChange('check_out_date', e.target.value, setCheckOut)}
+                                disabled={isPending}
+                            />
+                            {localErrors.check_out_date && <p className="auth-form-error">{localErrors.check_out_date}</p>}
+                        </div>
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-out Time</label>
+                            <input 
+                                type="time"
+                                value={checkOutTime}
+                                onChange={(e) => handleInputChange('check_out_time', e.target.value, setCheckOutTime)}
+                                disabled={isPending}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* RODAPÉ */}
+                <div className="flight-form-actions-wrapper">
+                    {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}
+                    <div className="flight-form-actions">
                         <button type="submit" className="btn-base btn-orange" disabled={isPending}>
-                            {isPending ? 'Saving...' : 'Save Changes'}
+                            {isPending ? 'Syncing Reservation...' : 'Save Reservation'}
                         </button>
                         <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>Cancel</button>
                     </div>

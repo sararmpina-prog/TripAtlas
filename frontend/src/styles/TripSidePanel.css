@@ -12,7 +12,7 @@
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-light);
   position: sticky;
-  top: 2rem;
+  top: calc(70px + 1rem); /* altura do header + margem */
 }
 
 .dashboard-sidepanel-header {
@@ -111,7 +111,7 @@
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: #888;
+    color: var(--text-muted);
     font-size: 18px;
 }
 

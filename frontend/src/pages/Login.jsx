@@ -6,6 +6,7 @@ import InfoCard from "../components/InfoCard";
 import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
 import { saveAuthSession } from "../utils/authStorage";
+import { preloadBackgroundImage } from '../utils/preload';
 import {
   getLoginErrorState,
   hasValidationErrors,
@@ -82,7 +83,12 @@ function Login() {
           <h2>Don't have an account yet?</h2>
           <h4>Sign up here:</h4>
 
-          <Link to="/register" className="btn-base btn-light">
+          <Link 
+            to="/register" 
+            className="btn-base btn-light"
+            onMouseEnter={() => preloadBackgroundImage('register-img-greece')}
+            onTouchStart={() => preloadBackgroundImage('register-img-greece')}
+          >
             Register
           </Link>
         </section>
@@ -153,8 +159,13 @@ function Login() {
                 Remember me
               </label>
 
-              <Link to="/forgot-password">
+              <Link 
+                to="/forgot-password"
+                onMouseEnter={() => preloadBackgroundImage('forgotPassword-img-mountains')}
+                onTouchStart={() => preloadBackgroundImage('forgotPassword-img-mountains')}
+              >
                 Forgot password?
+                
               </Link>
             </div>
 

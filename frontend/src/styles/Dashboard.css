@@ -1,9 +1,14 @@
 .dashboard-page {
   min-height: 100vh;
-  background: var(--surface-page);
+  background-color: var(--color-light-azure);
+  background-image: url('/bg/tripAtlas-Dashboard-desktop.avif');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .dashboard-content {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -11,6 +16,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  z-index: 1;
 }
 
 .dashboard-logistics {
@@ -26,9 +32,9 @@
 .dashboard-section {
   padding: 1.75rem;
   border-radius: 24px;
-  background: var(--surface-card);
-  box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-light);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-medium);
 }
 
 .dashboard-section-header {
@@ -190,5 +196,11 @@
   .dashboard-logistics {
     flex-direction: column;
     max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    background-image: url('/bg/tripAtlas-Dashboard-mobile.avif');
   }
 }

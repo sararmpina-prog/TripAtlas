@@ -286,7 +286,7 @@ export const db = mysql
     .promise();
 
 async function ensureForeignKey(constraintName, statement) {
-  const [rows] = await db.execute(
+  const [rows] = await db.execute( // os parâmetros são sanitizados nativamente e não há risco de SQL Injection
     `
       SELECT CONSTRAINT_NAME
       FROM information_schema.TABLE_CONSTRAINTS

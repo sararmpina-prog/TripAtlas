@@ -17,6 +17,7 @@ export const TRIPBOT_TEMPERATURE = 0.4; // Ligeiramente criativo para boas suges
 export function buildTripBotConfig(userId = null, tripContext = {}, customConfig = {}) {
   return {
     temperature: TRIPBOT_TEMPERATURE,
+    maxOutputTokens: 1000, // imita a resposta da IA a cerca de 4000 caracteres
     systemInstruction: buildTripAssistantSystemPrompt(tripContext, userId), 
     tools: [
         {

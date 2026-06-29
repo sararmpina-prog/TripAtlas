@@ -62,7 +62,7 @@ app.use('/api/suggestions', auth, suggestionsRoutes);
 app.use('/api/trips', auth, tripRoutes);
 app.use('/api/flights', auth, flightRoutes);
 app.use('/api/users', auth, userRoutes);
-app.use('/api/accommodations', accommodationRoutes);
+app.use('/api/accommodations', auth, accommodationRoutes);
 app.use('/api/reserves', auth, reserveRoutes);
 
 // Tratamento de Erros (Sempre no fim)
