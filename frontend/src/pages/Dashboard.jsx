@@ -13,7 +13,7 @@ import { ImAirplane } from "react-icons/im";
 import { FaHome } from "react-icons/fa";
 import { FaBook } from "react-icons/fa";
 
-import { getFlights, getReserves, getTrips, getSuggestions } from '../api'; 
+import { getFlights, getReserves, getTrips } from '../api'; 
 import { getStoredToken } from '../utils/authStorage';
 
 import { IoChatbubbleEllipses, IoClose } from "react-icons/io5";

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import ImageLayout from "../components/ImageLayout";
 import InfoCard from "../components/InfoCard";
+import { preloadBackgroundImage } from '../utils/preload';
 import "../styles/ForgotPassword.css";
 
 export default function ForgotPassword() {
@@ -11,7 +12,7 @@ export default function ForgotPassword() {
   const emailBody = encodeURIComponent("Hi Support Team,\n\nI need assistance resetting my password.\n\nMy registered email/username is: ");
 
   return (
-    <ImageLayout bgImageClass="bg-login-success">
+    <ImageLayout bgImageClass="bg-forgot-password" hasOverlay={true}>
       <InfoCard>
         <h3 className="heading-dark">Reset your password</h3>
         <p className="subtitle subtitle-dark">
@@ -31,6 +32,8 @@ export default function ForgotPassword() {
           <Link 
             to="/login" 
             className="back-login-link"
+            onMouseEnter={() => preloadBackgroundImage('login-img-mountains')}
+            onTouchStart={() => preloadBackgroundImage('login-img-mountains')}
           >
             Cancel and return to login
           </Link>

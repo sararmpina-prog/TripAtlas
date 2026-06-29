@@ -1,0 +1,28 @@
+
+.landing-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 450px;
+}
+
+.error-content div {
+    text-align: center;
+    padding: '20px 10px';
+}
+
+.error-content h1 {
+   font-size: 6rem;
+   color: var(--color-dark-azure);
+   margin: 0 0 10px 0;
+   font-family: Syne, sans-serif;
+}
+
+.heading-dark {
+  margin-bottom: 16px;
+}
+
+.subtitle-dark {
+  margin-bottom: 32px;
+}

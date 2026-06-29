@@ -24,7 +24,7 @@ function auth(req, res, next) {
         next();
     } catch (error) {
         console.log("JWT ERROR:", error.message);
-        // Se o token for inválido ou expirar, responde no vosso padrão JSON (403)
+        // Se o token for inválido ou expirar, responde no padrão JSON (403)
         return res.status(403).json({
             success: false,
             error: {

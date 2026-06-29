@@ -60,7 +60,7 @@ export default function FlightCard({ flights = [], tripId, isTripSelected, trips
             
             const result = mapApiServerError(err, allowedFields, 'Failed to update flight records.');
             
-            // Grava os erros nos estados correspondentes para o teu formulário consumir
+            // Grava os erros nos estados correspondentes para o formulário consumir
             setFieldErrors(result.fieldErrors);
             setFormError(result.formError);
         }

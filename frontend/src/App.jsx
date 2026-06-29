@@ -10,44 +10,42 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import RegisterSuccess from "./pages/RegisterSuccess";
+import EditProfile from "./pages/EditProfile";
+import ErrorPage from "./pages/ErrorPage";
 
 
-import ToDoList from "./pages/ToDoList";
-
-
+import { ConfirmProvider } from "./context/ConfirmContext"; // Modal de confirmação global para ações críticas
 
 export default function App() {
   return (
+    <ConfirmProvider> 
+      <Routes>
 
-  
-        <Routes>
+        {/* Páginas públicas */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
 
-          {/* Páginas públicas */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/register" element={<Register />} />
+        {/* Área autenticada */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register/success" element={<RegisterSuccess />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
+        </Route>
 
-
-            <Route path="/ToDoList" element={<ToDoList />} /> {/* Deve ser removida posteriormente */}
-
-
-          </Route>
-
-          {/* Área autenticada */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <MainLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/register/success" element={<RegisterSuccess />} />
-          </Route>
+        {/* PANHA TODOS OS ERROS 404 (Deve ser SEMPRE a última rota do ficheiro) */}
+          <Route path="*" element={<ErrorPage code="404" message="Page Not Found" />} />
 
         </Routes>
-
+    </ConfirmProvider>
   );
 }

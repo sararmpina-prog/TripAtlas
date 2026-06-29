@@ -5,25 +5,45 @@
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
+
+  animation: smoothBackground 0.4s ease-out;
+}
+
+@keyframes smoothBackground {
+  from {
+    filter: contrast(85%) brightness(90%);
+  }
+  to {
+    filter: contrast(100%) brightness(100%);
+  }
 }
 
 /* Imagem de Fundo da Landing Page (Praia) */
 .bg-landing {
-  background-image: url('../assets/landing-img-coastal-desktop.jpg');
+  background-color: #2e7498;
+  background-image: url('/bg/landing-img-coastal-desktop.avif');
 }
 
 /* Imagem de Fundo do Registo (Grécia/Casas Brancas) */
 .bg-register {
-  background-image: url('../assets/register-img-greece-desktop.jpg'); 
+  background-color: #76aac7;
+  background-image: url('/bg/register-img-greece-desktop.avif'); 
 }
 
 .bg-register-success {
-  background-image: url('../assets/registerSuccess-img-greece-desktop.jpg'); 
+  background-color: var(--color-dark-azure);
+  background-image: url('/bg/registerSuccess-img-greece-desktop.avif'); 
 }
 
 /* Imagem de Fundo do Login (Montanhas) */
 .bg-login {
-  background-image: url('../assets/login-img-mountains-desktop.jpg');
+  background-color: #24587f;
+  background-image: url('/bg/login-img-mountains-desktop.avif');
+}
+
+.bg-forgot-password {
+  background-color: #24587f;
+  background-image: url('/bg/forgotPassword-img-mountains-desktop.avif');
 }
 
 .image-overlay {
@@ -53,19 +73,23 @@
 
 @media (max-width: 768px) {
   .bg-landing {
-    background-image: url('../assets/landing-img-coastal-mobile.jpg');
+    background-image: url('/bg/landing-img-coastal-mobile.avif');
   }
 
   .bg-register {
-    background-image: url('../assets/register-img-greece-mobile.jpg');
+    background-image: url('/bg/register-img-greece-mobile.avif');
   }
 
   .bg-register-success {
-    background-image: url('../assets/registerSuccess-img-greece-mobile.jpg');
+    background-image: url('/bg/registerSuccess-img-greece-mobile.avif');
   }
 
   .bg-login {
-    background-image: url('../assets/login-img-mountains-mobile.jpg');
+    background-image: url('/bg/login-img-mountains-mobile.avif');
+  }
+
+  .bg-forgot-password {
+    background-image: url('/bg/forgotPassword-img-mountains-mobile.avif');
   }
 
   .image-overlay {

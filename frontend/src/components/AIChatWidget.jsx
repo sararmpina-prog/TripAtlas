@@ -153,6 +153,7 @@ export default function AIChatWidget() {
             }
         ]);
 
+        // O payload lê dinamicamente a prop ativa e envia em silêncio
         sendMessageMutation.mutate({
             user_message: textToSend,
             chat_id: activeChatId,
@@ -318,3 +319,23 @@ export default function AIChatWidget() {
         </div>
     );
 }
+
+/*
+O fluxo:
+Frontend (React) ➔ Envia um pedido para a API local (POST /api/ai/chat);
+    Este pedido leva a mensagem em texto.
+
+O Backend (Node.js) ➔ Recebe o pedido.
+    Vai à base de dados MySQL buscar o texto do contexto (ex: Destino: Évora, Título: Weekend Getaway).
+
+A API da AI (chatOrchestrator) ➔ Envia o pedido para os servidores da Google Gemini.
+    O que é enviado para a Google: Apenas o texto limpo ("You are in Évora...")  .O que NUNCA é enviado para a Google: O ID do utilizador ou da viagem.
+    O robô nunca vê esses números estruturais.
+
+Google Gemini ➔ Processa o texto, gera a sugestão em inglês britânico e decide acionar a ferramenta (Tool Calling).
+    Ela cospe apenas isto em JSON: {"title": "Évora Itinerary", "content": "..."}.
+    
+O Backend (Node.js) ➔ Recebe o JSON da Google e faz o INSERT INTO ai_suggestions de forma segura e autónoma.
+
+Em Resumo: O backend funciona como um escudo de privacidade. Ele filtra os dados, envia apenas texto de turismo para a API da AI (Google) e guarda os IDs em segredo dentro do próprio ecossistema.
+*/

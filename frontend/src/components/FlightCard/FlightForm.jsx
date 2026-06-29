@@ -94,7 +94,7 @@ export default function FlightForm({
         e.preventDefault();
         const newErrors = {};
 
-        // 1. Validar e trancar a cronologia da IDA (Outbound)
+        // Validar e trancar a cronologia da IDA (Outbound)
         outbound.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`out-fn-${index}`] = "Flight number is required";
             if (!flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
@@ -103,7 +103,7 @@ export default function FlightForm({
                 newErrors[`out-arr-time-${index}`] = "Arrival date/time is required";
             }
 
-            // Validação: Chegada da ida não pode ser antes da partida da ida
+            // Chegada da ida não pode ser antes da partida da ida
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`out-arr-time-${index}`] = "Arrival cannot be before departure";
@@ -111,7 +111,7 @@ export default function FlightForm({
             }
         });
 
-        // 2. Validar e trancar a cronologia da VOLTA (Return)
+        // Validar e trancar a cronologia da VOLTA (Return)
         returns.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`ret-fn-${index}`] = "Flight number is required";
             if (!flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
@@ -120,14 +120,14 @@ export default function FlightForm({
                 newErrors[`ret-arr-time-${index}`] = "Arrival date/time is required";
             }
 
-            // Validação 1: Chegada da volta não pode ser antes da partida da volta
+            // Chegada da volta não pode ser antes da partida da volta
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`ret-arr-time-${index}`] = "Arrival cannot be before departure";
                 }
             }
 
-            // Validação 2 Cruzada: Partida do regresso tem de ser obrigatoriamente após o último voo de ida terminar
+            // Validação Cruzada: Partida do regresso tem de ser obrigatoriamente após o último voo de ida terminar
             const lastOutboundFlight = outbound[outbound.length - 1];
             if (lastOutboundFlight?.arrival_datetime && flight.departure_datetime) {
                 if (new Date(flight.departure_datetime) < new Date(lastOutboundFlight.arrival_datetime)) {
