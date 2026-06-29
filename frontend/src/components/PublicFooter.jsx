@@ -3,7 +3,7 @@ import { FaEnvelope } from 'react-icons/fa';
 import '../styles/Footer.css';
 
 export default function PublicFooter() {
-  const adminEmail = "support@tripatlas.com";
+  const adminEmail = "support@tripatlas.com"; // email fictício para demonstração apenas
   const emailSubject = encodeURIComponent("TripAtlas - General Inquiry");
   const emailBody = encodeURIComponent("Hi TripAtlas Team,\n\nI would like to get more information about the platform.\n\nMy contact details: ");
 

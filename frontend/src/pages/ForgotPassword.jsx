@@ -7,7 +7,7 @@ import "../styles/ForgotPassword.css";
 export default function ForgotPassword() {
 
   // Configuração do email temporário
-  const adminEmail = "support@company.com";
+  const adminEmail = "support@tripatlas.com"; // email fictício para demonstração apenas
   const emailSubject = encodeURIComponent("Password Reset Request");
   const emailBody = encodeURIComponent("Hi Support Team,\n\nI need assistance resetting my password.\n\nMy registered email/username is: ");
 

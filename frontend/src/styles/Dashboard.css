@@ -1,10 +1,11 @@
 .dashboard-page {
   min-height: 100vh;
+  width: 100%;
   background-color: var(--color-light-azure);
   background-image: url('/bg/tripAtlas-Dashboard-desktop.avif');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
+  background-size: contain;
 }
 
 .dashboard-content {
