@@ -225,9 +225,6 @@ label {
 }
 
 .btn-delete-icon {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
   background: none;
   border: none;
   color: #ff4d4d;

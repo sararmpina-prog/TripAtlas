@@ -196,6 +196,12 @@
   position: relative;
 }
 
+.flight-form-segment-card .btn-delete-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
 .segment-card-badge {
   font-size: 0.75rem;
   font-weight: 700;
