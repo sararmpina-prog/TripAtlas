@@ -5,7 +5,7 @@ Importante: Base de dados → snake_case */
 import { db } from '../infra/db/db.js';
 
 // LISTA TODOS AS SUGESTÕES
-export async function listSuggestionsByTripId(tripId, tripName, userId) {
+export async function listSuggestionsByTripId(tripId, tripReference, userId) {
   const [rows] = await db.execute(`
     SELECT id, title, content
     FROM ai_suggestions

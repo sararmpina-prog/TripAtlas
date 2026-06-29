@@ -17,17 +17,13 @@ import * as tripRepository from '../repository/tripRepository.js';
 
 export const getSuggestions = asyncHandler(async (req, res) => {
 
+  const reference = req.query.reference;
+  const userId = req.user.id;
 
-  const { trip_name } = req.query;
-
-
-  console.log("trip_name é", trip_name)
-  console.log("req.query é", req.query)
-
-  const trip = await tripRepository.getTripByName(trip_name);
+  const trip = await tripRepository.resolveTripReference(reference, userId);
 
   if (!trip) {
-    return res.status(404).json({ success: false, message: 'Trip não encontrada' });
+    return res.status(404).json({ success: false, message: 'Trip not found' });
   }
   
   console.log("trip id é", trip.id)

@@ -1,4 +1,4 @@
-/* Orquestrador do fluxo completo de chat com o Gemini.
+/* Orquestrador do fluxo da conversa com o Gemini.
  *
  * Responsabilidades:
  *  - construir o histórico com a mensagem do utilizador (via historyBuilder)
@@ -13,6 +13,7 @@ import 'dotenv/config';
 import { buildTripBotConfig } from '../config/tripAssistantConfig.js';
 import { logGeminiDebug } from '../provider/aiDebugLogger.js';
 import { callGemini } from '../provider/callGemini.js'; // A callGemini faz a validação do histórico e da config, e depois chama o generateWithFallback 
+import * as tripRepository from '../../../repository/tripRepository.js';
 
 import { buildHistoryWithUserPrompt } from './historyBuilder.js';
 import {
@@ -37,7 +38,7 @@ export async function handleTripBotFlow(userPrompt, trip_id = null, chat_id, use
     }
 
     // Passamos o "user_id" (que vem do argumento da função) como o primeiro parâmetro,
-    // e o objeto "tripContext" como o segundo parâmetro!
+    // e o objeto "tripContext" como o segundo parâmetro
     const dynamicConfig = buildTripBotConfig(user_id, tripContext);
 
     // Primeira chamada protegida com o dynamicConfig

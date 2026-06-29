@@ -16,7 +16,7 @@ em caso de serem ficheiros com muitas mexidas o Git pode pedir para confirmar a 
 
 - git push origin main
 
------
+----- 3e7a03e
 
 # atualizar main local
 git checkout main

@@ -82,18 +82,21 @@ export async function deleteTrip(id) {
 }
 
 // Função actualizada para buscar uma viagem pelo NOME ou DESTINO ou ID, para ser mais user-friendly.
-export async function getTripByName(tripName) {
+export async function resolveTripReference(reference, userId) {
   // Converte para número se for uma string numérica (ex: "32" vira 32), caso contrário fica NaN
-  const tripIdAsNumber = Number(tripName) || -1; 
+  const tripIdAsNumber = Number(reference) || -1; 
 
   const [rows] = await db.execute(`
     SELECT id, title, user_id
     FROM trips
-    WHERE title = ? 
-       OR destination = ? 
-       OR id = ? 
+    WHERE (
+         id = ?
+      OR title LIKE ? 
+      OR destination LIKE ?
+    )
+    AND user_id = ?
     LIMIT 1
-  `, [tripName, tripName, tripIdAsNumber]); // Passa o ID como terceiro argumento
+  `, [tripIdAsNumber, `%${reference}%`, `%${reference}%`, userId]);
 
   console.log("rows[0] encontrada no repositório:", rows[0]);
   return rows[0];

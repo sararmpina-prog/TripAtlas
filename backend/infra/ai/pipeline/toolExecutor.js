@@ -6,6 +6,7 @@
  */
 
 import { createAiSuggestion } from '../../../repository/chatRepository.js';
+import * as tripRepository from '../../../repository/tripRepository.js';
 
 // Filtra array, elementos que tem functionCall e depois transforma cada objeto no valor dessa propriedade functionCall
 export function getFunctionCallsFromParts(parts = []) {
@@ -18,6 +19,25 @@ export function logRequestedFunctionCalls(currentResponse, functionCalls) {
   callsToLog.forEach((fn) => {
     console.log(`➡️ ${fn.name}`, fn.args);
   });
+}
+
+/* Função Auxiliar: Resolve a referência natural fornecida pelo utilizador */
+async function resolveTripReference(tripReference, userId) {
+  if (!tripReference) return null;
+
+  console.log(`ToolExecutor a tentar traduzir a referência: "${tripReference}" para o User: ${userId}`);
+  
+  // Chama o repositório "elástico" (procura por título, destino ou ID)
+  const tripRow = await tripRepository.resolveTripReference(tripReference, userId);
+  
+  console.log("→ Resposta da base de dados no ToolExecutor:", tripRow);
+
+  // Regra de segurança extra: Garante que a viagem encontrada pertence mesmo ao utilizador logado
+  if (tripRow && Number(tripRow.user_id) === Number(userId)) {
+    return tripRow.id;
+  }
+  
+  return null;
 }
 
 /*
@@ -35,25 +55,24 @@ export async function executeFunctionCalls(parts, { trip_id, user_id }) {
 
       switch (fn.name) {
         case 'create_trip_journal_entry': {
-          // SE O CONTEXTO FOR NULO, BUSCAMOS O ID PELO NOME QUE A GEMINI ENVIOU
-          let finalTripId = trip_id;
           
-          if (!finalTripId && fn.args.trip_name) {
-            const tripRow = await tripRepository.getTripByName(fn.args.trip_name);
-            finalTripId = tripRow?.id || null;
-          }
-
-          if (!finalTripId) {
-            result = { error: `Trip context not found for name: ${fn.args.trip_name || 'unknown'}` };
-            break;
-          }
-
-          // CHAMADA LIMPA: Passamos os argumentos reais para as colunas estruturais (id, title, content)
-          result = await createAiSuggestion(
-            finalTripId, 
-            fn.args.title || 'AI Suggestion', 
-            fn.args.content || fn.args.text_content || ''
+          const resolvedTripId = await resolveTripReference(
+              fn.args.trip_reference,
+              user_id
           );
+          
+          if (!resolvedTripId) {
+              result = { 
+                error: `Trip reference "${fn.args.trip_reference || 'unknown'}" not found or unauthorized. Please ask the user to clarify the correct trip name.` 
+              };
+              break;
+          }
+
+          const titleText = fn.args.title || 'AI Travel Insight';
+          const contentText = fn.args.content || fn.args.text_content || '';
+
+          // Grava usando o trip_id seguro resolvido pela infraestrutura
+          result = await createAiSuggestion(resolvedTripId, titleText, contentText);
           break;
         }
 

@@ -20,8 +20,8 @@ import * as suggestionRepository from '../repository/suggestionRepository.js';
 
 
 // LISTA TODOS AS SUGESTÕES
-export async function listSuggestions(tripId, tripName, userId) {
-  return await suggestionRepository.listSuggestionsByTripId(tripId, tripName, userId);
+export async function listSuggestions(tripId, tripReference, userId) {
+  return await suggestionRepository.listSuggestionsByTripId(tripId, tripReference, userId);
 }
 
 
