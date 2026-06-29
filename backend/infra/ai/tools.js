@@ -72,7 +72,6 @@ for recommendations or travel advice.
         }
       },
       "required": [
-        "user_id",
        "trip_name",
         "title",
         "content"

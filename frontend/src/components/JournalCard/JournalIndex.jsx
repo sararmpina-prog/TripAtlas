@@ -12,7 +12,8 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     const queryClient = useQueryClient();
     const confirm = useConfirm();
 
-    const tripReference = selectedTrip?.destination || selectedTrip?.title || '';
+    const tripReference = selectedTrip?.title || '';
+    console.log("estou no JournalCard e tripReference é", tripReference)
 
     // FETCH: Carrega as sugestões com Caching do TanStack Query
     const { data: suggestionsData, isPending: isLoading, error: apiError } = useQuery({
