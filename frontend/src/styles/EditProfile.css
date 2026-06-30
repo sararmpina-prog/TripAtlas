@@ -25,8 +25,12 @@
 }
 
 .profile-edit-container-wrapper {
-  width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px;
 }
 
 /* Limita a largura do DashboardCard para não esticar em ecrãs gigantes */
@@ -42,6 +46,7 @@
   display: inline-flex;
   align-items: center;
   margin-bottom: 20px;
+  padding: 4px;
   gap: 8px;
   cursor: pointer;
   font-weight: 700;
@@ -62,12 +67,26 @@
 }
 
 .profile-card-header {
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 1.25rem 0;
+  border-bottom: 2px solid var(--surface-page);
+  padding-bottom: 0.75rem;
 }
 
-.profile-card-header h2 {
+.profile-icon {
+  color: var(--color-dark-azure);
+  flex-shrink: 0; /* Impede que o ícone fique esmagado se o texto for muito longo */
+}
+
+.profile-card-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-card-header-text h2 {
   font-size: 2rem;
   color: var(--color-dark-azure);
   margin: 0 0 12px 0;
@@ -75,16 +94,15 @@
   text-shadow: none;
 }
 
-.profile-card-header p {
+.profile-card-header-text p {
   color: var(--text-muted);
-  margin: 0 0 20px 0;
   font-size: 0.95rem;
 }
 
 /* Garante que o formulário reaproveitado ocupa a largura total do DashboardCard */
 .edit-form {
   width: 100%;
-  margin: 0; 
+  margin: 20px 0 0 0; 
 }
 
 .edit-form input {

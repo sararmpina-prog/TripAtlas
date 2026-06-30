@@ -197,6 +197,10 @@ export default function ReserveForm({
                     </div>
                 </div>
 
+                <button type="button" className="btn-dashed-add" onClick={handleAddSegment}>
+                    <FaPlus size={12} /> Add Accomodation Reserve (Segment #{nextOrder})
+                </button>
+
                 {/* RODAPÉ */}
                 <div className="flight-form-actions-wrapper">
                     {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}

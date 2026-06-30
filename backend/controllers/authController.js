@@ -5,10 +5,10 @@ import * as authService from '../services/authService.js';
 
 // AUTENTICAÇÃO DE UTILIZADOR
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   // O service trata do SQL, bcrypt e geração do Token JWT
-  const authData = await authService.authenticateUser(email, password);
+  const authData = await authService.authenticateUser(email, password, rememberMe);
 
   // Devolve a resposta em JSON limpo
   res.json({

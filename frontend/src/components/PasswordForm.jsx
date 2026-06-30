@@ -8,10 +8,14 @@ import {
 } from '../validators/authValidator';
 import PasswordField from './PasswordField';
 import { updateUserPassword } from '../api';
+import { useToast } from '../context/ToastContext';
+import { triggerGlobalErrorToast } from '../utils/formHelpers';
+import SubmitButton from '../components/SubmitButton'; 
 
 export default function PasswordForm() {
     const user = getStoredUser();
     const token = getStoredToken();
+    const toast = useToast();
 
     const [formData, setFormData] = useState({
         current_password: '',
@@ -20,19 +24,22 @@ export default function PasswordForm() {
 
     const [fieldErrors, setFieldErrors] = useState({});
     const [formError, setFormError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+
+    const hasChanges = formData.current_password.trim() !== '' && formData.new_password.trim() !== '';
 
     const mutation = useMutation({
         mutationFn: (payload) => updateUserPassword(user.id, payload, token),
         onSuccess: () => {
-            setSuccessMessage('Password updated successfully!');
+            toast('Password updated successfully!', 'success');
             setFormData({ current_password: '', new_password: '' });
-            setTimeout(() => setSuccessMessage(''), 4000);
         },
         onError: (err) => {
             const result = getChangePasswordErrorState(err);
             setFieldErrors(result.fieldErrors);
             setFormError(result.formError);
+
+            // Helper para não repetir Toasts quando já existem erros inline
+            triggerGlobalErrorToast(toast, result, 'Failed to update password. Please check the fields.');
         }
     });
 
@@ -41,18 +48,20 @@ export default function PasswordForm() {
         setFormData(prev => ({ ...prev, [name]: value }));
         setFieldErrors(prev => ({ ...prev, [name]: '' }));
         setFormError('');
-        setSuccessMessage('');
     }
 
     function handleSubmit(e) {
         e.preventDefault();
         setFormError('');
         setFieldErrors({});
-        setSuccessMessage('');
+
+        if (!hasChanges) return;
 
         const validationError = validateChangePasswordForm(formData);
         if (hasValidationErrors(validationError)) {
             setFieldErrors(validationError);
+            // Mantemos este aviso local porque impede o envio ao servidor
+            toast('Please check the password requirements.', 'warning');
             return;
         }
 
@@ -87,12 +96,14 @@ export default function PasswordForm() {
             </div>
 
             {formError && <p className="auth-form-error global-profile-error" style={{ marginTop: '16px' }}>{formError}</p>}
-            {successMessage && <p style={{ color: 'green', fontWeight: '500', marginTop: '16px', fontSize: '0.9rem' }}>{successMessage}</p>}
 
             <div className="profile-form-actions">
-                <button type="submit" disabled={mutation.isPending} className="btn-base btn-orange">
-                    {mutation.isPending ? 'Updating password...' : 'Update Password'}
-                </button>
+                <SubmitButton 
+                    isPending={mutation.isPending} 
+                    hasChanges={hasChanges} 
+                    label="Update Password"
+                    pendingLabel="Updating password..."
+                />
             </div>
         </form>
     );

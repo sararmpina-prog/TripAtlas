@@ -15,37 +15,40 @@ import ErrorPage from "./pages/ErrorPage";
 
 
 import { ConfirmProvider } from "./context/ConfirmContext"; // Modal de confirmação global para ações críticas
+import { ToastProvider } from "./context/ToastContext"; // Para exibir notificações de sucesso, erro ou informação em qualquer parte da aplicação
 
 export default function App() {
   return (
-    <ConfirmProvider> 
-      <Routes>
+    <ConfirmProvider>
+      <ToastProvider>
+        <Routes>
 
-        {/* Páginas públicas */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/register" element={<Register />} />
-        </Route>
+          {/* Páginas públicas */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
 
-        {/* Área autenticada */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/register/success" element={<RegisterSuccess />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-        </Route>
+          {/* Área autenticada */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/register/success" element={<RegisterSuccess />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
+          </Route>
 
-        {/* PANHA TODOS OS ERROS 404 (Deve ser SEMPRE a última rota do ficheiro) */}
-          <Route path="*" element={<ErrorPage code="404" message="Page Not Found" />} />
+          {/* APANHA TODOS OS ERROS 404 (Deve ser SEMPRE a última rota do ficheiro) */}
+            <Route path="*" element={<ErrorPage code="404" message="Page Not Found" />} />
 
         </Routes>
+      </ToastProvider>
     </ConfirmProvider>
   );
 }
