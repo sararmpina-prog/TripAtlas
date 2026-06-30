@@ -25,6 +25,7 @@ export default function TripSidePanelView({
     };
 
     const hasTrips = trips && trips.length > 0;
+    const hasFilteredTrips = filteredTrips.length > 0;
 
     return (
         <div className="dashboard-sidepanel">
@@ -87,22 +88,29 @@ export default function TripSidePanelView({
 
                     <div className="sidepanel-trip-selector">
                         <p>Select another trip:</p>
-                        <div className="trip-list">
-                            {filteredTrips.map((trip) => (
-                                <button
-                                    key={trip.id}
-                                    type="button"
-                                    className={
-                                        Number(trip.id) === Number(tripData.id)
-                                            ? "trip-button active"
-                                            : "trip-button"
-                                    }
-                                    onClick={() => onSelectTrip(String(trip.id))} 
-                                >
-                                    {trip.title} - {trip.destination}
-                                </button>
-                            ))}
-                        </div>
+
+                        {hasFilteredTrips ? (
+                            <div className="trip-list">
+                                {filteredTrips.map((trip) => (
+                                    <button
+                                        key={trip.id}
+                                        type="button"
+                                        className={
+                                            Number(trip.id) === Number(tripData.id)
+                                                ? "trip-button active"
+                                                : "trip-button"
+                                        }
+                                        onClick={() => onSelectTrip(String(trip.id))}
+                                    >
+                                        {trip.title} - {trip.destination}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="sidepanel-trip-selector-empty">
+                                No trips match your search.
+                            </p>
+                        )}
                     </div>
                 </>
             )}

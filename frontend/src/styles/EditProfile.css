@@ -37,7 +37,8 @@
 
 .btn-back-dashboard {
   text-decoration: none;
-  color: var(--text-main, #333333); 
+  color: var(--text-main); 
+  background-color: var(--color-light-azure);
   display: inline-flex;
   align-items: center;
   margin-bottom: 20px;
@@ -71,6 +72,7 @@
   color: var(--color-dark-azure);
   margin: 0 0 12px 0;
   font-family: "Syne", sans-serif;
+  text-shadow: none;
 }
 
 .profile-card-header p {

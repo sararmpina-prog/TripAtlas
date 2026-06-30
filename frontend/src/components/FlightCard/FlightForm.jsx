@@ -97,7 +97,7 @@ export default function FlightForm({
         // Validar e trancar a cronologia da IDA (Outbound)
         outbound.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`out-fn-${index}`] = "Flight number is required";
-            if (!flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
+            if (flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
             if (!flight.departure_datetime) newErrors[`out-dep-time-${index}`] = "Departure date/time is required";
             if (!flight.arrival_datetime) {
                 newErrors[`out-arr-time-${index}`] = "Arrival date/time is required";
@@ -110,11 +110,11 @@ export default function FlightForm({
                 }
             }
         });
-
+        
         // Validar e trancar a cronologia da VOLTA (Return)
         returns.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`ret-fn-${index}`] = "Flight number is required";
-            if (!flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
+            if (flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
             if (!flight.departure_datetime) newErrors[`ret-dep-time-${index}`] = "Departure date/time is required";
             if (!flight.arrival_datetime) {
                 newErrors[`ret-arr-time-${index}`] = "Arrival date/time is required";

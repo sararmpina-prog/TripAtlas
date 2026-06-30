@@ -17,6 +17,7 @@
    color: var(--color-dark-azure);
    margin: 0 0 10px 0;
    font-family: Syne, sans-serif;
+   text-shadow: none;
 }
 
 .heading-dark {
