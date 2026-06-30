@@ -1,5 +1,6 @@
 import { FaRegTrashAlt } from "react-icons/fa";
 import DashboardCard from '../DashboardCard';
+import ReactMarkdown from "react-markdown";
 import '../../styles/JournalCard.css';
 
 export default function JournalView({ 
@@ -30,9 +31,11 @@ console.log("suggestions are",suggestions);
                             <h4>
                                 {s.title}
                             </h4>
-                            <p>
-                                {s.content}
-                            </p>
+                           <div className="journal-markdown">
+                                <ReactMarkdown>
+                                    {s.content}
+                                </ReactMarkdown>
+                            </div>
                         </div>
 
                         {/* Botão de apagar elástico alinhado à direita */}
@@ -45,16 +48,7 @@ console.log("suggestions are",suggestions);
                             <FaRegTrashAlt size={14} />
                         </button>
 
-                        <div
-                            style={{
-                                width: 30,
-                                height: 30,
-                                background: "red",
-                                marginLeft: 10
-                            }}
-                        >
-                            X
-                        </div>
+
                     </div>
                 ))}
             </div>

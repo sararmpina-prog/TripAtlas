@@ -15,6 +15,7 @@ import {createAiSuggestion} from '../../repository/chatRepository.js'
 import { logGeminiDebug } from './aiDebugLogger.js';
 import {generateWithFallback} from './modelsFallback.js'
 import {summarizeHistory} from './summarizeHistory.js';
+import {TripJournalEntrySchema} from '../../validators/journalValidor.js'
 import * as chatRepository from '../../repository/chatRepository.js';
 
 
@@ -111,7 +112,18 @@ console.log(JSON.stringify(currentResponse, null, 2));
 
     switch (fn.name) {
       case 'create_trip_journal_entry':
-        result = await createAiSuggestion({...fn.args, trip_id, user_id});
+        //  const data = TripJournalEntrySchema.parse({
+        //     ...fn.args,
+        //     trip_id,
+        //     user_id,
+        //   });
+
+
+        result = await createAiSuggestion({
+            ...fn.args,
+            trip_id,
+            user_id,
+          });
         break;
 
       default:

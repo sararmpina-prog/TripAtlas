@@ -60,7 +60,7 @@ for recommendations or travel advice.
         },
         "content": {
           "type": "string",
-          "description": "Conteúdo detalhado da sugestão."
+          "description": "Conteúdo simples da sugestão."
         },
         "trip_name": {
           "type": "string",
