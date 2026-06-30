@@ -24,6 +24,8 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
 
     const suggestions = suggestionsData?.data || suggestionsData || [];
 
+    console.log("suggestions no triAtlas", suggestionsData)
+
     // MUTATION: Apagar uma sugestão específica e atualizar o ecrã instantaneamente
     const deleteSuggestionMutation = useMutation({
         mutationFn: (suggestionId) => deleteSuggestion(suggestionId, token),

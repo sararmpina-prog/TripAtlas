@@ -7,7 +7,11 @@ export default function JournalView({
     loading, 
     error, 
     onDeleteSuggestion 
-}) {
+}) 
+
+{
+
+console.log("suggestions are",suggestions);
     return (
         <DashboardCard actions={null}>
             <div className="journal-view-container">
@@ -19,7 +23,7 @@ export default function JournalView({
                 {/* Listagem das sugestões mapeadas com ação de delete */}
                 {!loading && !error && suggestions.map((s) => (
                     <div 
-                        key={s.id || s.title} 
+                        key={s.id} 
                         className="journal-suggestion-item" 
                     >
                         <div style={{ flex: 1 }}>
@@ -35,11 +39,22 @@ export default function JournalView({
                         <button 
                             type="button" 
                             className="btn-delete-icon" 
-                            onClick={() => onDeleteSuggestion(s.id, s.title)}
+                            onClick={() => onDeleteSuggestion(s.id)}
                             title="Delete AI suggestion"
                         >
                             <FaRegTrashAlt size={14} />
                         </button>
+
+                        <div
+                            style={{
+                                width: 30,
+                                height: 30,
+                                background: "red",
+                                marginLeft: 10
+                            }}
+                        >
+                            X
+                        </div>
                     </div>
                 ))}
             </div>
