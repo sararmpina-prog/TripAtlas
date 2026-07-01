@@ -12,14 +12,11 @@ import {
   validateRegisterForm,
 } from '../validators/authValidator';
 import { preloadBackgroundImage } from '../utils/preload';
-import { useToast } from '../context/ToastContext';
-import { triggerGlobalErrorToast } from '../utils/formHelpers';
 import SubmitButton from '../components/SubmitButton';
 import '../styles/Register.css';
 
 export default function Register() {
   const navigate = useNavigate();
-  const toast = useToast();
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -46,15 +43,13 @@ export default function Register() {
       const user = response.data.user;
 
       saveAuthSession({ token, user });
+
       navigate('/register/success');
     },
     onError: (err) => {
       const nextErrorState = getRegisterErrorState(err);
       setFieldErrors(nextErrorState.fieldErrors);
       setFormError(nextErrorState.formError);
-
-    // Chamada do helper: Controla os Toasts sem duplicar erros inline
-    triggerGlobalErrorToast(toast, nextErrorState, "Failed to create account. Please check the fields.");
     },
   });
 
@@ -85,7 +80,6 @@ export default function Register() {
 
     if (hasValidationErrors(validationError)) {
       setFieldErrors(validationError);
-      toast('Please check the registration requirements.', 'warning');
       return;
     }
 
@@ -207,6 +201,7 @@ export default function Register() {
                   hasChanges={hasChanges} 
                   label="Register"
                   pendingLabel="Creating account..."
+                  className="btn-base btn-orange auth-submit"
                 />
               </div>
             </form>

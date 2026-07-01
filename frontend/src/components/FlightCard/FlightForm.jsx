@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
 
 import DashboardCard from '../DashboardCard';
 import FlightSegmentForm from './FlightSegmentForm';
 import { useConfirm } from '../../context/ConfirmContext';
+import SubmitButton from '../../components/SubmitButton';
 import '../../styles/FlightCard.css';
 
 export default function FlightForm({ 
@@ -15,14 +16,12 @@ export default function FlightForm({
     isPending,
     apiError,           
     serverFieldErrors = {}, 
-    selectedTrip // Recebemos a viagem aqui
+    selectedTrip
 }) {
-    // Converte as datas da viagem para o formato aceite pelos calendários (YYYY-MM-DD)
     const tripMinDate = selectedTrip?.start_date ? selectedTrip.start_date.split('T')[0] + "T00:00" : "";
     const tripMaxDate = selectedTrip?.end_date ? selectedTrip.end_date.split('T')[0] + "T23:59" : "";
     const tripStart = tripMinDate ? new Date(tripMinDate) : null;
     const tripEnd = tripMaxDate ? new Date(tripMaxDate) : null;
-
 
     const confirm = useConfirm();
 
@@ -40,11 +39,15 @@ export default function FlightForm({
     const [returns, setReturns] = useState([...returnSegments]);
     const [localErrors, setLocalErrors] = useState({});
 
-    useEffect(() => {
-        if (Object.keys(serverFieldErrors).length > 0) {
-            setLocalErrors(serverFieldErrors);
-        }
-    }, [serverFieldErrors]);
+    // Não usar setState dentro de useEffect - derivar do serverFieldErrors quando renderizar
+    const allErrors = { ...serverFieldErrors, ...localErrors };
+
+    // Detecção de alterações: Compara o estado atual com os dados originais
+    const hasChanges = 
+        outbound.length !== outboundSegments.length ||
+        returns.length !== returnSegments.length ||
+        JSON.stringify(outbound) !== JSON.stringify(outboundSegments) ||
+        JSON.stringify(returns) !== JSON.stringify(returnSegments);
 
     const nextOrder = direction === 'Outbound' ? outbound.length + 1 : returns.length + 1;
 
@@ -92,58 +95,54 @@ export default function FlightForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Proteção caso contornem o estado disabled visual
+        if (!hasChanges) return;
+
         const newErrors = {};
 
-        // Validar e trancar a cronologia da IDA (Outbound)
         outbound.forEach((flight, index) => {
-            if (!flight.flight_number) newErrors[`out-fn-${index}`] = "Flight number is required";
-            if (flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
-            if (!flight.departure_datetime) newErrors[`out-dep-time-${index}`] = "Departure date/time is required";
-            if (!flight.arrival_datetime) {
-                newErrors[`out-arr-time-${index}`] = "Arrival date/time is required";
-            }
+            const segmentKey = `outbound-${index}`;
+            if (!flight.flight_number) newErrors[`fn-${segmentKey}`] = "Flight number is required";
+            if (flight.departure_airport?.length !== 3) newErrors[`dep-${segmentKey}`] = "Must be a 3-letter airport code";
+            if (!flight.departure_datetime) newErrors[`dep-time-${segmentKey}`] = "Departure date/time is required";
+            if (!flight.arrival_datetime) newErrors[`arr-time-${segmentKey}`] = "Arrival date/time is required";
 
-            // Chegada da ida não pode ser antes da partida da ida
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
-                    newErrors[`out-arr-time-${index}`] = "Arrival cannot be before departure";
+                    newErrors[`arr-time-${segmentKey}`] = "Arrival cannot be before departure";
                 }
             }
         });
         
-        // Validar e trancar a cronologia da VOLTA (Return)
         returns.forEach((flight, index) => {
-            if (!flight.flight_number) newErrors[`ret-fn-${index}`] = "Flight number is required";
-            if (flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
-            if (!flight.departure_datetime) newErrors[`ret-dep-time-${index}`] = "Departure date/time is required";
-            if (!flight.arrival_datetime) {
-                newErrors[`ret-arr-time-${index}`] = "Arrival date/time is required";
-            }
+            const segmentKey = `return-${index}`;
+            if (!flight.flight_number) newErrors[`fn-${segmentKey}`] = "Flight number is required";
+            if (flight.departure_airport?.length !== 3) newErrors[`dep-${segmentKey}`] = "Must be a 3-letter airport code";
+            if (!flight.departure_datetime) newErrors[`dep-time-${segmentKey}`] = "Departure date/time is required";
+            if (!flight.arrival_datetime) newErrors[`arr-time-${segmentKey}`] = "Arrival date/time is required";
 
-            // Chegada da volta não pode ser antes da partida da volta
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
-                    newErrors[`ret-arr-time-${index}`] = "Arrival cannot be before departure";
+                    newErrors[`arr-time-${segmentKey}`] = "Arrival cannot be before departure";
                 }
             }
 
-            // Validação Cruzada: Partida do regresso tem de ser obrigatoriamente após o último voo de ida terminar
             const lastOutboundFlight = outbound[outbound.length - 1];
             if (lastOutboundFlight?.arrival_datetime && flight.departure_datetime) {
                 if (new Date(flight.departure_datetime) < new Date(lastOutboundFlight.arrival_datetime)) {
-                    newErrors[`ret-dep-time-${index}`] = "Return flight must be after outbound flight connects";
+                    newErrors[`dep-time-${segmentKey}`] = "Return flight must be after outbound flight connects";
                 }
             }
         });
 
-        // 3. Verificação do saco de erros e submissão elástica para a API
         if (Object.keys(newErrors).length > 0) {
             setLocalErrors(newErrors);
-            return; // Aborta e mostra as bordas vermelhas
+            return;
         }
 
         setLocalErrors({});
-        onSave([...outbound, ...returns]); // Envia o lote unificado sem erros de concorrência
+        onSave([...outbound, ...returns]);
     };
 
     const activeList = direction === 'Outbound' ? outbound : returns;
@@ -160,7 +159,6 @@ export default function FlightForm({
             <form onSubmit={handleSubmit} noValidate className="flight-form-container">
                 <h5 className='flight-form-title'>Manage Flights</h5>
 
-                {/* BOTÕES SELETORES */}
                 <div className="journey-selector">
                     <button
                         type="button"
@@ -178,7 +176,6 @@ export default function FlightForm({
                     </button>
                 </div>
 
-                {/* LISTAGEM REATIVA COMPONENTIZADA */}
                 <div className="flight-form-list">
                     {activeList.length === 0 ? (
                         <p className="flight-form-empty-msg">No {direction.toLowerCase()} segments logged yet.</p>
@@ -187,34 +184,44 @@ export default function FlightForm({
                             const segmentKey = `${direction.toLowerCase()}-${index}`;
 
                             return (
-                            <FlightSegmentForm 
-                                key={flight.id || `${segmentKey}`}
-                                flight={flight}
-                                index={index}
-                                direction={direction}
-                                segmentKey={segmentKey}
-                                localErrors={localErrors}
-                                onFieldChange={(field, val) => handleFieldChange(activeList, setActiveList, index, segmentKey, field, val)}
-                                onRemove={() => handleRemoveSegment(index, direction)}
-                                tripMinDate={tripMinDate}
-                                tripMaxDate={tripMaxDate}
-                            />
+                                <FlightSegmentForm
+                                    key={segmentKey}
+                                    index={index}
+                                    flight={flight}
+                                    direction={direction}
+                                    localErrors={allErrors}
+                                    segmentKey={segmentKey}
+                                    tripMinDate={tripMinDate}
+                                    tripMaxDate={tripMaxDate}
+                                    onFieldChange={(field, val) => handleFieldChange(activeList, setActiveList, index, segmentKey, field, val)}
+                                    onRemove={() => handleRemoveSegment(index, direction)}
+                                    disabled={isPending}
+                                />
                             );
                         })
                     )}
                 </div>
 
-                <button type="button" className="btn-dashed-add" onClick={handleAddSegment}>
-                    <FaPlus size={12} /> Add {direction} Flight (Segment #{nextOrder})
-                </button>
+                <div className="flight-form-bottom-actions">
+                    <button 
+                        type="button" 
+                        className="btn-dashed-add" 
+                        onClick={handleAddSegment}
+                        disabled={isPending}
+                    >
+                        <FaPlus size={12} /> Add Segment #{nextOrder}
+                    </button>
 
-                {/* RODAPÉ */}
-                <div className="flight-form-actions-wrapper">
-                    {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}
+                    {apiError && <p className="sidepanel-trip-picker-error">{apiError}</p>}
+
                     <div className="flight-form-actions">
-                        <button type="submit" className="btn-base btn-orange" disabled={isPending}>
-                            {isPending ? 'Syncing Flights...' : 'Save Flight Configuration'}
-                        </button>
+                        {/* SUBMIT BUTTON REUTILIZÁVEL */}
+                        <SubmitButton 
+                            isPending={isPending} 
+                            hasChanges={hasChanges} 
+                            label="Save Flights"
+                            pendingLabel="Saving..."
+                        />
                         <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>Cancel</button>
                     </div>
                 </div>

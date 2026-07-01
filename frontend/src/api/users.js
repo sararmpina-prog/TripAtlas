@@ -33,3 +33,18 @@ export async function updateUserPassword(userId, payload, token) {
   }
   return data;
 }
+
+/* Apaga permanentemente a conta do utilizador */
+export async function deleteUserAccount(userId, token) {
+  const response = await fetch(`${API_URL}/users/${userId}`, {
+    method: "DELETE",
+    headers: createJsonHeaders(token),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw buildApiError(data, "Failed to delete account.", response.status);
+  }
+  return data;
+}

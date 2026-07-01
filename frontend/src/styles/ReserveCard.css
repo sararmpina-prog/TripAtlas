@@ -89,6 +89,44 @@
   justify-content: flex-end;
 }
 
+/* SEGMENTOS DE ACOMODAÇÃO */
+.reserve-segment-wrapper {
+  padding: 1rem;
+  background: #fcfcfc;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.reserve-segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.reserve-segment-header h6 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading-dark);
+}
+
+.reserve-segment-header .btn-delete-icon {
+  background: none;
+  border: none;
+  color: var(--error-color-dark);
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.reserve-segment-header .btn-delete-icon:hover {
+  transform: scale(1.1);
+}
+
 /* FORMULÁRIO DE GESTÃO (MANAGE FORM)  */
 
 .reserve-form-container {

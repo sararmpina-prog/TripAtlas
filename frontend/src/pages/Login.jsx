@@ -8,7 +8,6 @@ import { loginUser } from "../api";
 import { saveAuthSession } from "../utils/authStorage";
 import { preloadBackgroundImage } from '../utils/preload';
 import { useToast } from "../context/ToastContext";
-import { triggerGlobalErrorToast } from "../utils/formHelpers";
 import SubmitButton from "../components/SubmitButton";
 import {
   getLoginErrorState,
@@ -40,6 +39,9 @@ function Login() {
 
       saveAuthSession({ token, user, rememberMe });
 
+      // Toast de sucesso que vai nascer já dentro do Dashboard
+      toast(`Welcome back, ${user?.first_name || 'traveler'}!`, 'success');
+
       navigate("/dashboard");
     },
 
@@ -47,9 +49,6 @@ function Login() {
       const nextErrorState = getLoginErrorState(err);
       setFieldErrors(nextErrorState.fieldErrors);
       setFormError(nextErrorState.formError);
-
-      // Chamada do helper: Controla os Toasts sem duplicar erros inline
-      triggerGlobalErrorToast(toast, nextErrorState, "Failed to log in. Please check your credentials.");
     },
   });
 
@@ -179,7 +178,7 @@ function Login() {
               hasChanges={hasChanges} 
               label="Login"
               pendingLabel="Logging in..."
-              className="auth-submit"
+              className="btn-base btn-light auth-submit"
             />
           </form>
         </InfoCard>

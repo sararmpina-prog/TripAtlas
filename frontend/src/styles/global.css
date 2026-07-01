@@ -189,9 +189,18 @@ label {
   transition: all 0.2s ease;
 }
 
-.btn-base:disabled {
-  opacity: 0.72;
-  cursor: wait;
+.btn-base:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-base:disabled, 
+.btn-base.btn-disabled {
+  opacity: 0.70;
+  cursor: not-allowed ;
+  transform: none;     /* Desativa os efeitos visuais de clique/hover ativos */
+  filter: none;     /* Desativa os efeitos visuais de clique/hover ativos */
+  text-shadow: none; /* Suaviza as sombras para o botão parecer desativado */
 }
 
 .btn-orange {

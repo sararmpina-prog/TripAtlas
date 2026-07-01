@@ -221,11 +221,15 @@
     font-weight: 600;
 }
 
-.dashboard-sidepanel-buttons {
+.dashboard-sidepanel .flight-form-actions {
    display: flex;
    flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
+}
+
+.dashboard-sidepanel .flight-form-actions button {
+  width: 100%;
 }
 
 

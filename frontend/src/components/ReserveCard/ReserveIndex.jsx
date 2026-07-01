@@ -15,12 +15,11 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
     const confirm = useConfirm();
 
     const [isEditing, setIsEditing] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
     const [currentReserve, setCurrentReserve] = useState(null);
     const [formError, setFormError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
-    const allowedFields = ['accommodation_name', 'accommodation_type', 'check_in_date', 'check_out_date', 'address'];
+    const allowedFields = ['accommodation_name', 'accommodation_type', 'check_in_date', 'check_out_date', 'check_in_time', 'check_out_time', 'address'];
 
     // MUTATION: Atualizar Reserva
     const updateMutation = useMutation({
@@ -71,6 +70,11 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
         setFieldErrors({});
     };
 
+    const handleCreateTrigger = () => {
+        if (!tripId) return;
+        window.location.href = `/accommodations/create?tripId=${tripId}`;
+    };
+
     if (isEditing && currentReserve) {
         return (
             <ReserveForm 
@@ -80,6 +84,7 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
                 apiError={formError}
                 serverFieldErrors={fieldErrors}
                 onSave={(data) => updateMutation.mutate(data)}
+                onCreateNew={handleCreateTrigger}
                 onDelete={() => handleDeleteTrigger(currentReserve.id, currentReserve.accommodation_name)}
                 onCancel={handleClose}
             />
@@ -91,7 +96,7 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
             <DashboardPlaceholderCard 
                 resource="accommodation"
                 hasTrip={!!selectedTrip}
-                onClick={() => window.location.href = `/accommodations/create?tripId=${tripId}`}
+                onClick={handleCreateTrigger}
             />
         );
     }

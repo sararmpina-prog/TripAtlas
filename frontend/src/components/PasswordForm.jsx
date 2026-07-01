@@ -82,7 +82,7 @@ export default function PasswordForm() {
                 {fieldErrors.current_password && <p className="auth-form-error">{fieldErrors.current_password}</p>}
             </div>
 
-            <div className="auth-form-field" style={{ marginTop: '16px' }}>
+            <div className="auth-form-field">
                 <PasswordField
                     name="new_password"
                     placeholder="New Password *"
@@ -95,7 +95,7 @@ export default function PasswordForm() {
                 {fieldErrors.new_password && <p className="auth-form-error">{fieldErrors.new_password}</p>}
             </div>
 
-            {formError && <p className="auth-form-error global-profile-error" style={{ marginTop: '16px' }}>{formError}</p>}
+            {formError && <p className="auth-form-error global-profile-error">{formError}</p>}
 
             <div className="profile-form-actions">
                 <SubmitButton 

@@ -180,7 +180,7 @@
 }
 
 .ai-chat-input-area button:disabled {
-  opacity: 0.5;
+  opacity: 0.70;
   cursor: not-allowed;
 }
 

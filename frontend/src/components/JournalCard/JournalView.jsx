@@ -22,7 +22,7 @@ export default function JournalView({
                         key={s.id || s.title} 
                         className="journal-suggestion-item" 
                     >
-                        <div style={{ flex: 1 }}>
+                        <div>
                             <h4>
                                 {s.title}
                             </h4>

@@ -25,6 +25,11 @@
   background-color: var(--color-light-azure);
 }
 
+.login-card .btn-light{
+  background-color: var(--color-white);
+  color: var(--text-main);
+}
+
 @media (max-width: 900px) {
   .auth-split,
   .auth-split-login {
