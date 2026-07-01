@@ -95,7 +95,6 @@ export default function Dashboard() {
                         {/* SECÇÃO DE VOOS */}
                         <DashboardSection title="Flights" count={currentFlights.length} icon={<ImAirplane size={30} />}>
                             <FlightCard 
-                                key={`flights-${selectedTrip?.id || 'none'}`} 
                                 flights={currentFlights} 
                                 tripId={selectedTrip?.id} 
                                 isTripSelected={!!selectedTrip}
@@ -106,7 +105,6 @@ export default function Dashboard() {
                         {/* SECÇÃO DE ALOJAMENTOS */}
                         <DashboardSection title="Accommodations" count={currentReserves.length} icon={<FaHome size={30} />}>
                             <ReserveCard
-                                key={`reserves-${selectedTrip?.id || 'none'}`} 
                                 reserves={currentReserves}
                                 tripId={selectedTrip?.id}
                                 selectedTrip={selectedTrip}
@@ -116,7 +114,6 @@ export default function Dashboard() {
                         {/* SECÇÃO DO JOURNAL / SUGESTÕES AI */}
                         <DashboardSection title="AI Travel Journal" count={0} icon={<FaBook size={30} />}>
                             <JournalCard 
-                                key={`journal-${selectedTrip?.id || 'none'}`} 
                                 selectedTrip={selectedTrip} 
                                 isTripSelected={!!selectedTrip}
                                 onTriggerChat={() => setIsChatOpen(true)} 
