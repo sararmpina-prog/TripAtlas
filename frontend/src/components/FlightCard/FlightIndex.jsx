@@ -9,10 +9,12 @@ import FlightView from './FlightView';
 import FlightForm from './FlightForm';
 import { useToast } from '../../context/ToastContext';
 
+import '../../styles/FlightCard.css';
+
 export default function FlightCard({ flights = [], tripId, isTripSelected, trips = [] }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [formError, setFormError] = useState(null); 
-    const [fieldErrors, setFieldErrors] = useState({}); 
+    const [formError, setFormError] = useState(null); // Erro de topo/base
+    const [fieldErrors, setFieldErrors] = useState({}); // Erro específicos de inputs
     
     const token = getStoredToken();
     const queryClient = useQueryClient();

@@ -1,7 +1,6 @@
 import { MdOutlineEdit } from 'react-icons/md';
 import FlightSegmentView from "./FlightSegmentView";
 import DashboardCard from '../DashboardCard';
-import '../../styles/FlightCard.css';
 
 export default function FlightView({ outboundSegments = [], returnSegments = [], onEditClick }) {
     const hasReturn = returnSegments.length > 0;

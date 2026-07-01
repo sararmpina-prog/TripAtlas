@@ -8,6 +8,9 @@ import { useToast } from '../../context/ToastContext';
 import JournalView from './JournalView';
 import DashboardPlaceholderCard from '../DashboardPlaceholderCard';
 
+
+import '../../styles/JournalCard.css';
+
 export default function JournalCard({ selectedTrip, isTripSelected, onTriggerChat }) {
     const token = getStoredToken();
     const queryClient = useQueryClient();

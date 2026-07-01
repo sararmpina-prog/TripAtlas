@@ -1,7 +1,6 @@
 import { formatDate } from '../../utils/dateHelpers';
 import { FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { MdOutlineEdit } from 'react-icons/md';
-import '../../styles/ReserveCard.css';
 
 export default function ReserveView({ reserve, onEditClick }) {
     const accommodationName = reserve.accommodation_name || `Accommodation #${reserve.accommodation_id}`;

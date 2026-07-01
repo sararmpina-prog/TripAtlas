@@ -1,7 +1,6 @@
 import { FaRegTrashAlt } from "react-icons/fa";
 import DashboardCard from '../DashboardCard';
 import ReactMarkdown from "react-markdown";
-import '../../styles/JournalCard.css';
 
 export default function JournalView({ 
     suggestions = [], 

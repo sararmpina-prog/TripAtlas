@@ -8,6 +8,7 @@ import { useToast } from '../../context/ToastContext';
 
 import TripSidePanelView from './TripSidePanelView';
 import TripSidePanelForm from './TripSidePanelForm';
+
 import '../../styles/TripSidePanel.css';
 
 export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }) {

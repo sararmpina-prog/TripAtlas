@@ -6,7 +6,6 @@ import DashboardCard from '../DashboardCard';
 import FlightSegmentForm from './FlightSegmentForm';
 import { useConfirm } from '../../context/ConfirmContext';
 import SubmitButton from '../../components/SubmitButton';
-import '../../styles/FlightCard.css';
 
 export default function FlightForm({ 
     outboundSegments = [], 
