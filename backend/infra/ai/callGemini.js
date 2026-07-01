@@ -1,14 +1,14 @@
-/* Camada genérica de comunicação com a Gemini.
+/* Camada de comunicação com a Gemini.
+objetivo: Isolar toda a complexidade da comunicação com a Gemini, incluindo:
+- fallback para modelos alternativos
+- logging de erros e debug
+- sumarização do histórico de conversa
+- execução de function calls sugeridas pelo modelo
 
-Responsabilidades:
-- validar configuração base
-- executar chamadas ao provider utilizando o SDK oficial @google/genai
-- aplicar retry/fallback de modelos
-- devolver texto ou resposta bruta
-
-Esta camada não conhece prompts, tools nem comportamento específico do assistente.
+Diferença de responsabilidades:
+- callGemini.js → comunicação com SDK da Gemini
+- tripBotConfig.js → comportamento do agente
 */
-
 import 'dotenv/config';
 import {config} from './tripBotConfig.js'
 import {createAiSuggestion} from '../../repository/chatRepository.js'
@@ -221,10 +221,3 @@ console.log(JSON.stringify(currentResponse, null, 2));
   throw error
     }
   }
-
-
-
-
-
-
-

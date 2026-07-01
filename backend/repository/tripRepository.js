@@ -93,3 +93,28 @@ export async function getTripByName(tripName) {
 
   return rows[0];
 }
+
+export async function resolveTripReference(reference, userId) {
+  const normalized = String(reference).trim();
+  const numericId = Number(normalized);
+
+  if (Number.isInteger(numericId) && numericId > 0) {
+    const [rows] = await db.execute(`
+      SELECT id, title, user_id
+      FROM trips
+      WHERE id = ? AND user_id = ?
+      LIMIT 1
+    `, [numericId, userId]);
+
+    if (rows[0]) return rows[0];
+  }
+
+  const [rows] = await db.execute(`
+    SELECT id, title, user_id
+    FROM trips
+    WHERE title = ? AND user_id = ?
+    LIMIT 1
+  `, [normalized, userId]);
+
+  return rows[0] ?? null;
+}

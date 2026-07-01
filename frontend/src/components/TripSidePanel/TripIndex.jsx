@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createTrip, updateTrip } from '../../api';
+import { createTrip, updateTrip, deleteTrip } from '../../api';
 import { getStoredToken, getStoredUser } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
+import { useConfirm } from '../../context/ConfirmContext';
 
 import TripSidePanelView from './TripSidePanelView';
 import TripSidePanelForm from './TripSidePanelForm';
@@ -12,6 +13,7 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
     const token = getStoredToken();
     const user = getStoredUser();
     const queryClient = useQueryClient();
+    const confirm = useConfirm();
 
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -61,6 +63,24 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         }
     });
 
+    // MUTATION: Apagar Viagem
+    const deleteTripMutation = useMutation({
+        mutationFn: (tripId) => deleteTrip(tripId, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'flights'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'reserves'] });
+            onTripChange(null);
+            setIsEditing(false);
+            setFormError('');
+            setFieldErrors({});
+        },
+        onError: (err) => {
+            const result = mapApiServerError(err, [], 'Failed to delete trip.');
+            setFormError(result.formError);
+        }
+    });
+
     const handleSave = (formData) => {
         if (!user?.id) {
             setFormError("User session not found. Please log in again.");
@@ -86,14 +106,28 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         setFieldErrors({});
     };
 
+    const handleDelete = async () => {
+        if (!selectedTrip?.id) return;
+
+        const confirmed = await confirm(
+            'Delete Trip?',
+            `Do you want to delete ${selectedTrip.title || 'this trip'}? This action cannot be undone.`
+        );
+
+        if (confirmed) {
+            deleteTripMutation.mutate(selectedTrip.id);
+        }
+    };
+
     if (isCreating || isEditing) {
         return (
             <TripSidePanelForm 
                 selectedTrip={isEditing ? selectedTrip : null}
-                isPending={createTripMutation.isPending || updateTripMutation.isPending}
+                isPending={createTripMutation.isPending || updateTripMutation.isPending || deleteTripMutation.isPending}
                 apiError={formError}
                 serverFieldErrors={fieldErrors} // Passa os erros do servidor
                 onSave={handleSave}
+                onDelete={isEditing ? handleDelete : null}
                 onCancel={handleCancel}
             />
         );

@@ -4,8 +4,6 @@ import { BrowserRouter } from 'react-router'
 import './index.css'
 import './styles/global.css'
 import App from './App.jsx'
-// import { ThemeProvider } from './context/ThemeContext'
-// import { PreferencesProvider } from './context/PreferencesContext'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 

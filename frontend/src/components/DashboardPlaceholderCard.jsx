@@ -6,7 +6,7 @@ export default function PlaceholderCard({ resource, hasTrip, onClick }) {
     let resourceName = resource;
     let description = "";
 
-    if (resource === 'reserves') {
+    if (resource === 'reserves' || resource === 'accommodation') {
         resourceName = 'accommodation reserves';
         description = hasTrip 
             ? "Click here to attach an accommodation reserve." 

@@ -12,10 +12,12 @@ import {
   validateRegisterForm,
 } from '../validators/authValidator';
 import { preloadBackgroundImage } from '../utils/preload';
+import SubmitButton from '../components/SubmitButton';
 import '../styles/Register.css';
 
 export default function Register() {
   const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     first_name: '',
     surname: '',
@@ -27,13 +29,20 @@ export default function Register() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState('');
 
+  // Validação: Acende o botão mal os campos obrigatórios tenham texto
+  const hasChanges = 
+    formData.first_name.trim() !== '' && 
+    formData.surname.trim() !== '' && 
+    formData.email.trim() !== '' && 
+    formData.password.trim() !== '';
+
   const { mutate, isPending } = useMutation({
     mutationFn: registerUser,
     onSuccess: (response) => {
       const token = response.data.token;
       const user = response.data.user;
 
-      saveAuthSession({ token, user, rememberMe: true });
+      saveAuthSession({ token, user });
 
       navigate('/register/success');
     },
@@ -64,6 +73,8 @@ export default function Register() {
     setFormError('');
     setFieldErrors({});
 
+    if (!hasChanges) return;
+
     const normalizedPayload = normalizeRegisterPayload(formData);
     const validationError = validateRegisterForm(normalizedPayload);
 
@@ -84,7 +95,6 @@ export default function Register() {
           <div className="left-content-wrapper">
             <h2>Get Started!</h2>
             <h4>Already have<br />an account?</h4>
-            {/* Otimização: Preload da imagem de login ao aproximar o rato */}
             <Link 
               to="/login" 
               className="btn-base btn-light"
@@ -182,17 +192,17 @@ export default function Register() {
 
               {formError && <p className="auth-form-error">{formError}</p>}
 
-              <div className="auth-form-actions">
-                {/* Otimização: Preload da imagem de sucesso assim que o utilizador vai clicar no botão */}
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="btn-base btn-orange"
-                  onMouseEnter={() => preloadBackgroundImage('registerSuccess-img-greece')}
-                  onTouchStart={() => preloadBackgroundImage('registerSuccess-img-greece')}
-                >
-                  {isPending ? 'Creating account...' : 'Register'}
-                </button>
+              <div className="auth-form-actions" 
+                   onMouseEnter={() => preloadBackgroundImage('registerSuccess-img-greece')}
+                   onTouchStart={() => preloadBackgroundImage('registerSuccess-img-greece')}>
+                {/* SUBMIT BUTTON REUTILIZÁVEL */}
+                <SubmitButton 
+                  isPending={isPending} 
+                  hasChanges={hasChanges} 
+                  label="Register"
+                  pendingLabel="Creating account..."
+                  className="btn-base btn-orange auth-submit"
+                />
               </div>
             </form>
           </div>

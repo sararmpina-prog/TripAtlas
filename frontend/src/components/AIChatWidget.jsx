@@ -114,6 +114,10 @@ export default function AIChatWidget() {
             queryClient.invalidateQueries({
                 queryKey: ['chat', backendChatId || activeChatId]
             });
+
+            queryClient.invalidateQueries({
+                queryKey: ['dashboard', 'journal']
+            });
         },
 
         onError: (error) => {

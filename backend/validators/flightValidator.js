@@ -15,6 +15,11 @@ export const createFlightSchema = z.object({
     .positive({ message: "The field trip_id must be a positive number." }),
     // coerce: tenta forçar a conversão do valor para número; se falhar, lança um erro de tipo inválido com a mensagem personalizada
 
+  direction: z
+    .enum(['outbound', 'return'], {
+      errorMap: () => ({ message: 'The field direction must be either outbound or return.' }),
+    }),
+
   // Aplica a normalização primeiro, valida o tamanho máximo se houver texto, e permite null/undefined
   flight_number: optionalNormalizedString
     .pipe(z.string().max(25, { message: "The field flight_number cannot exceed 25 characters." }).nullable())
@@ -58,6 +63,11 @@ export const updateFlightSchema = z.object({
     .coerce.number({ invalid_type_error: "The field trip_id must be numeric." })
     .int({ message: "The field trip_id must be an integer." })
     .positive({ message: "The field trip_id must be a positive number." })
+    .optional(),
+  direction: z
+    .enum(['outbound', 'return'], {
+      errorMap: () => ({ message: 'The field direction must be either outbound or return.' }),
+    })
     .optional(),
   flight_number: optionalNormalizedString
     .pipe(z.string().max(25, { message: "The field flight_number cannot exceed 25 characters." }).nullable())

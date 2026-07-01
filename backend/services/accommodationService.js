@@ -49,6 +49,7 @@ export async function updateAccommodation(id, validatedAccommodation) {
 
   const updateData = {
     name: validatedAccommodation.name ?? existingAccommodation.name,
+    address: validatedAccommodation.address ?? existingAccommodation.address,
     city: validatedAccommodation.city ?? existingAccommodation.city,
     country: validatedAccommodation.country ?? existingAccommodation.country,
   };

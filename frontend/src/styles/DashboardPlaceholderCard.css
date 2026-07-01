@@ -31,14 +31,27 @@
 /* Remove a formatação padrão do botão HTML e herda a largura elástica */
 .dashboard-placeholder-btn {
   width: 100%;
-  border: none;
-  background: none;
+  border: 2px dashed var(--border-main);
+  border-radius: 16px;
+  background: var(--surface-card);
   text-align: left;
-  padding: 0;
+  padding: 1.5rem;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dashboard-placeholder-btn h5,
+.dashboard-placeholder-btn p {
+  margin: 0;
+}
+
+.dashboard-placeholder-btn p {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
 }
 
 /* Aplica o efeito visual desativado apenas se o botão estiver bloqueado nativamente */
 .dashboard-placeholder-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.75;
 }

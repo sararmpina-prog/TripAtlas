@@ -221,11 +221,62 @@
     font-weight: 600;
 }
 
-.dashboard-sidepanel-buttons {
+.dashboard-sidepanel .flight-form-actions {
    display: flex;
    flex-direction: column;
    gap: 0.5rem;
    margin-top: 1rem;
+}
+
+.dashboard-sidepanel .flight-form-actions button {
+  width: 100%;
+}
+
+@media (max-width: 1150px) {
+  .dashboard-sidepanel {
+    width: 100%;
+    min-width: 0;
+    min-height: auto;
+    position: static;
+    top: auto;
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .trip-list {
+    max-height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-sidepanel {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .dashboard-sidepanel h1 {
+    font-size: 1.55rem;
+    margin: 0.25rem 0 1rem;
+  }
+
+  .trip-search {
+    height: 38px;
+    margin: 8px 0;
+  }
+
+  .trip-button {
+    padding: 9px;
+    margin: 3px 0;
+    font-size: 0.92rem;
+  }
+
+  .dashboard-sidepanel .flight-form-actions {
+    margin-top: 0.5rem;
+  }
+
+  .dashboard-sidepanel .flight-form-actions .btn-base {
+    margin: 0;
+  }
 }
 
 

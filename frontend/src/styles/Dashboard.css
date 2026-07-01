@@ -194,14 +194,86 @@
 /* *** RESPONSIVIDADE *** */
 
 @media (max-width: 1150px) {
-  .dashboard-logistics {
+  .dashboard-content {
     flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  .dashboard-logistics {
     max-width: 100%;
+  }
+
+  .dashboard-content .dashboard-sidepanel {
+    position: static;
+    top: auto;
+    width: 100%;
+    min-width: 0;
+    min-height: auto;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-page {
     background-image: url('/bg/tripAtlas-Dashboard-mobile.avif');
+    background-size: cover;
+    background-position: top center;
+  }
+
+  .dashboard-content {
+    padding: 1rem 0.75rem;
+    gap: 1rem;
+  }
+
+  .dashboard-section {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .dashboard-section-header {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .dashboard-section-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-section-header p {
+    font-size: 0.78rem;
+  }
+
+  .ai-floating-trigger-btn {
+    width: 52px;
+    height: 52px;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .ai-chat-floating-panel {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    height: min(72dvh, 560px);
+    bottom: 4.8rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard-content {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .dashboard-section {
+    padding: 0.85rem;
+  }
+
+  .section-icon-container {
+    margin-right: 0.35rem;
   }
 }

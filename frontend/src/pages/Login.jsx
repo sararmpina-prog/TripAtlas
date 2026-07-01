@@ -7,6 +7,8 @@ import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
 import { saveAuthSession } from "../utils/authStorage";
 import { preloadBackgroundImage } from '../utils/preload';
+import { useToast } from "../context/ToastContext";
+import SubmitButton from "../components/SubmitButton";
 import {
   getLoginErrorState,
   hasValidationErrors,
@@ -17,24 +19,16 @@ import "../styles/Login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-
-
-  //  useEffect(() => {
-  //   const token =
-  //     localStorage.getItem("token") ||
-  //     sessionStorage.getItem("token");
-
-  //   if (token) {
-  //     navigate("/dashboard");
-  //   }
-  // }, [navigate]);
-
+  
+  // Validação: O botão acende se ambos os campos tiverem texto digitado
+  const hasChanges = email.trim() !== "" && password.trim() !== "";
 
   const { mutate, isPending } = useMutation({
     mutationFn: loginUser,
@@ -44,6 +38,9 @@ function Login() {
       const user = response.data.user;
 
       saveAuthSession({ token, user, rememberMe });
+
+      // Toast de sucesso que vai nascer já dentro do Dashboard
+      toast(`Welcome back, ${user?.first_name || 'traveler'}!`, 'success');
 
       navigate("/dashboard");
     },
@@ -63,7 +60,7 @@ function Login() {
     setFormError("");
     setFieldErrors({});
 
-    const validationError = validateLoginForm({ email, password });
+    const validationError = validateLoginForm({ email, password, rememberMe });
 
     if (hasValidationErrors(validationError)) {
       setFieldErrors(validationError);
@@ -73,7 +70,7 @@ function Login() {
     console.log("Cliquei Login");
     console.log("SUBMIT OK");
     console.log("antes da função mutate os dados são", email, password)
-    mutate(normalizeLoginPayload({ email, password }));
+    mutate(normalizeLoginPayload({ email, password, rememberMe }));
   }
 
   return (
@@ -175,13 +172,14 @@ function Login() {
               </p>
             )}
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="btn-base btn-orange auth-submit"
-            >
-              {isPending ? "Logging in..." : "Login"}
-            </button>
+            {/* SUBMIT BUTTON REUTILIZÁVEL */}
+            <SubmitButton 
+              isPending={isPending} 
+              hasChanges={hasChanges} 
+              label="Login"
+              pendingLabel="Logging in..."
+              className="btn-base btn-light auth-submit"
+            />
           </form>
         </InfoCard>
       </div>

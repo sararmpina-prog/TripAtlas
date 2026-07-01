@@ -1,11 +1,11 @@
 import { fetchProtectedResource, API_URL, createJsonHeaders, buildApiError } from './client';
 
 
-export function getSuggestions(tripName, token) {
+export function getSuggestions(tripReference, token) {
   console.log("estou no get sugestions")  
-  console.log("get suggestions e nome é", tripName)
+  console.log("get suggestions e nome é", tripReference)
   return fetchProtectedResource(
-    `/suggestions?trip_name=${encodeURIComponent(tripName)}`,
+    `/suggestions?trip_reference=${encodeURIComponent(tripReference)}`,
     token,
     'Unable to load suggestions.'
   );

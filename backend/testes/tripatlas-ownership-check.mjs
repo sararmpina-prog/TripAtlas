@@ -30,12 +30,13 @@ function push(name, ok, detail) {
 }
 
 async function registerUser(label) {
+  const labelOffset = label === 'Alpha' ? 1 : 2;
   const response = await request('POST', '/api/auth/register', null, {
     first_name: label,
     surname: 'Owner',
     email: `${label.toLowerCase()}-${stamp}@example.com`,
-    mobile_phone: '+351900000000',
-    password: 'secret123',
+    mobile_phone: `+3519${String(stamp + labelOffset).slice(-8)}`,
+    password: 'Secret123!',
   });
 
   if (response.status !== 201 || response.json?.success !== true) {
@@ -85,8 +86,9 @@ try {
   const patchOtherTrip = await request('PATCH', `/api/trips/${created.tripBId}`, created.tokenA, { title: 'Hack trip' });
   push('PATCH /api/trips/:id blocks other trip', patchOtherTrip.status === 403, { status: patchOtherTrip.status, body: patchOtherTrip.json });
 
-  const accommodation = await request('POST', '/api/accommodations', null, {
+  const accommodation = await request('POST', '/api/accommodations', created.tokenA, {
     name: `Ownership Hotel ${stamp}`,
+    address: `Ownership Street ${stamp}`,
     city: 'Coimbra',
     country: 'Portugal',
   });
@@ -95,6 +97,7 @@ try {
 
   const flightA = await request('POST', '/api/flights', created.tokenA, {
     trip_id: created.tripAId,
+    direction: 'outbound',
     flight_number: `OA${String(stamp).slice(-4)}`,
     airline: 'TAP',
     departure_airport: 'OPO',
@@ -139,7 +142,7 @@ try {
 } finally {
   if (created.reserveAId) await request('DELETE', `/api/reserves/${created.reserveAId}`, created.tokenA);
   if (created.flightAId) await request('DELETE', `/api/flights/${created.flightAId}`, created.tokenA);
-  if (created.accommodationId) await request('DELETE', `/api/accommodations/${created.accommodationId}`, null);
+  if (created.accommodationId) await request('DELETE', `/api/accommodations/${created.accommodationId}`, created.tokenA);
   if (created.tripAId) await request('DELETE', `/api/trips/${created.tripAId}`, created.tokenA);
   if (created.tripBId) await request('DELETE', `/api/trips/${created.tripBId}`, created.tokenB);
   if (created.userAId) await request('DELETE', `/api/users/${created.userAId}`, created.tokenA);

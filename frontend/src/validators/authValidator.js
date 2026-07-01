@@ -112,6 +112,7 @@ export function normalizeLoginPayload(formData) {
   return {
     email: formData.email.trim().toLowerCase(),
     password: formData.password,
+    rememberMe: formData.rememberMe,
   };
 }
 

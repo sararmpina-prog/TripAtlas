@@ -26,7 +26,12 @@
 
 .profile-edit-container-wrapper {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px;
 }
 
 /* Limita a largura do DashboardCard para não esticar em ecrãs gigantes */
@@ -42,6 +47,7 @@
   display: inline-flex;
   align-items: center;
   margin-bottom: 20px;
+  padding: 4px;
   gap: 8px;
   cursor: pointer;
   font-weight: 700;
@@ -62,12 +68,26 @@
 }
 
 .profile-card-header {
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 1.25rem 0;
+  border-bottom: 2px solid var(--surface-page);
+  padding-bottom: 0.75rem;
 }
 
-.profile-card-header h2 {
+.profile-icon {
+  color: var(--color-dark-azure);
+  flex-shrink: 0; /* Impede que o ícone fique esmagado se o texto for muito longo */
+}
+
+.profile-card-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-card-header-text h2 {
   font-size: 2rem;
   color: var(--color-dark-azure);
   margin: 0 0 12px 0;
@@ -75,16 +95,16 @@
   text-shadow: none;
 }
 
-.profile-card-header p {
+.profile-card-header-text p {
   color: var(--text-muted);
-  margin: 0 0 20px 0;
   font-size: 0.95rem;
+  margin: 0;
 }
 
 /* Garante que o formulário reaproveitado ocupa a largura total do DashboardCard */
 .edit-form {
   width: 100%;
-  margin: 0; 
+  margin: 20px 0 0 0; 
 }
 
 .edit-form input {
@@ -101,9 +121,130 @@
   justify-content: flex-end; /* Alinha o botão "Save Changes" à direita */
 }
 
+.danger-zone-content {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 /* RESPONSIVIDADE */
+@media (max-width: 1024px) {
+  .profile-edit-content {
+    padding: 28px 16px;
+  }
+
+  .profile-edit-container-wrapper {
+    max-width: 640px;
+    gap: 24px;
+    padding: 12px;
+  }
+
+  .profile-edit-content .card-wrapper {
+    max-width: 100%;
+  }
+
+  .profile-card-header-text h2 {
+    font-size: 1.75rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .profile-card-header h2 {
-    font-size: 2rem;
+  .profile-edit-page {
+    background-image: url('/bg/tripAtlas-Dashboard-mobile.avif');
+    background-position: top center;
+  }
+
+  .profile-edit-content {
+    padding: 20px 12px;
+  }
+
+  .profile-edit-container-wrapper {
+    gap: 18px;
+    padding: 4px;
+  }
+
+  .btn-back-dashboard {
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+    padding: 2px;
+  }
+
+  .profile-card-header {
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin: 0.5rem 0 0.8rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .profile-icon {
+    margin-top: 2px;
+  }
+
+  .profile-card-header-text h2 {
+    font-size: 1.4rem;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .profile-card-header-text p {
+    font-size: 0.9rem;
+  }
+
+  .edit-form {
+    margin-top: 12px;
+  }
+
+  .profile-form-actions {
+    margin-top: 14px;
+    justify-content: stretch;
+  }
+
+  .profile-form-actions .btn-base {
+    width: 100%;
+    margin: 0;
+  }
+
+  .danger-zone-content {
+    align-items: stretch;
+  }
+
+  .danger-zone-content .danger-text {
+    font-size: 0.92rem;
+  }
+
+  .danger-zone-content .danger-actions {
+    width: 100%;
+  }
+
+  .danger-zone-content .btn-danger-action {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .profile-edit-content {
+    padding: 16px 10px;
+  }
+
+  .profile-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  .profile-card-header-text h2 {
+    font-size: 1.25rem;
+  }
+
+  .profile-card-header-text p {
+    font-size: 0.86rem;
+  }
+
+  .btn-back-dashboard {
+    font-size: 0.76rem;
   }
 }

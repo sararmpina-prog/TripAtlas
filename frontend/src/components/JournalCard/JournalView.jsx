@@ -27,7 +27,7 @@ console.log("suggestions are",suggestions);
                         key={s.id} 
                         className="journal-suggestion-item" 
                     >
-                        <div style={{ flex: 1 }}>
+                        <div>
                             <h4>
                                 {s.title}
                             </h4>

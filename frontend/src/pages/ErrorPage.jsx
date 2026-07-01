@@ -7,7 +7,7 @@ import { preloadBackgroundImage } from '../utils/preload';
 export default function ErrorPage({ code = "404", message = "Page Not Found" }) {
   return (
     <ImageLayout bgImageClass="bg-landing" hasOverlay={false}>
-      <div className="landing-center">
+      <div className="error-page-center">
         <InfoCard>
           <div className="error-content">
             <h1>

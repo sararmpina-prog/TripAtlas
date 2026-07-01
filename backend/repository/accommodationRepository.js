@@ -60,10 +60,10 @@ export async function createAccommodation(accommodation) {
 
   const [result] = await db.execute(
     `
-      INSERT INTO accommodations (name, city, country)
-      VALUES (?, ?, ?)
+      INSERT INTO accommodations (name, address, city, country)
+      VALUES (?, ?, ?, ?)
     `,
-    [accommodation.name, accommodation.city, accommodation.country]
+    [accommodation.name, accommodation.address, accommodation.city, accommodation.country]
   );
 
   return result.insertId;
@@ -77,12 +77,14 @@ export async function updateAccommodation(id, accommodation) {
    `UPDATE accommodations
       SET
         name = ?,
+        address = ?,
         city = ?,
         country = ?
       WHERE id = ?
     `,
     [
       accommodation.name,
+      accommodation.address,
       accommodation.city,
       accommodation.country,
       id

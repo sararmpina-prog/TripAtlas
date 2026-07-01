@@ -15,7 +15,7 @@ import { generateToken } from '../utils/jwtUtils.js';
 // @returns {object} Objeto contendo o token JWT e os dados do utilizador
 
 // AUTENTICAÇÃO DE UTILIZADOR
-export async function authenticateUser(email, password) {
+export async function authenticateUser(email, password, rememberMe = false) {
   // Validação básica
   if (!email || !password) {
     throw new ValidationError('Email and password are required fields.');
@@ -90,7 +90,7 @@ export async function authenticateUser(email, password) {
   });
 
   // Gerar token JWT
-  const token = generateToken(user.id);
+  const token = generateToken(user.id, rememberMe);
 
   return {
     token,
@@ -112,7 +112,7 @@ export async function authenticateUser(email, password) {
  * @returns {object} Objeto com o token JWT e dados do utilizador criado
  */
 export async function registerUser(validatedData) {
-  // 1. Verifica se o email já existe no sistema
+  // Verifica se o email já existe no sistema
   const existingUser = await userRepository.findUserByEmail(validatedData.email);
   if (existingUser) {
     throw new ValidationError('This email address is already registered.');
@@ -124,11 +124,11 @@ export async function registerUser(validatedData) {
     throw new ValidationError('This mobile phone number is already registered.');
   }
 
-  // 2. Encripta a password em texto limpo antes de ir para a BD
+  // Encripta a password em texto limpo antes de ir para a BD
   // O número 10 indica o custo do algoritmo (saltRounds), o padrão de mercado seguro
   const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
-  // 3. Prepara o objeto substituto em snake_case puro para o repositório
+  // Prepara o objeto substituto em snake_case puro para o repositório
   const newUserRows = {
     first_name: validatedData.first_name,
     surname: validatedData.surname,
@@ -137,14 +137,14 @@ export async function registerUser(validatedData) {
     password: hashedPassword // Esta é a hash que vai entrar na coluna password_hash
   };
 
-  // 4. Grava na BD e recupera o utilizador acabado de criar
+  // Grava na BD e recupera o utilizador acabado de criar
   const newUserId = await userRepository.createUser(newUserRows);
   const user = await userRepository.findUserById(newUserId);
 
-  // 5. Gera automaticamente o Token JWT (assim o utilizador faz login imediato ao registar-se)
+  // Gera automaticamente o Token JWT (assim o utilizador faz login imediato ao registar-se)
   const token = generateToken(user.id);
 
-  // 6. Retorna os dados limpos sem expor a password encriptada
+  // Retorna os dados limpos sem expor a password encriptada
   return {
     token,
     user: {

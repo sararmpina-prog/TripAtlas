@@ -8,10 +8,12 @@ Deve ser transformado num utilitário de geração de tokens (ex: generateToken(
 // @param {number} userId - ID do utilizador vindo da base de dados
 // @returns {string} Token JWT assinado
 
-export const generateToken = (userId) => {
+export const generateToken = (userId, rememberMe = false) => {
   return jwt.sign(
     { id: userId },
     process.env.JWT_SECRET,
-    { expiresIn: "1d" }
+    {
+      expiresIn: rememberMe ? "15d" : "2h",
+    }
   );
 };

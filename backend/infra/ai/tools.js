@@ -78,5 +78,3 @@ for recommendations or travel advice.
       ]
     }
   }
-
-

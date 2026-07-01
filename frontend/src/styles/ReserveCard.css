@@ -89,6 +89,44 @@
   justify-content: flex-end;
 }
 
+/* SEGMENTOS DE ACOMODAÇÃO */
+.reserve-segment-wrapper {
+  padding: 1rem;
+  background: #fcfcfc;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.reserve-segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.reserve-segment-header h6 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading-dark);
+}
+
+.reserve-segment-header .btn-delete-icon {
+  background: none;
+  border: none;
+  color: var(--error-color-dark);
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.reserve-segment-header .btn-delete-icon:hover {
+  transform: scale(1.1);
+}
+
 /* FORMULÁRIO DE GESTÃO (MANAGE FORM)  */
 
 .reserve-form-container {
@@ -157,6 +195,28 @@
 
 .reserve-input-group input:focus {
   border-color: var(--color-orange);
+}
+
+/* Botão tracejado adicionar novo segmento */
+.btn-dashed-add {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px dashed var(--color-orange);
+  background: #fff9f5;
+  color: var(--color-orange);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btn-dashed-add:hover {
+  background: #ffebe0;
 }
 
 .reserve-form-actions {
@@ -242,4 +302,84 @@
   font-size: 0.75rem;
   font-weight: 700;
   z-index: 15;
+}
+
+@media (max-width: 768px) {
+  .reserve-card-actions .btn-edit-card {
+    top: -58px;
+  }
+
+  .reserve-card-body {
+    padding: 1rem;
+  }
+
+  .reserve-card-title {
+    font-size: 1rem;
+  }
+
+  .reserve-card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .reserve-card-meta-block.right {
+    text-align: left;
+  }
+
+  .reserve-card-meta-block.right .reserve-card-meta-time {
+    justify-content: flex-start;
+  }
+
+  .reserve-form-container {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .reserve-form-row,
+  .reserve-form-column {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .reserve-input-group input {
+    width: 100%;
+  }
+
+  .flight-form-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .flight-form-actions .btn-base {
+    width: 100%;
+    margin: 0;
+  }
+
+  .carousel-arrow-btn {
+    top: 6.2rem;
+  }
+
+  .carousel-arrow-btn.left {
+    left: -8px;
+  }
+
+  .carousel-arrow-btn.right {
+    right: -8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .carousel-arrow-btn.left {
+    left: -4px;
+  }
+
+  .carousel-arrow-btn.right {
+    right: -4px;
+  }
+
+  .carousel-pagination-badge {
+    bottom: 0.5rem;
+  }
 }

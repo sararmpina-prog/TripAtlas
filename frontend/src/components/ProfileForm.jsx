@@ -9,37 +9,52 @@ import {
     hasValidationErrors 
 } from '../validators/authValidator';
 import { updateUserProfile } from '../api';
+import { useToast } from '../context/ToastContext';
+import { hasFormChanged, triggerGlobalErrorToast } from '../utils/formHelpers';
+import SubmitButton from '../components/SubmitButton';
 
 export default function ProfileForm() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const user = getStoredUser();
     const token = getStoredToken();
+    const toast = useToast(); 
 
-    const [formData, setFormData] = useState({
+    // Mapear os dados originais com as mesmas chaves do estado para comparar
+    const originalData = {
         first_name: user?.first_name || '',
         surname: user?.surname || '',
         email: user?.email || '',
         mobile_phone: user?.mobile_phone || '',
-    });
+    };
 
+    const [formData, setFormData] = useState(originalData);
     const [fieldErrors, setFieldErrors] = useState({});
     const [formError, setFormError] = useState('');
 
+    // Criar a mutação primeiro para que a propriedade mutation.isPending possa ser usada abaixo
     const mutation = useMutation({
         mutationFn: (cleanPayload) => updateUserProfile(user.id, cleanPayload, token),
         onSuccess: (response) => {
             const updatedUser = response?.data || response;
             saveAuthSession({ token, user: updatedUser });
             queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-            navigate('/dashboard');
+            
+            // Dispara o alerta flutuante de sucesso
+            toast('Profile updated successfully!', 'success');
         },
         onError: (err) => {
             const result = getProfileErrorState(err);
             setFieldErrors(result.fieldErrors);
             setFormError(result.formError);
+
+            // Helper para não repetir Toasts quando já existem erros inline
+            triggerGlobalErrorToast(toast, result, 'Failed to update profile. Please check the fields.');
         }
     });
+
+    // Calcular dinamicamente se o formulário foi alterado
+    const hasChanges = hasFormChanged(formData, originalData);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -53,9 +68,14 @@ export default function ProfileForm() {
         setFormError('');
         setFieldErrors({});
 
+        // Proteção extra caso contornem o disabled do HTML
+        if (!hasChanges) return;
+
         const validationError = validateProfileForm(formData);
         if (hasValidationErrors(validationError)) {
             setFieldErrors(validationError);
+            // Avisar o utilizador que existem falhas de preenchimento local
+            toast('Please fix the errors in the form before saving.', 'warning');
             return;
         }
 
@@ -122,9 +142,12 @@ export default function ProfileForm() {
             {formError && <p className="auth-form-error global-profile-error">{formError}</p>}
 
             <div className="profile-form-actions">
-                <button type="submit" disabled={mutation.isPending} className="btn-base btn-orange">
-                    {mutation.isPending ? 'Saving updates...' : 'Save Changes'}
-                </button>
+                <SubmitButton 
+                    isPending={mutation.isPending} 
+                    hasChanges={hasChanges} 
+                    label="Save Changes"
+                    pendingLabel="Saving updates..."
+                />
             </div>
         </form>
     );

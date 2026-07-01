@@ -11,11 +11,12 @@ function FlightSegmentForm({
     onFieldChange, 
     onRemove,
     tripMinDate,
-    tripMaxDate 
+    tripMaxDate,
+    disabled = false
 }) {
     return (
         <div className="flight-form-segment-card">
-            <button type="button" className="btn-delete-icon" onClick={onRemove} title="Remove segment">
+            <button type="button" className="btn-delete-icon" onClick={onRemove} title="Remove segment" disabled={disabled}>
                 <FaRegTrashAlt size={14} />
             </button>
 
@@ -29,7 +30,8 @@ function FlightSegmentForm({
                         placeholder="Flight No. (ex: TP102)" 
                         className={localErrors[`fn-${segmentKey}`] ? 'auth-input-error' : ''}
                         value={flight.flight_number || ''} 
-                        onChange={(e) => onFieldChange('flight_number', e.target.value)} 
+                        onChange={(e) => onFieldChange('flight_number', e.target.value)}
+                        disabled={disabled}
                     />
                     {localErrors[`fn-${segmentKey}`] && <p className="auth-form-error">{localErrors[`fn-${segmentKey}`]}</p>}
                 </div>
@@ -38,7 +40,8 @@ function FlightSegmentForm({
                         type="text" 
                         placeholder="Airline (ex: TAP)" 
                         value={flight.airline || ''} 
-                        onChange={(e) => onFieldChange('airline', e.target.value)} 
+                        onChange={(e) => onFieldChange('airline', e.target.value)}
+                        disabled={disabled}
                     />
                 </div>
             </div>
@@ -52,7 +55,8 @@ function FlightSegmentForm({
                         placeholder="From" 
                         maxLength={3} 
                         value={flight.departure_airport || ''} 
-                        onChange={(e) => onFieldChange('departure_airport', e.target.value.toUpperCase())} 
+                        onChange={(e) => onFieldChange('departure_airport', e.target.value.toUpperCase())}
+                        disabled={disabled}
                     />
                     {localErrors[`dep-${segmentKey}`] && <p className="auth-form-error">{localErrors[`dep-${segmentKey}`]}</p>}
                 </div>
@@ -63,7 +67,8 @@ function FlightSegmentForm({
                         placeholder="To" 
                         maxLength={3} 
                         value={flight.arrival_airport || ''} 
-                        onChange={(e) => onFieldChange('arrival_airport', e.target.value.toUpperCase())} 
+                        onChange={(e) => onFieldChange('arrival_airport', e.target.value.toUpperCase())}
+                        disabled={disabled}
                     />
                     {localErrors[`arr-${segmentKey}`] && <p className="auth-form-error">{localErrors[`arr-${segmentKey}`]}</p>}
                 </div>
@@ -76,9 +81,10 @@ function FlightSegmentForm({
                         type="datetime-local" 
                         className={localErrors[`dep-time-${segmentKey}`] ? 'auth-input-error' : ''}
                         value={toDateTimeLocalInput(flight.departure_datetime)}
-                         min={tripMinDate} // Não pode voar antes de a viagem começar
-                         max={tripMaxDate} // Não pode voar depois de a viagem acabar
-                        onChange={(e) => onFieldChange('departure_datetime', e.target.value)} 
+                        min={tripMinDate} // Não pode voar antes de a viagem começar
+                        max={tripMaxDate} // Não pode voar depois de a viagem acabar
+                        onChange={(e) => onFieldChange('departure_datetime', e.target.value)}
+                        disabled={disabled}
                     />
                     {localErrors[`dep-time-${segmentKey}`] && <p className="auth-form-error">{localErrors[`dep-time-${segmentKey}`]}</p>}
                 </div>
@@ -91,6 +97,7 @@ function FlightSegmentForm({
                         min={toDateTimeLocalInput(flight.departure_datetime)}
                         max={tripMaxDate}
                         onChange={(e) => onFieldChange('arrival_datetime', e.target.value)}
+                        disabled={disabled}
                     />
                     {localErrors[`arr-time-${segmentKey}`] && <p className="auth-form-error">{localErrors[`arr-time-${segmentKey}`]}</p>}
                 </div>

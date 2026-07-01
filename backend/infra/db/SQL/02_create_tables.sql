@@ -3,23 +3,25 @@
 -- Create users table
 -- 1. Users
 CREATE TABLE users (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	first_name VARCHAR(100) NOT NULL,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
     surname VARCHAR(100) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    mobile_phone VARCHAR(20),
+    email VARCHAR(150) NOT NULL UNIQUE,  -- UNIQUE para não permitir duplicação
+    mobile_phone VARCHAR(20) UNIQUE, -- UNIQUE para não permitir duplicação
     password_hash VARCHAR(255) NOT NULL,
+    failed_login_attempts INT DEFAULT 0, 
+    locked_until TIMESTAMP NULL,         
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-); 
+);
 
 
 -- Create trips table
 -- 2. Trips
 CREATE TABLE trips (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	user_id INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(100) NOT NULL, 
     description TEXT, -- Alterado de VARCHAR(255) para TEXT para maior flexibilidade
     destination VARCHAR(150) NOT NULL,
     start_date DATE NOT NULL,
@@ -34,9 +36,9 @@ CREATE TABLE trips (
 CREATE TABLE accommodations (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	name VARCHAR(150) NOT NULL,
+    address VARCHAR(255) NOT NULL,
     city VARCHAR(100),
     country VARCHAR(100),
-    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
 
@@ -48,10 +50,11 @@ CREATE TABLE accommodation_reserve (
 	accommodation_id INT NOT NULL,
 	trip_id INT NOT NULL,
     check_in_date DATE NOT NULL,  -- Recomendado NOT NULL para evitar inconsistências
-    check_out_date DATE NOT NULL   -- Recomendado NOT NULL para evitar inconsistências
+    check_out_date DATE NOT NULL,   -- Recomendado NOT NULL para evitar inconsistências
+    check_in_time TIME, -- Adicionado para permitir a especificação do horário de check-in
+    check_out_time TIME, -- Adicionado para permitir a especificação do horário de check-out
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 
@@ -66,9 +69,9 @@ CREATE TABLE flights (
 	arrival_airport VARCHAR(15),
     departure_datetime TIMESTAMP NULL, -- Alterado para TIMESTAMP para gestão de fusos horários
     arrival_datetime TIMESTAMP NULL,   -- Alterado para TIMESTAMP para gestão de fusos horários
+    direction ENUM('outbound', 'return') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ); 
 
 --- TABELAS RELACIONADAS COM AI ---
@@ -77,9 +80,9 @@ CREATE TABLE flights (
 -- 7. chat_history
 CREATE TABLE chat_history (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
+    user_id INT NULL,
     trip_id INT NULL,
-	user_message TEXT,
+    user_message TEXT,
     ai_response MEDIUMTEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
@@ -92,6 +95,5 @@ CREATE TABLE ai_suggestions (
 	title VARCHAR(100),
     content TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ); 

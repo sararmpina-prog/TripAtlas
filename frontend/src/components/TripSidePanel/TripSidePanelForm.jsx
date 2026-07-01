@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { FaRegTrashAlt } from "react-icons/fa";
+import SubmitButton from '../SubmitButton';
 
 export default function TripSidePanelForm({ 
     selectedTrip, 
     onSave, 
+    onDelete,
     onCancel, 
     isPending, 
     apiError, 
@@ -23,6 +26,13 @@ export default function TripSidePanelForm({
             setDescription(selectedTrip.description || '');
             setStartDate(selectedTrip.start_date ? selectedTrip.start_date.split('T')[0] : '');
             setEndDate(selectedTrip.end_date ? selectedTrip.end_date.split('T')[0] : '');
+        } else {
+            // Garante que os campos esvaziam se mudarmos de Edição para uma Nova Viagem
+            setTitle('');
+            setDestination('');
+            setDescription('');
+            setStartDate('');
+            setEndDate('');
         }
     }, [selectedTrip]);
 
@@ -32,6 +42,22 @@ export default function TripSidePanelForm({
             setLocalErrors(serverFieldErrors);
         }
     }, [serverFieldErrors]);
+
+    // Regra elástica de alteração visual (Garante o efeito semi-transparente correto)
+    const hasChanges = selectedTrip 
+        ? ( // Modo Edição: Compara se o utilizador mexeu em alguma coisa face aos dados originais
+            title.trim() !== (selectedTrip.title || '') ||
+            destination.trim() !== (selectedTrip.destination || '') ||
+            description.trim() !== (selectedTrip.description || '') ||
+            startDate !== (selectedTrip.start_date ? selectedTrip.start_date.split('T')[0] : '') ||
+            endDate !== (selectedTrip.end_date ? selectedTrip.end_date.split('T')[0] : '')
+          )
+        : ( // Modo Criação: Acende mal todos os inputs obrigatórios tenham texto
+            title.trim() !== '' && 
+            destination.trim() !== '' && 
+            startDate !== '' && 
+            endDate !== ''
+          );
 
     // Função utilitária para atualizar o campo e limpar o erro dele na hora
     const handleInputChange = (field, value, setter) => {
@@ -45,8 +71,11 @@ export default function TripSidePanelForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const errors = {};
+        
+        // Proteção extra caso tentem forçar o clique com o botão disabled
+        if (!hasChanges) return;
 
+        const errors = {};
         if (!title.trim()) errors.title = "Trip title is required.";
         if (!destination.trim()) errors.destination = "Destination is required.";
         if (!startDate) errors.start_date = "Start date is required.";
@@ -69,7 +98,20 @@ export default function TripSidePanelForm({
 
     return (
         <div className="dashboard-sidepanel">
-            <p className="sidepanel-eyebrow">{selectedTrip ? 'Edit Trip Details' : 'Create New Adventure'}</p>
+            <div className="dashboard-sidepanel-header">
+                <p className="sidepanel-eyebrow">{selectedTrip ? 'Edit Trip Details' : 'Create New Adventure'}</p>
+                {selectedTrip && onDelete && (
+                    <button
+                        type="button"
+                        className="btn-delete-icon"
+                        onClick={onDelete}
+                        title="Delete trip"
+                        disabled={isPending}
+                    >
+                        <FaRegTrashAlt size={14} />
+                    </button>
+                )}
+            </div>
 
             <form onSubmit={handleSubmit} noValidate className="sidepanel-form-flow">
                 
@@ -135,19 +177,17 @@ export default function TripSidePanelForm({
                     {localErrors.description && <p className="auth-form-error">{localErrors.description}</p>}
                 </label>
 
-                {apiError && (
-                    <p className="sidepanel-trip-picker-error">
-                        {apiError}
-                    </p>
-                )}
-
-                <div className="dashboard-sidepanel-buttons"> 
-                    <button type="submit" className="btn-base btn-orange" disabled={isPending}>
-                        {isPending ? 'Saving...' : 'Save Changes'}
-                    </button>
-                    <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>
-                        Cancel
-                    </button>
+                <div className="flight-form-actions-wrapper">
+                    {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}
+                    <div className="flight-form-actions">
+                        <SubmitButton 
+                        isPending={isPending} 
+                        hasChanges={hasChanges} 
+                        label={selectedTrip ? 'Save Changes' : 'Create Trip'}
+                        pendingLabel={selectedTrip ? 'Saving...' : 'Creating...'}
+                    />
+                        <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>Cancel</button>
+                    </div>
                 </div>
             </form>
         </div>
