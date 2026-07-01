@@ -4,7 +4,7 @@ import SubmitButton from '../SubmitButton';
 
 export default function TripSidePanelForm({ 
     selectedTrip, 
-    onSave, 
+    onSave,
     onDelete,
     onCancel, 
     isPending, 
@@ -177,17 +177,22 @@ export default function TripSidePanelForm({
                     {localErrors.description && <p className="auth-form-error">{localErrors.description}</p>}
                 </label>
 
-                <div className="flight-form-actions-wrapper">
-                    {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}
-                    <div className="flight-form-actions">
-                        <SubmitButton 
+                {apiError && (
+                    <p className="sidepanel-trip-picker-error">
+                        {apiError}
+                    </p>
+                )}
+
+                <div className="dashboard-sidepanel-buttons"> 
+                    <SubmitButton 
                         isPending={isPending} 
                         hasChanges={hasChanges} 
                         label={selectedTrip ? 'Save Changes' : 'Create Trip'}
                         pendingLabel={selectedTrip ? 'Saving...' : 'Creating...'}
                     />
-                        <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>Cancel</button>
-                    </div>
+                    <button type="button" className="btn-base" onClick={onCancel} disabled={isPending}>
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>
