@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateReserve, deleteReserve } from '../../api';
+import { updateReserve, deleteReserve, createReserve, createAccommodation } from '../../api';
 import { getStoredToken } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
 import { useConfirm } from '../../context/ConfirmContext';
@@ -19,11 +19,45 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
     const [formError, setFormError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
-    const allowedFields = ['accommodation_name', 'accommodation_type', 'check_in_date', 'check_out_date', 'check_in_time', 'check_out_time', 'address'];
+    const allowedFields = ['accommodation_name', 'accommodation_type', 'check_in_date', 'check_out_date', 'address', 'city', 'country'];
 
-    // MUTATION: Atualizar Reserva
-    const updateMutation = useMutation({
-        mutationFn: (updatedData) => updateReserve(currentReserve.id, updatedData, token),
+    // MUTATION: Atualizar/Criar Reservas a partir do form de accommodations
+    const saveMutation = useMutation({
+        mutationFn: async (reservesPayload) => {
+            const reservesList = Array.isArray(reservesPayload) ? reservesPayload : [reservesPayload];
+
+            for (const segment of reservesList) {
+                const checkIn = segment.check_in_date;
+                const checkOut = segment.check_out_date;
+                const tripReferenceId = selectedTrip?.id ?? currentReserve?.trip_id ?? tripId;
+
+                if (segment.id) {
+                    await updateReserve(segment.id, {
+                        accommodation_id: segment.accommodation_id,
+                        trip_id: tripReferenceId,
+                        check_in_date: checkIn,
+                        check_out_date: checkOut,
+                    }, token);
+                    continue;
+                }
+
+                const createdAccommodation = await createAccommodation({
+                    name: segment.accommodation_name,
+                    address: segment.address,
+                    city: segment.city,
+                    country: segment.country,
+                }, token);
+
+                const accommodationId = createdAccommodation?.data?.id ?? createdAccommodation?.id;
+
+                await createReserve({
+                    accommodation_id: accommodationId,
+                    trip_id: tripReferenceId,
+                    check_in_date: checkIn,
+                    check_out_date: checkOut,
+                }, token);
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'reserves'] });
             handleClose();
@@ -80,11 +114,10 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
             <ReserveForm 
                 reserve={currentReserve}
                 selectedTrip={selectedTrip} // Passa a viagem para trancar as datas
-                isPending={updateMutation.isPending || deleteMutation.isPending}
+                isPending={saveMutation.isPending || deleteMutation.isPending}
                 apiError={formError}
                 serverFieldErrors={fieldErrors}
-                onSave={(data) => updateMutation.mutate(data)}
-                onCreateNew={handleCreateTrigger}
+                onSave={(data) => saveMutation.mutate(data)}
                 onDelete={() => handleDeleteTrigger(currentReserve.id, currentReserve.accommodation_name)}
                 onCancel={handleClose}
             />

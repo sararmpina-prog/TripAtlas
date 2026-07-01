@@ -17,6 +17,7 @@ Nota importante:
 */
 
 import * as suggestionRepository from '../repository/suggestionRepository.js';
+import { NotFoundError, ForbiddenError } from '../utils/appErrors.js';
 
 
 // LISTA TODOS AS SUGESTÕES

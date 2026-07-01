@@ -83,6 +83,7 @@ const tableStatements = [
       id INT PRIMARY KEY AUTO_INCREMENT,
       user_id INT NOT NULL,
       trip_id INT NULL,
+      chat_id VARCHAR(100) NULL,
       user_message TEXT,
       ai_response MEDIUMTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -91,7 +92,9 @@ const tableStatements = [
   `
     CREATE TABLE IF NOT EXISTS ai_suggestions (
       id INT PRIMARY KEY AUTO_INCREMENT,
-      trip_id INT NOT NULL,
+      trip_id INT NULL,
+      trip_name VARCHAR(100) NULL,
+      user_id INT NULL,
       title VARCHAR(100),
       content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -205,6 +208,30 @@ const columnStatements = [
     statement: `
       ALTER TABLE chat_history
       ADD COLUMN user_id INT NULL AFTER id
+    `,
+  },
+  {
+    tableName: 'chat_history',
+    columnName: 'chat_id',
+    statement: `
+      ALTER TABLE chat_history
+      ADD COLUMN chat_id VARCHAR(100) NULL AFTER trip_id
+    `,
+  },
+  {
+    tableName: 'ai_suggestions',
+    columnName: 'trip_name',
+    statement: `
+      ALTER TABLE ai_suggestions
+      ADD COLUMN trip_name VARCHAR(100) NULL AFTER trip_id
+    `,
+  },
+  {
+    tableName: 'ai_suggestions',
+    columnName: 'user_id',
+    statement: `
+      ALTER TABLE ai_suggestions
+      ADD COLUMN user_id INT NULL AFTER trip_name
     `,
   },
 ];
@@ -345,6 +372,7 @@ export async function ensureTripAtlasSchema() {
 
   await ensureNullableColumn('chat_history', 'trip_id', 'INT');
   await ensureNotNullColumnWhenSafe('chat_history', 'user_id', 'INT');
+  await ensureNullableColumn('ai_suggestions', 'trip_id', 'INT');
 
   for (const foreignKey of foreignKeyStatements) {
     await ensureForeignKey(foreignKey.name, foreignKey.statement);

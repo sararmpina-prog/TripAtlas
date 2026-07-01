@@ -1,12 +1,13 @@
-/* Camada genérica de comunicação com a Gemini.
+/* Camada de comunicação com a Gemini.
+objetivo: Isolar toda a complexidade da comunicação com a Gemini, incluindo:
+- fallback para modelos alternativos
+- logging de erros e debug
+- sumarização do histórico de conversa
+- execução de function calls sugeridas pelo modelo
 
-Responsabilidades:
-- validar configuração base
-- executar chamadas ao provider utilizando o SDK oficial @google/genai
-- aplicar retry/fallback de modelos
-- devolver texto ou resposta bruta
-
-Esta camada não conhece prompts, tools nem comportamento específico do assistente.
+Diferença de responsabilidades:
+- callGemini.js → comunicação com SDK da Gemini
+- tripBotConfig.js → comportamento do agente
 */
 
 import 'dotenv/config';
@@ -91,7 +92,7 @@ console.log(JSON.stringify(currentResponse, null, 2));
  if (functionCalls.length == 0) { break}
 
     // Mostrar chamadas
-   currentResponse.functionCalls.forEach(fn => {
+   functionCalls.forEach(fn => {
     console.log(`➡️ ${fn.name}`, fn.args);
   });
   
@@ -121,8 +122,9 @@ console.log(JSON.stringify(currentResponse, null, 2));
 
         result = await createAiSuggestion({
             ...fn.args,
-            trip_id,
-            user_id,
+            trip_id: trip_id ?? fn.args?.trip_id ?? null,
+            user_id: user_id ?? fn.args?.user_id ?? null,
+            trip_reference: fn.args?.trip_reference ?? fn.args?.trip_name ?? null,
           });
         break;
 
@@ -159,7 +161,7 @@ console.log(JSON.stringify(currentResponse, null, 2));
         const oldHistory = history.slice(0, -10);
         const recent = history.slice(-10);
 
-        summary = await summarizeHistory(oldHistory);
+        const summary = await summarizeHistory(oldHistory);
 
         history = [
           {
@@ -221,10 +223,3 @@ console.log(JSON.stringify(currentResponse, null, 2));
   throw error
     }
   }
-
-
-
-
-
-
-

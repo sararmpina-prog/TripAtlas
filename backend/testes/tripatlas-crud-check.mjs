@@ -45,7 +45,7 @@ async function cleanup() {
   const deletions = [
     ['DELETE /api/reserves/:id', created.reserveId && `/api/reserves/${created.reserveId}`, created.token],
     ['DELETE /api/flights/:id', created.flightId && `/api/flights/${created.flightId}`, created.token],
-    ['DELETE /api/accommodations/:id', created.accommodationId && `/api/accommodations/${created.accommodationId}`, null],
+    ['DELETE /api/accommodations/:id', created.accommodationId && `/api/accommodations/${created.accommodationId}`, created.token],
     ['DELETE /api/trips/:id', created.tripId && `/api/trips/${created.tripId}`, created.token],
     ['DELETE /api/users/:id', created.userId && `/api/users/${created.userId}`, created.token],
   ];
@@ -71,7 +71,7 @@ try {
     surname: 'Suite',
     email: `crud-suite-${stamp}@example.com`,
     mobile_phone: '+351912345678',
-    password: 'secret123',
+    password: 'Secret123!',
   }), 201);
   created.userId = authData.user.id;
   created.token = authData.token;
@@ -85,11 +85,12 @@ try {
   }), 200);
 
   expectSuccess('PATCH /api/users/:id/password', await request('PATCH', `/api/users/${created.userId}/password`, created.token, {
-    current_password: 'secret123',
-    new_password: 'secret456'
+    current_password: 'Secret123!',
+    new_password: 'Secret456!'
   }), 200);
 
   const trip = expectSuccess('POST /api/trips', await request('POST', '/api/trips', created.token, {
+    user_id: created.userId,
     title: `Trip ${stamp}`,
     description: 'Integration manual CRUD check',
     destination: 'Porto',
@@ -106,6 +107,7 @@ try {
 
   const flight = expectSuccess('POST /api/flights', await request('POST', '/api/flights', created.token, {
     trip_id: created.tripId,
+    direction: 'outbound',
     flight_number: `TP${String(stamp).slice(-4)}`,
     airline: 'TAP',
     departure_airport: 'OPO',
@@ -120,15 +122,16 @@ try {
     airline: 'TAP Air Portugal'
   }), 200);
 
-  const accommodation = expectSuccess('POST /api/accommodations', await request('POST', '/api/accommodations', null, {
+  const accommodation = expectSuccess('POST /api/accommodations', await request('POST', '/api/accommodations', created.token, {
     name: `Hotel ${stamp}`,
+    address: `Street ${stamp}`,
     city: 'Lisboa',
     country: 'Portugal'
   }), 201);
   created.accommodationId = accommodation.id;
 
-  expectSuccess('GET /api/accommodations', await request('GET', '/api/accommodations'), 200);
-  expectSuccess('PATCH /api/accommodations/:id', await request('PATCH', `/api/accommodations/${created.accommodationId}`, null, {
+  expectSuccess('GET /api/accommodations', await request('GET', '/api/accommodations', created.token), 200);
+  expectSuccess('PATCH /api/accommodations/:id', await request('PATCH', `/api/accommodations/${created.accommodationId}`, created.token, {
     city: 'Porto'
   }), 200);
 

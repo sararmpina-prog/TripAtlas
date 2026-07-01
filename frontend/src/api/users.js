@@ -33,7 +33,6 @@ export async function updateUserPassword(userId, payload, token) {
   }
   return data;
 }
-<<<<<<< HEAD
 
 /* Apaga permanentemente a conta do utilizador */
 export async function deleteUserAccount(userId, token) {
@@ -49,5 +48,3 @@ export async function deleteUserAccount(userId, token) {
   }
   return data;
 }
-=======
->>>>>>> main
