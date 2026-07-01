@@ -72,5 +72,36 @@
     flex: none;
     width: 100%;
     min-height: 50vh;
+    padding: 28px 20px;
+  }
+
+  .left-content-wrapper {
+    max-width: 520px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .right-content-wrapper {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 560px) {
+  .register-left-side,
+  .register-right-side {
+    min-height: auto;
+    padding: 20px 14px;
+  }
+
+  .register-side-copy {
+    font-size: 1.08rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .register-side-cta,
+  .left-content-wrapper .btn-base,
+  .register-form .auth-submit {
+    width: 100%;
+    min-width: 0;
   }
 }

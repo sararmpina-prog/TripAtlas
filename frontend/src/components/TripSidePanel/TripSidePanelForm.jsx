@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { FaRegTrashAlt } from "react-icons/fa";
 import SubmitButton from '../SubmitButton';
 
 export default function TripSidePanelForm({ 
     selectedTrip, 
     onSave, 
+    onDelete,
     onCancel, 
     isPending, 
     apiError, 
@@ -96,7 +98,20 @@ export default function TripSidePanelForm({
 
     return (
         <div className="dashboard-sidepanel">
-            <p className="sidepanel-eyebrow">{selectedTrip ? 'Edit Trip Details' : 'Create New Adventure'}</p>
+            <div className="dashboard-sidepanel-header">
+                <p className="sidepanel-eyebrow">{selectedTrip ? 'Edit Trip Details' : 'Create New Adventure'}</p>
+                {selectedTrip && onDelete && (
+                    <button
+                        type="button"
+                        className="btn-delete-icon"
+                        onClick={onDelete}
+                        title="Delete trip"
+                        disabled={isPending}
+                    >
+                        <FaRegTrashAlt size={14} />
+                    </button>
+                )}
+            </div>
 
             <form onSubmit={handleSubmit} noValidate className="sidepanel-form-flow">
                 

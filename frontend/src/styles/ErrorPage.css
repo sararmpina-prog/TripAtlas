@@ -1,5 +1,5 @@
 
-.landing-center {
+.error-page-center {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,17 +7,17 @@
   max-width: 450px;
 }
 
-.error-content div {
-    text-align: center;
-    padding: '20px 10px';
+.error-content {
+  text-align: center;
+  padding: 20px 10px;
 }
 
 .error-content h1 {
-   font-size: 6rem;
-   color: var(--color-dark-azure);
-   margin: 0 0 10px 0;
-   font-family: Syne, sans-serif;
-   text-shadow: none;
+  font-size: clamp(3.6rem, 11vw, 6rem);
+  color: var(--color-dark-azure);
+  margin: 0 0 10px 0;
+  font-family: Syne, sans-serif;
+  text-shadow: none;
 }
 
 .heading-dark {
@@ -26,4 +26,30 @@
 
 .subtitle-dark {
   margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .error-page-center {
+    max-width: 100%;
+  }
+
+  .error-content {
+    padding: 6px 0;
+  }
+
+  .error-content .subtitle-dark {
+    margin-bottom: 22px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 420px) {
+  .error-content h1 {
+    margin-bottom: 6px;
+  }
+
+  .error-content .btn-base {
+    width: 100%;
+    margin-top: 8px;
+  }
 }

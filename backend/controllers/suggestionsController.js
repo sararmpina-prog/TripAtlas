@@ -17,8 +17,18 @@ import * as tripRepository from '../repository/tripRepository.js';
 
 export const getSuggestions = asyncHandler(async (req, res) => {
 
-  const reference = req.query.reference;
+  const reference = req.query.reference ?? req.query.trip_reference;
   const userId = req.user.id;
+
+  if (!reference) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        message: 'Trip reference is required.',
+        code: 'VALIDATION_ERROR'
+      }
+    });
+  }
 
   const trip = await tripRepository.resolveTripReference(reference, userId);
 

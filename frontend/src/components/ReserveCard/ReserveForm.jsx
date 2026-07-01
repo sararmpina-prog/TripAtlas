@@ -179,7 +179,7 @@ export default function ReserveForm({
                 {reserves.map((item, index) => (
                     <div key={`${item.id ?? 'new'}-${index}`} className="reserve-segment-wrapper">
                         <div className="reserve-segment-header">
-                            <span className="segment-card-badge">Accommodation #{index + 1}</span>
+                            <span className="segment-card-badge">Accommodation</span>
 
                             {item.id ? (
                                 reserves.length === 1 && reserve ? (

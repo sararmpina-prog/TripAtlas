@@ -92,7 +92,9 @@ export default function EditProfile() {
                         </div>
                         <div className="danger-zone-content">
                             <p className="danger-text">
-                                Once you delete your account, there is no going back. Please be certain before proceeding.
+                                Once you delete your account, there is no going back.
+                                <br />
+                                Please be certain before proceeding.
                             </p>
                             <div className="danger-actions">
                                 <button 

@@ -42,9 +42,27 @@
     max-width: 100%;
     padding-left: 0;
     text-align: center;
+    align-items: center;
   }
 
   .auth-side-panel h2 {
     line-height: 1.05;
+  }
+
+  .login-card {
+    width: 100%;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-split {
+    gap: 1.25rem;
+  }
+
+  .auth-side-panel .btn-base,
+  .login-card .auth-submit {
+    width: 100%;
   }
 }
