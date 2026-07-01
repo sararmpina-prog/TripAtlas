@@ -15,6 +15,7 @@
 
 import { db } from '../infra/db/db.js';
 import { z } from 'zod';
+import { resolveTripReference } from './tripRepository.js'; 
 
 // Validador simples do Zod para garantir um limite numérico limpo e seguro para o SQL
 const limitSchema = z.coerce.number().int().positive().catch(10);
@@ -91,12 +92,29 @@ export async function getChatSessions(user_id) {
 
 export async function createAiSuggestion({ trip_id, title, content, trip_name, user_id }) {
 
-  console.log("estou no createAiSuggestion", trip_id)
-  console.log("estou no createAiSuggestion", title)
-  console.log("estou no createAiSuggestion", content)
-  console.log("estou no createAiSuggestion", trip_name)
-  console.log("estou no createAiSuggestion", user_id)
+  console.log("estou no createAiSuggestion original trip_id:", trip_id)
+  console.log("estou no createAiSuggestion original trip_name:", trip_name)
   
+  // Guardamos as variáveis que podem ser reparadas
+  let correctedTripId = trip_id;
+  let correctedTripName = trip_name;
+
+  // ENGENHARIA DE CORREÇÃO AUTOMÁTICA:
+  // Se a IA enviou um nome de viagem inventado (ex: "Paris Trip"), usamos o resolveTripReference
+  // para correr a query por aproximação (LIKE) e descobrir a viagem verdadeira do utilizador.
+  const incomingReference = trip_name || title;
+  if (incomingReference) {
+    const matchedTrip = await resolveTripReference(incomingReference, user_id);
+    
+    if (matchedTrip) {
+      // Encontrou! Substitui o ID para o ID real da base de dados (ex: 'Paris Fashion Week' ID: 12)
+      correctedTripId = matchedTrip.id;
+      correctedTripName = matchedTrip.title;
+      console.log(`🎯 Sucesso! Alucinação corrigida de "${trip_name}" para a viagem real: "${matchedTrip.title}" (ID: ${matchedTrip.id})`);
+    }
+  }
+
+  // Executa o INSERT original na base de dados com as chaves corrigidas e higienizadas
   const [result] = await db.execute(
     `
     INSERT INTO ai_suggestions (
@@ -108,7 +126,7 @@ export async function createAiSuggestion({ trip_id, title, content, trip_name, u
     )
     VALUES (?, ?, ?, ?, ?)
     `,
-    [trip_id, title, content, trip_name, user_id]
+    [correctedTripId, title, content, correctedTripName, user_id]
   );
 
   return {
@@ -116,6 +134,7 @@ export async function createAiSuggestion({ trip_id, title, content, trip_name, u
     suggestion_id: result.insertId
   };
 }
+
 
 export async function getHistoryForGemini({user_id, chat_id}) {
 

@@ -94,27 +94,42 @@ export async function getTripByName(tripName) {
   return rows[0];
 }
 
+
+// Para apanhar referências de viagem que a IA possa enviar, seja por ID ou por título/destino aproximado
 export async function resolveTripReference(reference, userId) {
-  const normalized = String(reference).trim();
-  const numericId = Number(normalized);
+  if (!reference) return null;
+  
+  let normalized = String(reference).trim();
+  const tripIdAsNumber = Number(normalized) || -1; 
 
-  if (Number.isInteger(numericId) && numericId > 0) {
+  // Se a IA enviou um ID numérico, valida e devolve logo
+  if (tripIdAsNumber > 0) {
     const [rows] = await db.execute(`
-      SELECT id, title, user_id
-      FROM trips
-      WHERE id = ? AND user_id = ?
-      LIMIT 1
-    `, [numericId, userId]);
-
+      SELECT id, title, user_id FROM trips WHERE id = ? AND user_id = ? LIMIT 1
+    `, [tripIdAsNumber, userId]);
     if (rows[0]) return rows[0];
   }
 
+  // TRUQUE DE LIMPEZA: Se a IA enviou algo como "trip to Paris" ou "vacation in Rome", remove palavras comuns e procura apenas por palavras-chave relevantes
+  normalized = normalized
+    .replace(/(trip|tour|vacation|travel|viagem|passeio|férias)/gi, '')
+    .trim();
+
+  // Se após a limpeza a string ficou vazia, aborta
+  if (!normalized) return null;
+
+  // Faz a busca por aproximação na base de dados (Ex: procura '%Paris%')
   const [rows] = await db.execute(`
     SELECT id, title, user_id
     FROM trips
-    WHERE title = ? AND user_id = ?
+    WHERE (
+         LOWER(title) LIKE LOWER(?) 
+      OR LOWER(destination) LIKE LOWER(?)
+    )
+    AND user_id = ?
     LIMIT 1
-  `, [normalized, userId]);
+  `, [ `%${normalized}%`, `%${normalized}%`, userId]);
 
+  console.log("rows encontrada no repositório por palavra-chave:", rows[0]);
   return rows[0] ?? null;
 }
