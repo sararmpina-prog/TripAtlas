@@ -68,6 +68,7 @@ const tableStatements = [
     CREATE TABLE IF NOT EXISTS flights (
       id INT PRIMARY KEY AUTO_INCREMENT,
       trip_id INT NOT NULL,
+      direction ENUM('outbound', 'return') NOT NULL,
       flight_number VARCHAR(25),
       airline VARCHAR(100),
       departure_airport VARCHAR(15),
@@ -200,6 +201,14 @@ const columnStatements = [
     statement: `
       ALTER TABLE users
       ADD COLUMN locked_until TIMESTAMP NULL
+    `,
+  },
+  {
+    tableName: 'flights',
+    columnName: 'direction',
+    statement: `
+      ALTER TABLE flights
+      ADD COLUMN direction ENUM('outbound', 'return') NULL AFTER trip_id
     `,
   },
   {
@@ -373,6 +382,7 @@ export async function ensureTripAtlasSchema() {
   await ensureNullableColumn('chat_history', 'trip_id', 'INT');
   await ensureNotNullColumnWhenSafe('chat_history', 'user_id', 'INT');
   await ensureNullableColumn('ai_suggestions', 'trip_id', 'INT');
+  await ensureNotNullColumnWhenSafe('flights', 'direction', "ENUM('outbound', 'return')");
 
   for (const foreignKey of foreignKeyStatements) {
     await ensureForeignKey(foreignKey.name, foreignKey.statement);
