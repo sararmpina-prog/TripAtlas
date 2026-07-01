@@ -234,6 +234,9 @@
   height: 46px;
   padding: 0.6rem 1rem;
   font-size: 0.95rem;
+  display: flex;
+  flex-direction: column; /* Força o input a ficar em cima e o erro em baixo */
+  width: 100%;
 }
 
 .flight-input-group input:focus {
@@ -241,7 +244,7 @@
 }
 
 /* Variante mais estreita exclusiva para os códigos IATA (From/To) */
-.flight-input-group.small-input {
+.flight-input-group .small-input {
   flex: 0 1 100px;
   max-width: 90px;
 }
@@ -249,10 +252,14 @@
 /* Formatação do texto do erro abaixo do input */
 .flight-input-group .auth-form-error {
   font-size: 0.78rem;
-  margin-top: 0.35rem;
-  color: var(--error-color-dark);
+  margin-top: 0.4rem;
+  color: var(--error-color-dark, #ef4444);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.3;
+  width: 100%;
+  display: block;
+  white-space: normal; /* Garante que o texto quebra as palavras se for muito comprido */
+  word-wrap: break-word;
 }
 
 /* Botão tracejado adicionar novo segmento */

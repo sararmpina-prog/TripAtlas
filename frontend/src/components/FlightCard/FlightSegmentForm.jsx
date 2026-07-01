@@ -1,102 +1,114 @@
 import { FaRegTrashAlt } from "react-icons/fa";
-
 import { toDateTimeLocalInput } from '../../utils/dateHelpers';
 
-function FlightSegmentForm({ 
+// Recebe a propriedade 'errors' (enviada pelo pai)
+export default function FlightSegmentForm({ 
     flight, 
     index, 
-    direction, 
-    segmentKey,
-    localErrors, 
+    segmentKey, // Já vem no formato: "outbound-0" ou "return-0"
+    errors = {}, // Alterado de localErrors para errors para casar com o pai
     onFieldChange, 
     onRemove,
     tripMinDate,
     tripMaxDate 
 }) {
+    
+    // Unificação de chaves: Lê as mesmas strings geradas pelo validador do handleSubmit do pai
+    const isOutbound = segmentKey.startsWith('outbound');
+    const prefix = isOutbound ? 'out' : 'ret';
+    
+    const keyFlightNumber = `${prefix}-fn-${index}`;
+    const keyAirline = `${prefix}-air-${index}`;
+    const keyDepartureAirport = `${prefix}-dep-${index}`;
+    const keyArrivalAirport = `${prefix}-arr-${index}`;
+    const keyDepartureTime = `${prefix}-dep-time-${index}`;
+    const keyArrivalTime = `${prefix}-arr-time-${index}`;
+
+    // Determina o texto amigável da etiqueta
+    const labelDirection = isOutbound ? 'Outbound' : 'Return';
+
     return (
         <div className="flight-form-segment-card">
-            <button type="button" className="btn-delete-segment" onClick={onRemove} title="Remove segment">
+            <button type="button" className="btn-delete-icon" onClick={onRemove} title="Remove segment">
                 <FaRegTrashAlt size={14} />
             </button>
 
-            <span className="segment-card-badge">{direction} Flight #{index + 1}</span>
+            <span className="segment-card-badge">{labelDirection} Flight</span>
             
-            {/* Linha 1 */}
+            {/* Número do voo e companhia aérea */}
             <div className="flight-form-row">
                 <div className="flight-input-group">
                     <input 
                         type="text" 
                         placeholder="Flight No. (ex: TP102)" 
-                        className={localErrors[`fn-${segmentKey}`] ? 'auth-input-error' : ''}
+                        className={errors[keyFlightNumber] ? 'auth-input-error' : ''}
                         value={flight.flight_number || ''} 
                         onChange={(e) => onFieldChange('flight_number', e.target.value)} 
                     />
-                    {localErrors[`fn-${segmentKey}`] && <p className="auth-form-error">{localErrors[`fn-${segmentKey}`]}</p>}
+                    {errors[keyFlightNumber] && <p className="auth-form-error">{errors[keyFlightNumber]}</p>}
                 </div>
                 <div className="flight-input-group">
                     <input 
                         type="text" 
                         placeholder="Airline (ex: TAP)" 
+                        className={errors[keyAirline] ? 'auth-input-error' : ''} 
                         value={flight.airline || ''} 
                         onChange={(e) => onFieldChange('airline', e.target.value)} 
                     />
+                    {errors[keyAirline] && <p className="auth-form-error">{errors[keyAirline]}</p>}
                 </div>
             </div>
 
-            {/* Linha 2 */}
+            {/* Código de Aeroportos */}
             <div className="flight-form-row">
                 <div className="flight-input-group small-input">
                     <input 
                         type="text" 
-                        className={`input-airport ${localErrors[`dep-${segmentKey}`] ? 'auth-input-error' : ''}`}
+                        className={`input-airport ${errors[keyDepartureAirport] ? 'auth-input-error' : ''}`}
                         placeholder="From" 
                         maxLength={3} 
                         value={flight.departure_airport || ''} 
                         onChange={(e) => onFieldChange('departure_airport', e.target.value.toUpperCase())} 
                     />
-                    {localErrors[`dep-${segmentKey}`] && <p className="auth-form-error">{localErrors[`dep-${segmentKey}`]}</p>}
+                    {errors[keyDepartureAirport] && <p className="auth-form-error">{errors[keyDepartureAirport]}</p>}
                 </div>
                 <div className="flight-input-group small-input">
                     <input 
                         type="text" 
-                        className={`input-airport ${localErrors[`arr-${segmentKey}`] ? 'auth-input-error' : ''}`}
+                        className={`input-airport ${errors[keyArrivalAirport] ? 'auth-input-error' : ''}`}
                         placeholder="To" 
                         maxLength={3} 
                         value={flight.arrival_airport || ''} 
                         onChange={(e) => onFieldChange('arrival_airport', e.target.value.toUpperCase())} 
                     />
-                    {localErrors[`arr-${segmentKey}`] && <p className="auth-form-error">{localErrors[`arr-${segmentKey}`]}</p>}
                 </div>
             </div>
 
-            {/* Linha 3 */}
+            {/* Datas de Outbound e Return */}
             <div className="flight-form-row">
                 <div className="flight-input-group">
                     <input 
                         type="datetime-local" 
-                        className={localErrors[`dep-time-${segmentKey}`] ? 'auth-input-error' : ''}
+                        className={errors[keyDepartureTime] ? 'auth-input-error' : ''}
                         value={toDateTimeLocalInput(flight.departure_datetime)}
-                         min={tripMinDate} // Não pode voar antes de a viagem começar
-                         max={tripMaxDate} // Não pode voar depois de a viagem acabar
+                        min={tripMinDate} 
+                        max={tripMaxDate} 
                         onChange={(e) => onFieldChange('departure_datetime', e.target.value)} 
                     />
-                    {localErrors[`dep-time-${segmentKey}`] && <p className="auth-form-error">{localErrors[`dep-time-${segmentKey}`]}</p>}
+                    {errors[keyDepartureTime] && <p className="auth-form-error">{errors[keyDepartureTime]}</p>}
                 </div>
                 <div className="flight-input-group">
                     <input 
                         type="datetime-local"
-                        className={localErrors[`arr-time-${segmentKey}`] ? 'auth-input-error' : ''}
+                        className={errors[keyArrivalTime] ? 'auth-input-error' : ''}
                         value={toDateTimeLocalInput(flight.arrival_datetime)}
-                        // O mínimo é a data de partida deste voo específico, o máximo é o fim da viagem!
-                        min={toDateTimeLocalInput(flight.departure_datetime)}
+                        min={toDateTimeLocalInput(flight.departure_datetime) || tripMinDate}
                         max={tripMaxDate}
                         onChange={(e) => onFieldChange('arrival_datetime', e.target.value)}
                     />
-                    {localErrors[`arr-time-${segmentKey}`] && <p className="auth-form-error">{localErrors[`arr-time-${segmentKey}`]}</p>}
+                    {errors[keyArrivalTime] && <p className="auth-form-error">{errors[keyArrivalTime]}</p>}
                 </div>
             </div>
         </div>
     );
 }
-
-export default FlightSegmentForm;
