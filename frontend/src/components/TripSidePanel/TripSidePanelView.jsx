@@ -2,7 +2,6 @@ import { MdOutlineEdit } from 'react-icons/md';
 import { IoIosSearch } from "react-icons/io";
 import { formatDate } from '../../utils/dateHelpers';
 import TripIdentityBadge from '../TripIdentityBadge';
-import '../../styles/TripSidePanel.css';
 
 export default function TripSidePanelView({ 
     selectedTrip, 

@@ -1,5 +1,5 @@
 .image-layout {
-  min-height:calc(100vh - 150px);
+  flex: 1;
   width: 100%;
   background-size: cover;
   background-position: center;
