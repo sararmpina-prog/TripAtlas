@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getSuggestions, deleteSuggestion } from '../../api/journal'; 
 import { getStoredToken } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
-import { useConfirm } from '../../context/ConfirmContext'; // Importado para segurança
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 import JournalView from './JournalView';
 import DashboardPlaceholderCard from '../DashboardPlaceholderCard';
@@ -11,6 +12,7 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     const token = getStoredToken();
     const queryClient = useQueryClient();
     const confirm = useConfirm();
+    const toast = useToast();
 
     const tripReference = selectedTrip?.title || '';
     console.log("estou no JournalCard e tripReference é", tripReference)
@@ -31,23 +33,28 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
         mutationFn: (suggestionId) => deleteSuggestion(suggestionId, token),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'journal', selectedTrip?.id] });
+            
+            // TOAST INFORMATIVO DE SUCESSO AO APAGAR RECOMENDAÇÃO
+            toast('AI suggestion removed from your travel journal.', 'info');
         },
         onError: (err) => {
             const result = mapApiServerError(err, [], 'Failed to delete suggestion.');
-            alert(result.formError);
+            
+            // TOAST DE ERRO
+            toast(result.formError || 'Unable to delete suggestion.', 'error');
         }
     });
 
     const handleDeleteTrigger = async (suggestionId, suggestionTitle) => {
-    const confirmed = await confirm(
-        "Remove AI Suggestion?",
-        `Do you want to remove "${suggestionTitle || 'this suggestion'}" from your travel journal? This action can't be undone.`
-    );
-    
-    if (confirmed) {
-        deleteSuggestionMutation.mutate(suggestionId);
-    }
-};
+        const confirmed = await confirm(
+            "Remove AI Suggestion?",
+            `Do you want to remove "${suggestionTitle || 'this suggestion'}" from your travel journal? This action can't be undone.`
+        );
+        
+        if (confirmed) {
+            deleteSuggestionMutation.mutate(suggestionId);
+        }
+    };
 
     const hasSuggestions = suggestions.length > 0;
 
@@ -67,12 +74,7 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
             suggestions={suggestions}
             loading={isLoading}
             error={apiError?.message || null}
-            onDeleteSuggestion={handleDeleteTrigger} // Passa o gatilho seguro
+            onDeleteSuggestion={handleDeleteTrigger} 
         />
     );
 }
-
-/* ******** Nota ********* :
-A captura de erros (catch (err)), foi acoplada ao validador genérico da API.
-Assim, se a remoção falhar no servidor por falta de ligação, a aplicação limpa as mensagens técnicas e avisa o utilizador de forma amigável."
-*/

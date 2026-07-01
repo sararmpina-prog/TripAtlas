@@ -240,7 +240,7 @@ const handleSubmit = (e) => {
                         onClick={handleAddSegment}
                         disabled={isPending}
                     >
-                        <FaPlus size={12} /> Add Segment #{nextOrder}
+                        <FaPlus size={12} /> Add Flight
                     </button>
 
                 {/* RODAPÉ */}

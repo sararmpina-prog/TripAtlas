@@ -183,7 +183,7 @@ export default function TripSidePanelForm({
                     </p>
                 )}
 
-                <div className="dashboard-sidepanel-buttons"> 
+                <div className="flight-form-actions"> 
                     <SubmitButton 
                         isPending={isPending} 
                         hasChanges={hasChanges} 

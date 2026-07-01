@@ -4,6 +4,7 @@ import { createTrip, updateTrip, deleteTrip } from '../../api';
 import { getStoredToken, getStoredUser } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
 import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 import TripSidePanelView from './TripSidePanelView';
 import TripSidePanelForm from './TripSidePanelForm';
@@ -14,11 +15,12 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
     const user = getStoredUser();
     const queryClient = useQueryClient();
     const confirm = useConfirm();
+    const toast = useToast();
 
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [formError, setFormError] = useState('');
-    const [fieldErrors, setFieldErrors] = useState({}); // Novo estado para erros por input
+    const [fieldErrors, setFieldErrors] = useState({});
     const [search, setSearch] = useState('');
 
     const filteredTrips = useMemo(() => {
@@ -34,6 +36,10 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         mutationFn: (newTripData) => createTrip(newTripData, token),
         onSuccess: (response) => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
+            
+            // TOAST DE SUCESSO AO CRIAR
+            toast('New trip created successfully!', 'success');
+            
             setIsCreating(false);
             setFormError('');
             setFieldErrors({});
@@ -43,7 +49,7 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         onError: (err) => {
             const result = mapApiServerError(err, allowedFields, 'Failed to create trip.');
             setFormError(result.formError);
-            setFieldErrors(result.fieldErrors); // erros nos inputs
+            setFieldErrors(result.fieldErrors);
         }
     });
 
@@ -52,6 +58,10 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         mutationFn: (updatedData) => updateTrip(selectedTrip.id, updatedData, token),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
+            
+            // TOAST DE SUCESSO AO EDITAR
+            toast('Trip updates saved successfully!', 'success');
+            
             setIsEditing(false);
             setFormError('');
             setFieldErrors({});
@@ -59,7 +69,7 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
         onError: (err) => {
             const result = mapApiServerError(err, allowedFields, 'Failed to update trip.');
             setFormError(result.formError);
-            setFieldErrors(result.fieldErrors); // erros nos inputs
+            setFieldErrors(result.fieldErrors);
         }
     });
 
@@ -70,6 +80,10 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'trips'] });
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'flights'] });
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'reserves'] });
+            
+            // TOAST INFORMATIVO AO REMOVER
+            toast('Trip deleted permanently from your dashboard.', 'info');
+            
             onTripChange(null);
             setIsEditing(false);
             setFormError('');
@@ -84,6 +98,7 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
     const handleSave = (formData) => {
         if (!user?.id) {
             setFormError("User session not found. Please log in again.");
+            toast("Session expired. Please log in again.", "error");
             return;
         }
 
@@ -125,9 +140,9 @@ export default function TripSidePanel({ selectedTrip, trips = [], onTripChange }
                 selectedTrip={isEditing ? selectedTrip : null}
                 isPending={createTripMutation.isPending || updateTripMutation.isPending || deleteTripMutation.isPending}
                 apiError={formError}
-                serverFieldErrors={fieldErrors} // Passa os erros do servidor
+                serverFieldErrors={fieldErrors}
                 onSave={handleSave}
-                onDelete={isEditing ? handleDelete : null}
+                onDelete={isEditing ? handleDelete : null} 
                 onCancel={handleCancel}
             />
         );

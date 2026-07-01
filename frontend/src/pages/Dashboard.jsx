@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import FlightCard from '../components/FlightCard/FlightIndex';
 import ReserveCard from '../components/ReserveCard/ReserveIndex';
 import AIChatWidget from '../components/AIChatWidget';
-import TripSidePanel from '../components/TripSidePanel/TripIndex';
+import TripSidePanel from '../components/TripSidePanel/TripSidePanelIndex';
 import JournalCard from '../components/JournalCard/JournalIndex';
 
 import { ImAirplane } from "react-icons/im";
