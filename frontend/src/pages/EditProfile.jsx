@@ -1,4 +1,3 @@
-// src/pages/EditProfile.jsx
 import { Link, useNavigate } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
 import Header from '../components/Header';

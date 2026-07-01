@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { clearAuthSession, getStoredUser } from "../utils/authStorage";

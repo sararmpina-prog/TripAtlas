@@ -1,4 +1,3 @@
-// src/api/users.js
 import { API_URL, createJsonHeaders, buildApiError } from './client';
 
 /* Atualiza os dados de perfil do utilizador (first_name, surname, email, mobile_phone) */

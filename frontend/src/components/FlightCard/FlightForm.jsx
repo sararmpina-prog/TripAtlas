@@ -94,8 +94,6 @@ export default function FlightForm({
             : setReturns(returns.filter((_, i) => i !== index));
     };
 
-    // src/components/FlightCard/FlightForm.jsx
-
 const handleSubmit = (e) => {
     e.preventDefault();
     

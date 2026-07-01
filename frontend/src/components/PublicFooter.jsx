@@ -1,4 +1,3 @@
-// src/components/PublicFooter.jsx
 import { FaEnvelope } from 'react-icons/fa';
 import '../styles/Footer.css';
 

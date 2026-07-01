@@ -1,4 +1,3 @@
-// src/components/PrivateFooter.jsx
 import '../styles/Footer.css';
 
 export default function PrivateFooter() {
