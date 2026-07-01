@@ -16,14 +16,13 @@ export default function FlightForm({
     isPending,
     apiError,           
     serverFieldErrors = {}, 
-    selectedTrip // Recebemos a viagem aqui
+    selectedTrip
 }) {
     // Converte as datas da viagem para o formato aceite pelos calendários (YYYY-MM-DD)
     const tripMinDate = selectedTrip?.start_date ? selectedTrip.start_date.split('T')[0] + "T00:00" : "";
     const tripMaxDate = selectedTrip?.end_date ? selectedTrip.end_date.split('T')[0] + "T23:59" : "";
     const tripStart = tripMinDate ? new Date(tripMinDate) : null;
     const tripEnd = tripMaxDate ? new Date(tripMaxDate) : null;
-
 
     const confirm = useConfirm();
 
@@ -46,6 +45,14 @@ export default function FlightForm({
             setLocalErrors(serverFieldErrors);
         }
     }, [serverFieldErrors]);
+
+    // Declaração e cálculo dinâmico da variável hasChanges
+    // O botão fica semi-transparente e trancado até detetar qualquer mudança nos voos
+    const hasChanges = 
+        outbound.length !== outboundSegments.length ||
+        returns.length !== returnSegments.length ||
+        JSON.stringify(outbound) !== JSON.stringify(outboundSegments) ||
+        JSON.stringify(returns) !== JSON.stringify(returnSegments);
 
     const nextOrder = direction === 'Outbound' ? outbound.length + 1 : returns.length + 1;
 
@@ -93,18 +100,23 @@ export default function FlightForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Proteção extra caso tentem forçar o envio com o botão bloqueado
+        if (!hasChanges) return;
+
         const newErrors = {};
 
-        // 1. Validar e trancar a cronologia da IDA (Outbound)
+        // Validar e trancar a cronologia da IDA (Outbound)
         outbound.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`out-fn-${index}`] = "Flight number is required";
-            if (!flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
+            
+            if (flight.departure_airport?.length !== 3) newErrors[`out-dep-${index}`] = "Must be a 3-letter airport code";
+            
             if (!flight.departure_datetime) newErrors[`out-dep-time-${index}`] = "Departure date/time is required";
             if (!flight.arrival_datetime) {
                 newErrors[`out-arr-time-${index}`] = "Arrival date/time is required";
             }
 
-            // Validação: Chegada da ida não pode ser antes da partida da ida
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`out-arr-time-${index}`] = "Arrival cannot be before departure";
@@ -112,23 +124,23 @@ export default function FlightForm({
             }
         });
 
-        // 2. Validar e trancar a cronologia da VOLTA (Return)
+        // Validar e trancar a cronologia da VOLTA (Return)
         returns.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`ret-fn-${index}`] = "Flight number is required";
-            if (!flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
+
+            if (flight.departure_airport?.length !== 3) newErrors[`ret-dep-${index}`] = "Must be a 3-letter airport code";
+            
             if (!flight.departure_datetime) newErrors[`ret-dep-time-${index}`] = "Departure date/time is required";
             if (!flight.arrival_datetime) {
                 newErrors[`ret-arr-time-${index}`] = "Arrival date/time is required";
             }
 
-            // Validação 1: Chegada da volta não pode ser antes da partida da volta
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`ret-arr-time-${index}`] = "Arrival cannot be before departure";
                 }
             }
 
-            // Validação 2 Cruzada: Partida do regresso tem de ser obrigatoriamente após o último voo de ida terminar
             const lastOutboundFlight = outbound[outbound.length - 1];
             if (lastOutboundFlight?.arrival_datetime && flight.departure_datetime) {
                 if (new Date(flight.departure_datetime) < new Date(lastOutboundFlight.arrival_datetime)) {
@@ -137,14 +149,13 @@ export default function FlightForm({
             }
         });
 
-        // 3. Verificação do saco de erros e submissão elástica para a API
         if (Object.keys(newErrors).length > 0) {
             setLocalErrors(newErrors);
-            return; // Aborta e mostra as bordas vermelhas
+            return;
         }
 
         setLocalErrors({});
-        onSave([...outbound, ...returns]); // Envia o lote unificado sem erros de concorrência
+        onSave([...outbound, ...returns]);
     };
 
     const activeList = direction === 'Outbound' ? outbound : returns;
