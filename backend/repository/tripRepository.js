@@ -112,7 +112,7 @@ export async function resolveTripReference(reference, userId) {
 
   // TRUQUE DE LIMPEZA: Se a IA enviou algo como "trip to Paris" ou "vacation in Rome", remove palavras comuns e procura apenas por palavras-chave relevantes
   normalized = normalized
-    .replace(/(trip|tour|vacation|travel|viagem|passeio|férias)/gi, '')
+    .replace(/(trip|tour|vacation|travel)/gi, '')
     .trim();
 
   // Se após a limpeza a string ficou vazia, aborta
