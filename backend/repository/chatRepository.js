@@ -89,35 +89,26 @@ export async function getChatSessions(user_id) {
   return rows;
 }
 
-// Em conformidade com o toolExecutor.js
-export async function createAiSuggestion({ trip_id = null, user_id = null, trip_reference = null, trip_name = null, title, content }) {
+export async function createAiSuggestion({ trip_id, title, content, trip_name, user_id }) {
 
   console.log("estou no createAiSuggestion", trip_id)
-  console.log("estou no createAiSuggestion", user_id)
-  console.log("estou no createAiSuggestion", trip_reference)
   console.log("estou no createAiSuggestion", title)
   console.log("estou no createAiSuggestion", content)
-
-  // PROTEÇÃO CONTRA UNDEFINED: Converte para valores válidos salvaguardando o driver do MySQL
-  const safeTripId = trip_id ?? null;
-  const safeTripName = trip_reference ?? trip_name ?? null;
-  const safeUserId = user_id ?? null;
-  const safeTitle = title ?? 'AI Travel Insight';
-  const safeContent = content ?? '';
-
+  console.log("estou no createAiSuggestion", trip_name)
+  console.log("estou no createAiSuggestion", user_id)
   
   const [result] = await db.execute(
     `
     INSERT INTO ai_suggestions (
       trip_id,
-      trip_name,
-      user_id,
       title,
-      content
+      content,
+      trip_name,
+      user_id
     )
     VALUES (?, ?, ?, ?, ?)
     `,
-    [safeTripId, safeTripName, safeUserId, safeTitle, safeContent]
+    [trip_id, title, content, trip_name, user_id]
   );
 
   return {

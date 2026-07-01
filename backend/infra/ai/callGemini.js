@@ -9,7 +9,6 @@ Diferença de responsabilidades:
 - callGemini.js → comunicação com SDK da Gemini
 - tripBotConfig.js → comportamento do agente
 */
-
 import 'dotenv/config';
 import {config} from './tripBotConfig.js'
 import {createAiSuggestion} from '../../repository/chatRepository.js'
@@ -92,7 +91,7 @@ console.log(JSON.stringify(currentResponse, null, 2));
  if (functionCalls.length == 0) { break}
 
     // Mostrar chamadas
-   functionCalls.forEach(fn => {
+   currentResponse.functionCalls.forEach(fn => {
     console.log(`➡️ ${fn.name}`, fn.args);
   });
   
@@ -122,9 +121,8 @@ console.log(JSON.stringify(currentResponse, null, 2));
 
         result = await createAiSuggestion({
             ...fn.args,
-            trip_id: trip_id ?? fn.args?.trip_id ?? null,
-            user_id: user_id ?? fn.args?.user_id ?? null,
-            trip_reference: fn.args?.trip_reference ?? fn.args?.trip_name ?? null,
+            trip_id,
+            user_id,
           });
         break;
 
@@ -161,7 +159,7 @@ console.log(JSON.stringify(currentResponse, null, 2));
         const oldHistory = history.slice(0, -10);
         const recent = history.slice(-10);
 
-        const summary = await summarizeHistory(oldHistory);
+        summary = await summarizeHistory(oldHistory);
 
         history = [
           {
