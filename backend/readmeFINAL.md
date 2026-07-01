@@ -46,8 +46,18 @@ validators
 - app.js
 - server.js
 
-Considerações adicionais sobre a arquitetura:
- As subpastas routes, controllers e services seguem a mesma estrutura trabalhada em aula. 
+Considerações adicionais sobre a arquitetura backend:
+ - As subpastas routes, controllers e services seguem a mesma estrutura trabalhada em aula. Nestas apresentamos as diferentes entidades do nosso projeto (flight, reserves, accomodations, suggestions, trips, user). Com a adição de ficheiros destinados à autenticação (authRoutes, authcontroller e authService) e ao chatBot (aiRoutes, chatController e chatService)
+
+- A pasta repositório apresenta tudo o que é destinado à ligação com a base de dados ou seja todos as queries de pedido à BD. 
+
+- A pasta infra, agrega duas subpastas. Na primeira **ai** temos todos os ficheiros destinados à criação do chat Bot. A **db** condiciona tudo o que é relativo à criação da nossa BD (criação de tabelas, atualizações e inserção de valores).
+
+- Optamos por usar Zod Schema para validar a estutura das diferentes entidades que ficou guardado em **validators**. 
+
+- As pastas documentacaoApoio e testes são destinadas a nós utilizadas durante o desenvolvimento da aplicação e reunem informação de teste durante o deployment das funcionalidades. 
+
+
 
 Em frontend temos a seguinte arquitetura: 
 api
@@ -69,6 +79,6 @@ validators
 
 
 
-
+Considerações adicionais sobre a arquitetura frontend:
 
 
