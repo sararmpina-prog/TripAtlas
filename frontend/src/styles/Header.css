@@ -8,7 +8,7 @@
   padding: 10px 20px;
   border-bottom: 1px solid var(--border-light);
   background: var(--color-dark-azure);
-  z-index: 999;
+  z-index: 998;
   box-shadow: var(--shadow-medium);
 }
 

@@ -242,6 +242,18 @@ export default function AIChatWidget() {
                 </div>
                 <div className="ai-chat-main">
 
+                    {/* MENSAGEM DE BOAS-VINDAS */}
+                    {localMessages.length === 0 && (
+                        <div className="ai-chat-welcome-container">
+                            <h5>How can I help with your travels today?</h5>
+                            <p>
+                               Ask me for hidden gems, local restaurant recommendations or travel tips.
+                               <br />
+                               Whenever you like a suggestion, just tell me to save it to your Travel Journal!
+                            </p>
+                        </div>
+                    )}
+
                     <div className="ai-chat-messages">
 
                         {localMessages.map((msg, index) => (

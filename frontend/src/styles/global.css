@@ -57,13 +57,10 @@ textarea,
 select,
 button,
 a,
-span {
+span,
+li {
   font-family: "Open Sans", sans-serif;
 }
-/* 
-li {
-  list-style-type: none;
-} */
 
 h1,
 h2,
@@ -295,10 +292,6 @@ input:focus {
   color: var(--text-muted);
 }
 
-.auth-form-field .auth-form-error {
-  margin-top: 0.45rem;
-}
-
 .auth-inline-options {
   display: flex;
   justify-content: space-between;
@@ -336,11 +329,12 @@ input:focus {
 }
 
 .auth-form-error {
-  margin: 0;
+  margin-top: 0.45rem;
   color: var(--error-color-dark);
   font-size: 0.95rem;
   font-weight: 600;
   text-align: left;
+  font-family: "Open Sans", sans-serif;
 }
 
 .auth-input-error {

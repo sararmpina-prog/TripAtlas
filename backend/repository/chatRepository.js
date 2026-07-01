@@ -91,30 +91,40 @@ export async function getChatSessions(user_id) {
 }
 
 export async function createAiSuggestion({ trip_id, title, content, trip_name, user_id }) {
-
-  console.log("estou no createAiSuggestion original trip_id:", trip_id)
-  console.log("estou no createAiSuggestion original trip_name:", trip_name)
   
-  // Guardamos as variáveis que podem ser reparadas
   let correctedTripId = trip_id;
   let correctedTripName = trip_name;
 
-  // ENGENHARIA DE CORREÇÃO AUTOMÁTICA:
-  // Se a IA enviou um nome de viagem inventado (ex: "Paris Trip"), usamos o resolveTripReference
-  // para correr a query por aproximação (LIKE) e descobrir a viagem verdadeira do utilizador.
+  // 1. Corre a busca inteligente por aproximação (LIKE) na base de dados
   const incomingReference = trip_name || title;
+  let matchedTrip = null;
+  
   if (incomingReference) {
-    const matchedTrip = await resolveTripReference(incomingReference, user_id);
-    
-    if (matchedTrip) {
-      // Encontrou! Substitui o ID para o ID real da base de dados (ex: 'Paris Fashion Week' ID: 12)
-      correctedTripId = matchedTrip.id;
-      correctedTripName = matchedTrip.title;
-      console.log(`🎯 Sucesso! Alucinação corrigida de "${trip_name}" para a viagem real: "${matchedTrip.title}" (ID: ${matchedTrip.id})`);
-    }
+    matchedTrip = await resolveTripReference(incomingReference, user_id);
   }
 
-  // Executa o INSERT original na base de dados com as chaves corrigidas e higienizadas
+  // BLOQUEIO MÍNIMO DE SEGURANÇA:
+  // Se a IA inventou um nome (ex: "Paris Trip") e o resolveTripReference devolveu null 
+  // (porque o utilizador só tem "Paris Fashion Week" ou não tem nenhuma viagem de Paris),
+  // nós TRAVAMOS a gravação imediatamente. 
+  if (!matchedTrip && !trip_id) {
+    console.log(`❌ Gravação abortada: A IA tentou inventar a viagem "${incomingReference}" que não existe.`);
+    
+    // Devolvemos um erro estruturado que a Gemini consegue ler e interpretar
+    return {
+      success: false,
+      error: "TRIP_NOT_FOUND",
+      message: `The trip reference '${incomingReference}' does not match any existing trip in the database. Please ask the user for the correct trip name or to create the trip first.`
+    };
+  }
+
+  // Se encontrou a viagem por aproximação, repara as variáveis
+  if (matchedTrip) {
+    correctedTripId = matchedTrip.id;
+    correctedTripName = matchedTrip.title;
+  }
+
+  // Executa o INSERT apenas se tivermos a certeza que a viagem é real
   const [result] = await db.execute(
     `
     INSERT INTO ai_suggestions (
