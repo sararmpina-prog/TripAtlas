@@ -26,7 +26,7 @@ async function touchTripTimestamp(tripId) {
 // LISTA TODOS OS VOOS
 export async function listFlightsByUserId(userId) {
   const [rows] = await db.execute(`
-    SELECT f.id, f.trip_id, f.flight_number, f.airline, f.departure_airport, f.arrival_airport, f.departure_datetime, f.arrival_datetime, f.direction, f.created_at, f.updated_at
+    SELECT f.id, f.trip_id, f.flight_number, f.airline, f.departure_airport, f.arrival_airport, f.departure_datetime, f.arrival_datetime, f.created_at, f.updated_at
     FROM flights f
     INNER JOIN trips t ON f.trip_id = t.id
     WHERE t.user_id = ?
@@ -37,7 +37,7 @@ export async function listFlightsByUserId(userId) {
 // PROCURA UM VOO PELO ID
 export async function findFlightById(id) {
   const [rows] = await db.execute(`
-    SELECT id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, direction, created_at, updated_at
+    SELECT id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, created_at, updated_at
     FROM flights
     WHERE id = ?
     LIMIT 1
@@ -48,7 +48,7 @@ export async function findFlightById(id) {
 // LISTA TODOS OS VOOS DE UMA VIAGEM
 export async function getFlightsByTripId(tripId) {
   const [rows] = await db.execute(`
-    SELECT id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, direction, created_at, updated_at
+    SELECT id, trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, created_at, updated_at
     FROM flights
     WHERE trip_id = ?
   `, [tripId]);
@@ -61,12 +61,11 @@ export async function createFlight(flightData) {
     ...flightData,
     departure_datetime: toMySqlDateTime(flightData.departure_datetime),
     arrival_datetime: toMySqlDateTime(flightData.arrival_datetime),
-    direction: flightData.direction ?? 'outbound',
   };
 
   const [result] = await db.execute(`
-    INSERT INTO flights (trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime, direction)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO flights (trip_id, flight_number, airline, departure_airport, arrival_airport, departure_datetime, arrival_datetime)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `, [
       normalizedFlightData.trip_id,
       normalizedFlightData.flight_number ?? null,
@@ -75,7 +74,6 @@ export async function createFlight(flightData) {
       normalizedFlightData.arrival_airport ?? null,
       normalizedFlightData.departure_datetime,
       normalizedFlightData.arrival_datetime,
-      normalizedFlightData.direction,
   ]);
 
   // CASO DE CRIAÇÃO: O trip_id vem direto nos dados do formulário

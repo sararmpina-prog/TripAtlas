@@ -45,6 +45,7 @@ export default function AIChatWidget() {
         enabled: Boolean(token)
     });
 
+
     /* 
     CHAT HISTORY */
 
@@ -55,7 +56,7 @@ export default function AIChatWidget() {
 
     });
 
-    console.log("serverHistory =", serverHistory);
+    // console.log("serverHistory =", serverHistory);
 
     /* LOAD HISTORY INTO UI */
 
@@ -217,8 +218,8 @@ export default function AIChatWidget() {
                     }`}
                 >
                     <div className="chat-history-list">
-                        {/* O .slice(0, 5) garante que só aparecem as 5 conversas mais recentes */}
-                        {chatSessions.slice(0, 5).map((chat) => (
+            
+                        {chatSessions.map((chat) => (
                             <button
                                 key={chat.chat_id}
                                 type="button"

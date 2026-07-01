@@ -197,6 +197,7 @@
   border-color: var(--color-orange);
 }
 
+<<<<<<< HEAD
 /* Botão tracejado adicionar novo segmento */
 .btn-dashed-add {
   width: 100%;
@@ -219,6 +220,8 @@
   background: #ffebe0;
 }
 
+=======
+>>>>>>> main
 .reserve-form-actions {
   display: flex;
   gap: 0.5rem;

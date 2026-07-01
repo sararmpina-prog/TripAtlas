@@ -23,6 +23,7 @@ export default function App() {
       <ToastProvider>
         <Routes>
 
+<<<<<<< HEAD
           {/* Páginas públicas */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<LandingPage />} />
@@ -49,6 +50,33 @@ export default function App() {
 
         </Routes>
       </ToastProvider>
+=======
+        {/* Páginas públicas */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        {/* Área autenticada */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register/success" element={<RegisterSuccess />} />
+          <Route path="/profile/edit" element={<EditProfile />} />
+        </Route>
+
+        {/* PANHA TODOS OS ERROS 404 (Deve ser SEMPRE a última rota do ficheiro) */}
+          <Route path="*" element={<ErrorPage code="404" message="Page Not Found" />} />
+
+        </Routes>
+>>>>>>> main
     </ConfirmProvider>
   );
 }

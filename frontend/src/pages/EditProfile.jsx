@@ -1,17 +1,17 @@
 // src/pages/EditProfile.jsx
-import { Link, useNavigate } from 'react-router'; // 🌟 Adicionado useNavigate
-import { useMutation } from '@tanstack/react-query'; // 🌟 Adicionado useMutation
+import { Link, useNavigate } from 'react-router';
+import { useMutation } from '@tanstack/react-query';
 import Header from '../components/Header';
 import DashboardCard from '../components/DashboardCard';
 import ProfileForm from '../components/ProfileForm';
 import PasswordForm from '../components/PasswordForm';
-import { FaArrowLeft, FaTrashAlt } from 'react-icons/fa'; // 🌟 Adicionado FaTrashAlt
+import { FaArrowLeft, FaTrashAlt } from 'react-icons/fa';
 import { MdManageAccounts } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { useConfirm } from '../context/ConfirmContext'; // 🌟 Importado o teu Modal de Confirmação Global
-import { useToast } from '../context/ToastContext'; // 🌟 Importado o teu sistema de Toasts
+import { useConfirm } from '../context/ConfirmContext'; 
+import { useToast } from '../context/ToastContext';
 import { getStoredUser, getStoredToken, clearAuthSession } from '../utils/authStorage';
-import { deleteUserAccount } from '../api'; // 🌟 Garante que tens esta rota no teu api.js
+import { deleteUserAccount } from '../api';
 import '../styles/EditProfile.css';
 
 export default function EditProfile() {
@@ -21,7 +21,7 @@ export default function EditProfile() {
     const user = getStoredUser();
     const token = getStoredToken();
 
-    // 🌟 MUTAÇÃO CRÍTICA: Apagar conta do Servidor
+    // MUTAÇÃO CRÍTICA: Apagar conta do Servidor
     const deleteMutation = useMutation({
         mutationFn: () => deleteUserAccount(user.id, token),
         onSuccess: () => {
@@ -81,12 +81,12 @@ export default function EditProfile() {
                         <PasswordForm />
                     </DashboardCard>
 
-                    {/* 🌟 NOVO BLOCO 3: ZONA DE PERIGO (DELETE ACCOUNT) */}
+                    {/* NOVO BLOCO 3: ZONA DE PERIGO (DELETE ACCOUNT) */}
                     <DashboardCard actions={null}>
                         <div className="profile-card-header danger-zone-header">
                             <FaTrashAlt className='profile-icon danger-icon' size={32} />
                             <div className="profile-card-header-text">
-                                <h2 className="danger-title">Danger Zone</h2>
+                                <h2 className="danger-title">Delete Account</h2>
                                 <p>Permanently delete your TripAtlas profile and all associated logs</p>
                             </div>
                         </div>

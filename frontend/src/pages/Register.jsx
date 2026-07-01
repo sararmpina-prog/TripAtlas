@@ -12,7 +12,10 @@ import {
   validateRegisterForm,
 } from '../validators/authValidator';
 import { preloadBackgroundImage } from '../utils/preload';
+<<<<<<< HEAD
 import SubmitButton from '../components/SubmitButton';
+=======
+>>>>>>> main
 import '../styles/Register.css';
 
 export default function Register() {
@@ -95,6 +98,10 @@ export default function Register() {
           <div className="left-content-wrapper">
             <h2>Get Started!</h2>
             <h4>Already have<br />an account?</h4>
+<<<<<<< HEAD
+=======
+            {/* Otimização: Preload da imagem de login ao aproximar o rato */}
+>>>>>>> main
             <Link 
               to="/login" 
               className="btn-base btn-light"
@@ -192,6 +199,7 @@ export default function Register() {
 
               {formError && <p className="auth-form-error">{formError}</p>}
 
+<<<<<<< HEAD
               <div className="auth-form-actions" 
                    onMouseEnter={() => preloadBackgroundImage('registerSuccess-img-greece')}
                    onTouchStart={() => preloadBackgroundImage('registerSuccess-img-greece')}>
@@ -203,6 +211,19 @@ export default function Register() {
                   pendingLabel="Creating account..."
                   className="btn-base btn-orange auth-submit"
                 />
+=======
+              <div className="auth-form-actions">
+                {/* Otimização: Preload da imagem de sucesso assim que o utilizador vai clicar no botão */}
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="btn-base btn-orange"
+                  onMouseEnter={() => preloadBackgroundImage('registerSuccess-img-greece')}
+                  onTouchStart={() => preloadBackgroundImage('registerSuccess-img-greece')}
+                >
+                  {isPending ? 'Creating account...' : 'Register'}
+                </button>
+>>>>>>> main
               </div>
             </form>
           </div>

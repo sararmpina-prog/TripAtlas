@@ -70,8 +70,8 @@ try {
     first_name: 'Crud',
     surname: 'Suite',
     email: `crud-suite-${stamp}@example.com`,
-    mobile_phone: `+35191${String(stamp).slice(-7)}`, 
-    password: 'SecretP123!',
+    mobile_phone: '+351912345678',
+    password: 'secret123',
   }), 201);
   created.userId = authData.user.id;
   created.token = authData.token;
@@ -81,23 +81,21 @@ try {
 
   expectSuccess('PATCH /api/users/:id', await request('PATCH', `/api/users/${created.userId}`, created.token, {
     first_name: 'CrudUpdated',
-    mobile_phone: `+35192${String(stamp).slice(-7)}`
+    mobile_phone: '+351911111111'
   }), 200);
 
   expectSuccess('PATCH /api/users/:id/password', await request('PATCH', `/api/users/${created.userId}/password`, created.token, {
-    current_password: 'SecretP123!',
-    new_password: 'NewSecretP123!'
+    current_password: 'secret123',
+    new_password: 'secret456'
   }), 200);
 
   const trip = expectSuccess('POST /api/trips', await request('POST', '/api/trips', created.token, {
-    user_id: created.userId,
     title: `Trip ${stamp}`,
     description: 'Integration manual CRUD check',
     destination: 'Porto',
     start_date: '2026-07-10',
     end_date: '2026-07-12'
   }), 201);
-
   created.tripId = trip.id;
 
   expectSuccess('GET /api/trips', await request('GET', '/api/trips', created.token), 200);
@@ -113,8 +111,7 @@ try {
     departure_airport: 'OPO',
     arrival_airport: 'LIS',
     departure_datetime: '2026-07-10T09:00:00.000Z',
-    arrival_datetime: '2026-07-10T10:00:00.000Z',
-    direction: 'outbound'
+    arrival_datetime: '2026-07-10T10:00:00.000Z'
   }), 201);
   created.flightId = flight.id;
 
@@ -125,7 +122,6 @@ try {
 
   const accommodation = expectSuccess('POST /api/accommodations', await request('POST', '/api/accommodations', null, {
     name: `Hotel ${stamp}`,
-    address: 'Main Street 123',
     city: 'Lisboa',
     country: 'Portugal'
   }), 201);

@@ -61,6 +61,7 @@ export async function getChatSessions(token) {
   });
 
   const data = await response.json();
+  console.log("tou no fetch certo", data)
 
   if (!response.ok) {
     throw buildApiError(data, "Unable to load chat sessions.", response.status);

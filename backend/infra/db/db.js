@@ -48,7 +48,6 @@ const tableStatements = [
     CREATE TABLE IF NOT EXISTS accommodations (
       id INT PRIMARY KEY AUTO_INCREMENT,
       name VARCHAR(150) NOT NULL,
-      address VARCHAR(255) NOT NULL,
       city VARCHAR(100),
       country VARCHAR(100),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -61,8 +60,6 @@ const tableStatements = [
       trip_id INT NOT NULL,
       check_in_date DATE NOT NULL,
       check_out_date DATE NOT NULL,
-      check_in_time TIME,
-      check_out_time TIME,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -77,7 +74,6 @@ const tableStatements = [
       arrival_airport VARCHAR(15),
       departure_datetime TIMESTAMP NULL, -- CORREÇÃO: Sincronizado para TIMESTAMP NULL
       arrival_datetime TIMESTAMP NULL,   -- CORREÇÃO: Sincronizado para TIMESTAMP NULL
-      direction ENUM('outbound', 'return') NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
@@ -87,7 +83,6 @@ const tableStatements = [
       id INT PRIMARY KEY AUTO_INCREMENT,
       user_id INT NOT NULL,
       trip_id INT NULL,
-      chat_id VARCHAR(36) NOT NULL,
       user_message TEXT,
       ai_response MEDIUMTEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -210,46 +205,6 @@ const columnStatements = [
     statement: `
       ALTER TABLE chat_history
       ADD COLUMN user_id INT NULL AFTER id
-    `,
-  },
-  {
-    tableName: 'accommodations',
-    columnName: 'address',
-    statement: `
-      ALTER TABLE accommodations
-      ADD COLUMN address VARCHAR(255) NOT NULL AFTER name
-    `,
-  },
-  {
-    tableName: 'accommodation_reserve',
-    columnName: 'check_in_time',
-    statement: `
-      ALTER TABLE accommodation_reserve
-      ADD COLUMN check_in_time TIME NULL AFTER check_out_date
-    `,
-  },
-  {
-    tableName: 'accommodation_reserve',
-    columnName: 'check_out_time',
-    statement: `
-      ALTER TABLE accommodation_reserve
-      ADD COLUMN check_out_time TIME NULL AFTER check_in_time
-    `,
-  },
-  {
-    tableName: 'flights',
-    columnName: 'direction',
-    statement: `
-      ALTER TABLE flights
-      ADD COLUMN direction ENUM('outbound', 'return') NOT NULL DEFAULT 'outbound' AFTER arrival_datetime
-    `,
-  },
-  {
-    tableName: 'chat_history',
-    columnName: 'chat_id',
-    statement: `
-      ALTER TABLE chat_history 
-      ADD COLUMN chat_id VARCHAR(36) NOT NULL AFTER trip_id
     `,
   },
 ];

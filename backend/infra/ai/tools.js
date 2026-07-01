@@ -60,6 +60,7 @@ export const setAiSuggestionFunctionDeclaration = {
             description: "A natural reference provided by the user to identify the trip, such as the trip title, destination, trip ID, or another identifier."
           }
         },
+<<<<<<< HEAD:backend/infra/ai/config/tools.js
         required: [
           "title",
           "content",
@@ -67,4 +68,31 @@ export const setAiSuggestionFunctionDeclaration = {
         ]
       }
     };
+=======
+        "title": {
+          "type": "string",
+          "description": "Título da sugestão."
+        },
+        "content": {
+          "type": "string",
+          "description": "Conteúdo simples da sugestão."
+        },
+        "trip_name": {
+          "type": "string",
+          "description": "Título da viagem."
+        },
+          "user_id": {
+          "type": "integer",
+          "description": "ID do utilizador."
+        }
+      },
+      "required": [
+       "trip_name",
+        "title",
+        "content"
+      ]
+    }
+  }
+
+>>>>>>> main:backend/infra/ai/tools.js
 

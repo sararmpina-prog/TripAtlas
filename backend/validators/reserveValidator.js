@@ -19,16 +19,6 @@ export const createReserveSchema = z.object({
   check_out_date: z
     .string({ required_error: "The field check_out_date is mandatory." })
     .date({ message: "The field check_out_date must use the YYYY-MM-DD format." }),
-  check_in_time: optionalNormalizedString
-    .pipe(z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
-      message: 'The field check_in_time must use the HH:MM:SS format.',
-    }).nullable())
-    .optional(),
-  check_out_time: optionalNormalizedString
-    .pipe(z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
-      message: 'The field check_out_time must use the HH:MM:SS format.',
-    }).nullable())
-    .optional(),
 })
 // Validação Cross-Field: data de fim não pode ser anterior à data de início
 .refine((data) => data.check_out_date >= data.check_in_date, {
@@ -55,16 +45,6 @@ export const updateReserveSchema = z.object({
   check_out_date: z
     .string()
     .date({ message: "The field check_out_date must use the YYYY-MM-DD format." })
-    .optional(),
-  check_in_time: optionalNormalizedString
-    .pipe(z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
-      message: 'The field check_in_time must use the HH:MM:SS format.',
-    }).nullable())
-    .optional(),
-  check_out_time: optionalNormalizedString
-    .pipe(z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
-      message: 'The field check_out_time must use the HH:MM:SS format.',
-    }).nullable())
     .optional(),
 })
 // Garante que o corpo do PATCH não vai totalmente vazio

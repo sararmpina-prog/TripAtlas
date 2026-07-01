@@ -57,8 +57,8 @@ export async function deleteReserve(id) {
 // LISTA RESERVAS DUPLICADAS
 export async function listDuplicatedReserves(reserve) {
   const [rows] = await db.execute(`
-   SELECT 1 FROM accommodation_reserve WHERE accommodation_id = ? AND trip_id = ? AND check_in_date = ? AND check_out_date = ? AND check_in_time <=> ? AND check_out_time <=> ? LIMIT 1
-  `,  [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date, reserve.check_in_time ?? null, reserve.check_out_time ?? null]);
+   SELECT 1 FROM accommodation_reserve WHERE accommodation_id = ? AND trip_id = ? AND check_in_date = ? AND check_out_date = ? LIMIT 1
+  `,  [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]);
 
   return rows.length > 0;
 }
@@ -67,17 +67,10 @@ export async function listDuplicatedReserves(reserve) {
 export async function createReserve(reserve) {
   const [result] = await db.execute(
     `
-      INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date, check_in_time, check_out_time)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO accommodation_reserve (accommodation_id, trip_id, check_in_date, check_out_date)
+      VALUES (?, ?, ?, ?)
     `,
-    [
-      reserve.accommodation_id,
-      reserve.trip_id,
-      reserve.check_in_date,
-      reserve.check_out_date,
-      reserve.check_in_time ?? null,
-      reserve.check_out_time ?? null,
-    ]
+    [reserve.accommodation_id, reserve.trip_id, reserve.check_in_date, reserve.check_out_date]
   );
 
   // CASO DE CRIAÇÃO: O trip_id vem direto nos dados do parâmetro
@@ -94,9 +87,7 @@ export async function updateReserve(id, reserve) {
         accommodation_id = ?,
         trip_id = ?,
         check_in_date = ?,
-        check_out_date = ?,
-        check_in_time = ?,
-        check_out_time = ?
+        check_out_date = ?
       WHERE id = ?
     `,
     [
@@ -104,8 +95,6 @@ export async function updateReserve(id, reserve) {
       reserve.trip_id,
       reserve.check_in_date,
       reserve.check_out_date,
-      reserve.check_in_time ?? null,
-      reserve.check_out_time ?? null,
       id
     ]);
 
@@ -126,10 +115,7 @@ export async function listReservesByUserId(userId) {
       ar.trip_id, 
       ar.check_in_date, 
       ar.check_out_date,
-      ar.check_in_time,
-      ar.check_out_time,
-      a.name AS accommodation_name,
-      a.address AS accommodation_address
+      a.name AS accommodation_name
     FROM accommodation_reserve ar
     INNER JOIN trips t ON ar.trip_id = t.id
     INNER JOIN accommodations a ON ar.accommodation_id = a.id

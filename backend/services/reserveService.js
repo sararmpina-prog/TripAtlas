@@ -120,8 +120,6 @@ export async function updateReserve(id, currentUserId, validatedReserve) {
 
   updateData.check_in_date = checkInDate;
   updateData.check_out_date = checkOutDate;
-  updateData.check_in_time = validatedReserve.check_in_time ?? existingReserve.check_in_time ?? null;
-  updateData.check_out_time = validatedReserve.check_out_time ?? existingReserve.check_out_time ?? null;
 
   await reserveRepository.updateReserve(id, updateData);
 

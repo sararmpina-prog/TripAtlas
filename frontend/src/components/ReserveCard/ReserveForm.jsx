@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { IoClose } from "react-icons/io5";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { FaPlus } from 'react-icons/fa';
 import DashboardCard from '../DashboardCard';
 import SubmitButton from '../../components/SubmitButton';
 import { useConfirm } from '../../context/ConfirmContext';
@@ -21,8 +20,16 @@ export default function ReserveForm({
     const tripMinDate = selectedTrip?.start_date ? selectedTrip.start_date.split('T')[0] : "";
     const tripMaxDate = selectedTrip?.end_date ? selectedTrip.end_date.split('T')[0] : "";
 
-    // Inicializa lista de reservas: se é edição de uma existente, começa com essa; se é criação, começa vazio
-    const [reserves, setReserves] = useState(reserve ? [reserve] : []);
+    const [name, setName] = useState(reserve?.accommodation_name || reserve?.name || '');
+    const [address, setAddress] = useState(reserve?.address || reserve?.accommodation_address || '');
+    const [city, setCity] = useState(reserve?.city || '');
+    const [country, setCountry] = useState(reserve?.country || '');
+    
+    const [checkIn, setCheckIn] = useState(reserve?.check_in_date ? reserve.check_in_date.split('T')[0] : '');
+    const [checkOut, setCheckOut] = useState(reserve?.check_out_date ? reserve.check_out_date.split('T')[0] : '');
+    const [checkInTime, setCheckInTime] = useState(reserve?.check_in_time || '');
+    const [checkOutTime, setCheckOutTime] = useState(reserve?.check_out_time || '');
+    
     const [localErrors, setLocalErrors] = useState({});
     const [editedFields, setEditedFields] = useState({});
 
@@ -146,36 +153,16 @@ export default function ReserveForm({
 
         setEditedFields({});
         setLocalErrors({});
-
-        // Se é edição de uma reserva só, passa a reserva singular
-        if (reserve && reserves.length === 1) {
-            onSave({
-                accommodation_name: reserves[0].accommodation_name || reserves[0].name,
-                name: reserves[0].accommodation_name || reserves[0].name,
-                accommodation_id: reserves[0].accommodation_id,
-                address: reserves[0].address || reserves[0].accommodation_address,
-                accommodation_address: reserves[0].address || reserves[0].accommodation_address,
-                city: reserves[0].city || null,
-                country: reserves[0].country || null,
-                check_in_date: reserves[0].check_in_date,
-                check_out_date: reserves[0].check_out_date,
-                check_in_time: reserves[0].check_in_time || null,
-                check_out_time: reserves[0].check_out_time || null
-            });
-        } else {
-            // Se é criação com múltiplas reservas, passa todas
-            onSave(reserves.map(r => ({
-                accommodation_name: r.accommodation_name || r.name,
-                accommodation_id: r.accommodation_id,
-                address: r.address || r.accommodation_address,
-                city: r.city || null,
-                country: r.country || null,
-                check_in_date: r.check_in_date,
-                check_out_date: r.check_out_date,
-                check_in_time: r.check_in_time || null,
-                check_out_time: r.check_out_time || null
-            })));
-        }
+        onSave({
+            name: name.trim(),
+            address: address.trim(),
+            city: city.trim() || null,
+            country: country.trim() || null,
+            check_in_date: checkIn,
+            check_out_date: checkOut,
+            check_in_time: checkInTime || null,
+            check_out_time: checkOutTime || null
+        });
     };
 
     return (
@@ -188,166 +175,124 @@ export default function ReserveForm({
         >
             <form onSubmit={handleSubmit} noValidate className="reserve-form-container">
                 
-                <h5 className="reserve-form-title">
-                    {reserve ? 'Manage Accommodation Reserve' : 'Add Accommodation Reserves'}
-                </h5>
-
-                {/* RENDERIZAR SEGMENTOS DE ACOMODAÇÃO */}
-                {reserves.map((res, index) => {
-                    const name = res.accommodation_name || res.name || '';
-                    const address = res.address || res.accommodation_address || '';
-                    const city = res.city || '';
-                    const country = res.country || '';
-                    const checkIn = res.check_in_date ? (typeof res.check_in_date === 'string' ? res.check_in_date.split('T')[0] : res.check_in_date) : '';
-                    const checkOut = res.check_out_date ? (typeof res.check_out_date === 'string' ? res.check_out_date.split('T')[0] : res.check_out_date) : '';
-                    const checkInTime = res.check_in_time || '';
-                    const checkOutTime = res.check_out_time || '';
-
-                    return (
-                        <div key={index} className="reserve-segment-wrapper">
-                            <div className="reserve-segment-header">
-                                <span className="segment-card-badge">Accommodation #{index + 1}</span>
-                                {(reserves.length > 1 || !reserve) && (
-                                    <button 
-                                        type="button" 
-                                        className="btn-delete-icon" 
-                                        onClick={() => handleRemoveSegment(index)} 
-                                        disabled={isPending}
-                                        title="Delete this accommodation"
-                                    >
-                                        <FaRegTrashAlt size={14} />
-                                    </button>
-                                )}
-                                {reserve && reserves.length === 1 && (
-                                    <button 
-                                        type="button" 
-                                        className="btn-delete-icon" 
-                                        onClick={onDelete} 
-                                        disabled={isPending}
-                                        title="Delete this accommodation reservation"
-                                    >
-                                        <FaRegTrashAlt size={14} />
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="reserve-form-row">
-                                <div className="reserve-input-group">
-                                    <input 
-                                        type="text"
-                                        placeholder="Accommodation / Hotel Name *"
-                                        className={getFieldError('accommodation_name', index) ? 'auth-input-error' : ''}
-                                        value={name}
-                                        onChange={(e) => handleFieldChange(index, 'accommodation_name', e.target.value)}
-                                        disabled={isPending}
-                                    />
-                                    {getFieldError('accommodation_name', index) && <p className="auth-form-error">{getFieldError('accommodation_name', index)}</p>}
-                                </div>
-                                <div className="reserve-input-group">
-                                    <input 
-                                        type="text"
-                                        placeholder="Street Address *"
-                                        className={getFieldError('address', index) ? 'auth-input-error' : ''}
-                                        value={address}
-                                        onChange={(e) => handleFieldChange(index, 'address', e.target.value)}
-                                        disabled={isPending}
-                                    />
-                                    {getFieldError('address', index) && <p className="auth-form-error">{getFieldError('address', index)}</p>}
-                                </div>
-                            </div>
-
-                            <div className="reserve-form-row">
-                                <div className="reserve-input-group">
-                                    <input 
-                                        type="text"
-                                        placeholder="City (Optional)"
-                                        value={city}
-                                        onChange={(e) => handleFieldChange(index, 'city', e.target.value)}
-                                        disabled={isPending}
-                                    />
-                                </div>
-                                <div className="reserve-input-group">
-                                    <input 
-                                        type="text"
-                                        placeholder="Country (Optional)"
-                                        value={country}
-                                        onChange={(e) => handleFieldChange(index, 'country', e.target.value)}
-                                        disabled={isPending}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="reserve-form-row">
-                                <div className="reserve-form-column">
-                                    <div className="reserve-input-group">
-                                        <label className="reserve-input-label">Check-in Date *</label>
-                                        <input 
-                                            type="date"
-                                            className={getFieldError('check_in_date', index) ? 'auth-input-error' : ''}
-                                            value={checkIn}
-                                            min={tripMinDate}
-                                            max={tripMaxDate}
-                                            onChange={(e) => handleFieldChange(index, 'check_in_date', e.target.value)}
-                                            disabled={isPending}
-                                        />
-                                        {getFieldError('check_in_date', index) && <p className="auth-form-error">{getFieldError('check_in_date', index)}</p>}
-                                    </div>
-                                    <div className="reserve-input-group">
-                                        <label className="reserve-input-label">Check-in Time</label>
-                                        <input 
-                                            type="time"
-                                            value={checkInTime}
-                                            onChange={(e) => handleFieldChange(index, 'check_in_time', e.target.value)}
-                                            disabled={isPending}
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div className="reserve-form-column">
-                                    <div className="reserve-input-group">
-                                        <label className="reserve-input-label">Check-out Date *</label>
-                                        <input 
-                                            type="date"
-                                            className={getFieldError('check_out_date', index) ? 'auth-input-error' : ''}
-                                            value={checkOut}
-                                            min={checkIn || tripMinDate}
-                                            max={tripMaxDate}
-                                            onChange={(e) => handleFieldChange(index, 'check_out_date', e.target.value)}
-                                            disabled={isPending}
-                                        />
-                                        {getFieldError('check_out_date', index) && <p className="auth-form-error">{getFieldError('check_out_date', index)}</p>}
-                                    </div>
-                                    <div className="reserve-input-group">
-                                        <label className="reserve-input-label">Check-out Time</label>
-                                        <input 
-                                            type="time"
-                                            value={checkOutTime}
-                                            onChange={(e) => handleFieldChange(index, 'check_out_time', e.target.value)}
-                                            disabled={isPending}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-
-                {/* Em create mode adiciona segmento local; em edit mode oferece atalho para criar nova accommodation */}
-                {!reserve ? (
-                    <button type="button" className="btn-dashed-add" onClick={handleAddSegment} disabled={isPending}>
-                        <FaPlus size={12} /> Add Accommodation Reserve (Segment #{reserves.length + 1})
-                    </button>
-                ) : (
-                    <button type="button" className="btn-dashed-add" onClick={onCreateNew} disabled={isPending}>
-                        <FaPlus size={12} /> Add New Accommodation
+                {reserve && (
+                    <button 
+                        type="button" 
+                        className="btn-delete-icon" 
+                        onClick={onDelete} 
+                        disabled={isPending}
+                        title="Delete this entire accommodation reservation"
+                    >
+                        <FaRegTrashAlt size={14} />
                     </button>
                 )}
+
+                <h5 className="reserve-form-title">
+                    {reserve ? 'Manage Accommodation Reserve' : 'Add New Accommodation Reserve'}
+                </h5>
+
+                <div className="reserve-form-row">
+                    <div className="reserve-input-group">
+                        <input 
+                            type="text"
+                            placeholder="Accommodation / Hotel Name *"
+                            className={localErrors.name ? 'auth-input-error' : ''}
+                            value={name}
+                            onChange={(e) => handleInputChange('name', e.target.value, setName)}
+                            disabled={isPending}
+                        />
+                        {localErrors.name && <p className="auth-form-error">{localErrors.name}</p>}
+                    </div>
+                    <div className="reserve-input-group">
+                        <input 
+                            type="text"
+                            placeholder="Street Address *"
+                            className={localErrors.address ? 'auth-input-error' : ''}
+                            value={address}
+                            onChange={(e) => handleInputChange('address', e.target.value, setAddress)}
+                            disabled={isPending}
+                        />
+                        {localErrors.address && <p className="auth-form-error">{localErrors.address}</p>}
+                    </div>
+                </div>
+
+                <div className="reserve-form-row">
+                    <div className="reserve-input-group">
+                        <input 
+                            type="text"
+                            placeholder="City (Optional)"
+                            value={city}
+                            onChange={(e) => handleInputChange('city', e.target.value, setCity)}
+                            disabled={isPending}
+                        />
+                    </div>
+                    <div className="reserve-input-group">
+                        <input 
+                            type="text"
+                            placeholder="Country (Optional)"
+                            value={country}
+                            onChange={(e) => handleInputChange('country', e.target.value, setCountry)}
+                            disabled={isPending}
+                        />
+                    </div>
+                </div>
+
+                <div className="reserve-form-row">
+                    <div className="reserve-form-column">
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-in Date *</label>
+                            <input 
+                                type="date"
+                                className={localErrors.check_in_date ? 'auth-input-error' : ''}
+                                value={checkIn}
+                                min={tripMinDate}
+                                max={tripMaxDate}
+                                onChange={(e) => handleInputChange('check_in_date', e.target.value, setCheckIn)}
+                                disabled={isPending}
+                            />
+                            {localErrors.check_in_date && <p className="auth-form-error">{localErrors.check_in_date}</p>}
+                        </div>
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-in Time</label>
+                            <input 
+                                type="time"
+                                value={checkInTime}
+                                onChange={(e) => handleInputChange('check_in_time', e.target.value, setCheckInTime)}
+                                disabled={isPending}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="reserve-form-column">
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-out Date *</label>
+                            <input 
+                                type="date"
+                                className={localErrors.check_out_date ? 'auth-input-error' : ''}
+                                value={checkOut}
+                                min={checkIn || tripMinDate}
+                                max={tripMaxDate}
+                                onChange={(e) => handleInputChange('check_out_date', e.target.value, setCheckOut)}
+                                disabled={isPending}
+                            />
+                            {localErrors.check_out_date && <p className="auth-form-error">{localErrors.check_out_date}</p>}
+                        </div>
+                        <div className="reserve-input-group">
+                            <label className="reserve-input-label">Check-out Time</label>
+                            <input 
+                                type="time"
+                                value={checkOutTime}
+                                onChange={(e) => handleInputChange('check_out_time', e.target.value, setCheckOutTime)}
+                                disabled={isPending}
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 {/* RODAPÉ */}
                 <div className="flight-form-actions-wrapper">
                     {apiError && <div className="auth-form-error api-error-banner"> {apiError}</div>}
                     <div className="flight-form-actions">
-                        
                         {/* SUBMIT BUTTON REUTILIZÁVEL */}
                         <SubmitButton
                             isPending={isPending}

@@ -53,10 +53,12 @@ export function buildApiError(data, fallbackMessage, status) {
 
 // FUNÇÂO PARA GET DE RECURSOS PROTEGIDOS DA API (COM TRATAMENTO DE ERROS PADRÃO)
 export async function fetchProtectedResource(path, token, fallbackMessage) {
+  
   const response = await fetch(`${API_URL}${path}`, {
     headers: createJsonHeaders(token),
   });
 
+  console.log("RAW RESPONSE:", response);
   const data = await response.json();
 
   if (!response.ok) {

@@ -12,7 +12,12 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     const queryClient = useQueryClient();
     const confirm = useConfirm();
 
+<<<<<<< HEAD
     const tripReference = selectedTrip?.destination || selectedTrip?.title || '';
+=======
+    const tripReference = selectedTrip?.title || '';
+    console.log("estou no JournalCard e tripReference é", tripReference)
+>>>>>>> main
 
     // FETCH: Carrega as sugestões com Caching do TanStack Query
     const { data: suggestionsData, isPending: isLoading, error: apiError } = useQuery({
@@ -22,6 +27,8 @@ export default function JournalCard({ selectedTrip, isTripSelected, onTriggerCha
     });
 
     const suggestions = suggestionsData?.data || suggestionsData || [];
+
+    console.log("suggestions no triAtlas", suggestionsData)
 
     // MUTATION: Apagar uma sugestão específica e atualizar o ecrã instantaneamente
     const deleteSuggestionMutation = useMutation({

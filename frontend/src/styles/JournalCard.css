@@ -1,5 +1,5 @@
 .journal-view-container {
-  position: relative; /* OBRIGATÓRIO para o botão alinhar à direita */
+  /* position: relative; OBRIGATÓRIO para o botão alinhar à direita */
   width: 100%;
   padding: 0.5rem 0;
 }
@@ -7,10 +7,10 @@
 .journal-suggestion-item {
   display: flex;
   margin-bottom: 1.2rem;
-  justify-content: 'space-between';
-  align-items: 'flex-start';
-  gap: '1rem';
-  border-bottom: '1px solid var(--border-light)';
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border-light);
   padding-bottom: '0.8rem'
 }
 
@@ -29,7 +29,7 @@
 .journal-suggestion-item p {
   color: var(--text-main);
   font-size: 0.9rem;
-  line-height: '1.4';
+  line-height: 1.4;
   margin: 0;
 }
 
@@ -54,4 +54,51 @@
   margin: 0.5rem 0 0 0;
   padding: 10px 25px;
   font-size: 0.85rem;
+}
+
+.journal-markdown {
+    color: var(--text-main);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.journal-markdown h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-heading-dark);
+    margin: 0 0 1rem;
+}
+
+.journal-markdown h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 1.2rem 0 0.6rem;
+}
+
+.journal-markdown h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+}
+
+.journal-markdown p {
+    margin: 0.6rem 0;
+}
+
+.journal-markdown ul,
+.journal-markdown ol {
+    margin: 0.75rem 0;
+    padding-left: 1.4rem;
+}
+
+.journal-markdown li {
+    margin-bottom: 0.35rem;
+}
+
+.journal-markdown strong {
+    font-weight: 700;
+}
+
+.journal-markdown hr {
+    margin: 1.5rem 0;
 }
