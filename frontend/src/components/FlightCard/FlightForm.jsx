@@ -101,15 +101,6 @@ export default function FlightForm({
 
         const newErrors = {};
 
-<<<<<<< HEAD
-        outbound.forEach((flight, index) => {
-            const segmentKey = `outbound-${index}`;
-            if (!flight.flight_number) newErrors[`fn-${segmentKey}`] = "Flight number is required";
-            if (flight.departure_airport?.length !== 3) newErrors[`dep-${segmentKey}`] = "Must be a 3-letter airport code";
-            if (!flight.departure_datetime) newErrors[`dep-time-${segmentKey}`] = "Departure date/time is required";
-            if (!flight.arrival_datetime) newErrors[`arr-time-${segmentKey}`] = "Arrival date/time is required";
-
-=======
         // Validar e trancar a cronologia da IDA (Outbound)
         outbound.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`out-fn-${index}`] = "Flight number is required";
@@ -120,7 +111,6 @@ export default function FlightForm({
             }
 
             // Chegada da ida não pode ser antes da partida da ida
->>>>>>> main
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`arr-time-${segmentKey}`] = "Arrival cannot be before departure";
@@ -128,15 +118,6 @@ export default function FlightForm({
             }
         });
         
-<<<<<<< HEAD
-        returns.forEach((flight, index) => {
-            const segmentKey = `return-${index}`;
-            if (!flight.flight_number) newErrors[`fn-${segmentKey}`] = "Flight number is required";
-            if (flight.departure_airport?.length !== 3) newErrors[`dep-${segmentKey}`] = "Must be a 3-letter airport code";
-            if (!flight.departure_datetime) newErrors[`dep-time-${segmentKey}`] = "Departure date/time is required";
-            if (!flight.arrival_datetime) newErrors[`arr-time-${segmentKey}`] = "Arrival date/time is required";
-
-=======
         // Validar e trancar a cronologia da VOLTA (Return)
         returns.forEach((flight, index) => {
             if (!flight.flight_number) newErrors[`ret-fn-${index}`] = "Flight number is required";
@@ -147,17 +128,13 @@ export default function FlightForm({
             }
 
             // Chegada da volta não pode ser antes da partida da volta
->>>>>>> main
             if (flight.departure_datetime && flight.arrival_datetime) {
                 if (new Date(flight.arrival_datetime) < new Date(flight.departure_datetime)) {
                     newErrors[`arr-time-${segmentKey}`] = "Arrival cannot be before departure";
                 }
             }
 
-<<<<<<< HEAD
-=======
             // Validação Cruzada: Partida do regresso tem de ser obrigatoriamente após o último voo de ida terminar
->>>>>>> main
             const lastOutboundFlight = outbound[outbound.length - 1];
             if (lastOutboundFlight?.arrival_datetime && flight.departure_datetime) {
                 if (new Date(flight.departure_datetime) < new Date(lastOutboundFlight.arrival_datetime)) {

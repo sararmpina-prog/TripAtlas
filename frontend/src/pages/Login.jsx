@@ -7,11 +7,8 @@ import PasswordField from "../components/PasswordField";
 import { loginUser } from "../api";
 import { saveAuthSession } from "../utils/authStorage";
 import { preloadBackgroundImage } from '../utils/preload';
-<<<<<<< HEAD
 import { useToast } from "../context/ToastContext";
 import SubmitButton from "../components/SubmitButton";
-=======
->>>>>>> main
 import {
   getLoginErrorState,
   hasValidationErrors,
