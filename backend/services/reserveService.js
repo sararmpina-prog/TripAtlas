@@ -43,8 +43,28 @@ export async function deleteAccommodationReserve(id, currentUserId) {
 
 //Cria reserva
 export async function createReserve(payload, currentUserId) {
-  const reserve = payload
-  
+  const reserve = { ...payload };
+
+  // Fluxo de criação no form: se não vier accommodation_id, cria primeiro a accommodation.
+  if (!reserve.accommodation_id) {
+    if (!reserve.name || !reserve.name.trim()) {
+      throw new ValidationError('Accommodation name is required.');
+    }
+
+    if (!reserve.address || !reserve.address.trim()) {
+      throw new ValidationError('Accommodation address is required.');
+    }
+
+    const newAccommodationId = await accommodationRepository.createAccommodation({
+      name: reserve.name.trim(),
+      address: reserve.address.trim(),
+      city: reserve.city?.trim() || null,
+      country: reserve.country?.trim() || null,
+    });
+
+    reserve.accommodation_id = Number(newAccommodationId);
+  }
+
   const accommodation = await accommodationRepository.findAccommodationById(reserve.accommodation_id)
       
   if (!accommodation) {
@@ -120,6 +140,8 @@ export async function updateReserve(id, currentUserId, validatedReserve) {
 
   updateData.check_in_date = checkInDate;
   updateData.check_out_date = checkOutDate;
+  updateData.check_in_time = validatedReserve.check_in_time ?? existingReserve.check_in_time;
+  updateData.check_out_time = validatedReserve.check_out_time ?? existingReserve.check_out_time;
 
   await reserveRepository.updateReserve(id, updateData);
 

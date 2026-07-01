@@ -1,79 +1,91 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateReserve, deleteReserve, createReserve, createAccommodation } from '../../api';
+import { updateReserve, deleteReserve, createReserve } from '../../api';
 import { getStoredToken } from '../../utils/authStorage';
 import { mapApiServerError } from '../../validators/apiValidator';
 import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 import ReserveCarousel from './ReserveCarousel';
 import ReserveForm from './ReserveForm';
 import DashboardPlaceholderCard from '../DashboardPlaceholderCard';
 
-export default function ReserveSection({ reserves = [], tripId, selectedTrip }) {
+import '../../styles/ReserveCard.css';
+
+export default function ReserveCard({ reserves = [], tripId, selectedTrip }) {
     const token = getStoredToken();
     const queryClient = useQueryClient();
     const confirm = useConfirm();
+    const toast = useToast();
 
     const [isEditing, setIsEditing] = useState(false);
-    const [currentReserve, setCurrentReserve] = useState(null);
+    const [isCreating, setIsCreating] = useState(false);
     const [formError, setFormError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
-    const allowedFields = ['accommodation_name', 'accommodation_type', 'check_in_date', 'check_out_date', 'address', 'city', 'country'];
+    const allowedFields = ['name', 'address', 'city', 'country', 'check_in_date', 'check_out_date', 'check_in_time', 'check_out_time'];
 
-    // MUTATION: Atualizar/Criar Reservas a partir do form de accommodations
+    const handleClose = () => {
+        setIsEditing(false);
+        setIsCreating(false);
+        setFormError('');
+        setFieldErrors({});
+    };
+
+    // Se o utilizador muda de viagem ativa, fecha automaticamente o formulário de edição/criação
+    useEffect(() => {
+        handleClose(); 
+    }, [selectedTrip?.id]); 
+
+    // MUTAÇÃO UNIFICADA: Grava o lote completo enviado pelo formulário
     const saveMutation = useMutation({
-        mutationFn: async (reservesPayload) => {
-            const reservesList = Array.isArray(reservesPayload) ? reservesPayload : [reservesPayload];
+        mutationFn: async (reservesList) => {
+            const promises = reservesList.map(reserve => {
+                // BASE DO PAYLOAD COM AS CHAVES NATIVAS DO TEU SQL
+                const apiPayload = {
+                    trip_id: Number(selectedTrip?.id || tripId),
+                    name: reserve.accommodation_name || reserve.name, // Garante que lê a string correta
+                    address: reserve.address || reserve.accommodation_address,
+                    city: reserve.city || null,
+                    country: reserve.country || null,
+                    check_in_date: reserve.check_in_date,
+                    check_out_date: reserve.check_out_date,
+                    check_in_time: reserve.check_in_time || null,
+                    check_out_time: reserve.check_out_time || null
+                };
 
-            for (const segment of reservesList) {
-                const checkIn = segment.check_in_date;
-                const checkOut = segment.check_out_date;
-                const tripReferenceId = selectedTrip?.id ?? currentReserve?.trip_id ?? tripId;
-
-                if (segment.id) {
-                    await updateReserve(segment.id, {
-                        accommodation_id: segment.accommodation_id,
-                        trip_id: tripReferenceId,
-                        check_in_date: checkIn,
-                        check_out_date: checkOut,
-                    }, token);
-                    continue;
+                // PROTEÇÃO CONTRA NaN: Se o registo já tem um ID numérico válido no SQL, atualiza (PUT)
+                if (reserve.id && !isNaN(Number(reserve.id))) {
+                    apiPayload.id = Number(reserve.id);
+                    apiPayload.accommodation_id = Number(reserve.accommodation_id || reserve.id);
+                    
+                    return updateReserve(reserve.id, apiPayload, token);
                 }
 
-                const createdAccommodation = await createAccommodation({
-                    name: segment.accommodation_name,
-                    address: segment.address,
-                    city: segment.city,
-                    country: segment.country,
-                }, token);
-
-                const accommodationId = createdAccommodation?.data?.id ?? createdAccommodation?.id;
-
-                await createReserve({
-                    accommodation_id: accommodationId,
-                    trip_id: tripReferenceId,
-                    check_in_date: checkIn,
-                    check_out_date: checkOut,
-                }, token);
-            }
+                // SE FOR NOVO: Não envia IDs nulos ou vazios de todo! O SQL gera o auto-increment sozinho (POST)
+                return createReserve(apiPayload, token);
+            });
+            
+            return Promise.all(promises);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'reserves'] });
+            toast('Accommodation logistics saved successfully!', 'success');
             handleClose();
         },
         onError: (err) => {
-            const result = mapApiServerError(err, allowedFields, 'Failed to update accommodation.');
+            const result = mapApiServerError(err, allowedFields, 'Failed to save accommodation logistics.');
             setFormError(result.formError);
             setFieldErrors(result.fieldErrors);
         }
     });
 
-    // MUTATION: Apagar Reserva
+    // MUTAÇÃO: Apagar Reserva Individual
     const deleteMutation = useMutation({
         mutationFn: (reserveId) => deleteReserve(reserveId, token),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'reserves'] });
+            toast('Accommodation log removed permanently.', 'info');
             handleClose();
         },
         onError: (err) => {
@@ -82,43 +94,26 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
         }
     });
 
-    const handleEditTrigger = (reserve) => {
-        setCurrentReserve(reserve);
-        setIsEditing(true);
-    };
-
-    const handleDeleteTrigger = async (reserveId, accommodationName) => {
+    const handleDeleteTrigger = async (reserveId, name) => {
         const confirmed = await confirm(
             'Delete Accommodation?',
-            `Do you want to delete ${accommodationName || 'this accommodation'}? This action can't be undone.`
+            `Are you sure you want to delete ${name || 'this accommodation'}? Changes are final.`
         );
         if (confirmed) {
             deleteMutation.mutate(reserveId);
         }
     };
 
-    const handleClose = () => {
-        setIsEditing(false);
-        setCurrentReserve(null);
-        setFormError('');
-        setFieldErrors({});
-    };
-
-    const handleCreateTrigger = () => {
-        if (!tripId) return;
-        window.location.href = `/accommodations/create?tripId=${tripId}`;
-    };
-
-    if (isEditing && currentReserve) {
+    if (isCreating || isEditing) {
         return (
             <ReserveForm 
-                reserve={currentReserve}
-                selectedTrip={selectedTrip} // Passa a viagem para trancar as datas
+                initialReserves={isEditing ? reserves : []}
+                selectedTrip={selectedTrip}
                 isPending={saveMutation.isPending || deleteMutation.isPending}
                 apiError={formError}
                 serverFieldErrors={fieldErrors}
                 onSave={(data) => saveMutation.mutate(data)}
-                onDelete={() => handleDeleteTrigger(currentReserve.id, currentReserve.accommodation_name)}
+                onDelete={handleDeleteTrigger}
                 onCancel={handleClose}
             />
         );
@@ -129,7 +124,7 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
             <DashboardPlaceholderCard 
                 resource="accommodation"
                 hasTrip={!!selectedTrip}
-                onClick={handleCreateTrigger}
+                onClick={() => setIsCreating(true)} 
             />
         );
     }
@@ -137,7 +132,7 @@ export default function ReserveSection({ reserves = [], tripId, selectedTrip }) 
     return (
         <ReserveCarousel 
             reserves={reserves} 
-            onEditClick={handleEditTrigger} 
+            onEditClick={() => setIsEditing(true)} 
         />
     );
 }
